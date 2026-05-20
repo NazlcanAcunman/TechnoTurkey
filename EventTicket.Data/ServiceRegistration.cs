@@ -18,15 +18,15 @@ public static class DataServiceRegistration
 
         services.AddDbContext<AppDbContext>(options =>
         {
-            options.UseSqlServer(
+            options.UseNpgsql(
                 connectionString,
-                sql =>
+                npgsql =>
                 {
-                    sql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
-                    sql.EnableRetryOnFailure(
+                    npgsql.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName);
+                    npgsql.EnableRetryOnFailure(
                         maxRetryCount: 3,
                         maxRetryDelay: TimeSpan.FromSeconds(5),
-                        errorNumbersToAdd: null);
+                        errorCodesToAdd: null);
                 });
 
 #if DEBUG
