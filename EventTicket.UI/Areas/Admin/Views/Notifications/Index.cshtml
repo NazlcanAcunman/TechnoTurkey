@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Bildirim Gönder";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.25);border-radius:10px;
+        padding:14px 18px;margin-bottom:24px;color:#4ade80;font-size:13px;font-weight:600;">
+        ✓ @TempData["Success"]
+    </div>
+}
+
+<div style="max-width:640px">
+    <p style="color:rgba(255,255,255,0.45);font-size:13px;margin-bottom:32px;line-height:1.6">
+        Aşağıdaki formu kullanarak tüm kayıtlı kullanıcılara bildirim gönderebilirsiniz.
+        Gönderilen bildirimler kullanıcıların bildirim sayfasında görünür.
+    </p>
+
+    <form method="post" asp-action="SendToAll">
+        <div style="display:flex;flex-direction:column;gap:20px">
+            <div>
+                <label style="display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;
+                    color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:8px">
+                    Bildirim Türü
+                </label>
+                <select name="type" style="width:100%;background:rgba(255,255,255,0.05);
+                    border:1px solid rgba(255,255,255,0.1);border-radius:10px;
+                    padding:11px 14px;color:#fff;font-size:13px;font-family:inherit;outline:none">
+                    <option value="info">Bilgi</option>
+                    <option value="announcement">Duyuru</option>
+                    <option value="promo">Promosyon</option>
+                    <option value="warning">Uyarı</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="display:block;font-size:11px;font-weight:700;letter-spacing:0.08em;
+                    color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:8px">
+                    Bildirim Mesajı
+                </label>
+                <textarea name="message" rows="4" required
+                    placeholder="Tüm kullanıcılara gönderilecek mesajı yazın..."
+                    style="width:100%;background:rgba(255,255,255,0.05);
+                        border:1px solid rgba(255,255,255,0.1);border-radius:10px;
+                        padding:12px 14px;color:#fff;font-size:14px;font-family:inherit;
+                        outline:none;resize:vertical;line-height:1.6;box-sizing:border-box"></textarea>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end">
+                <button type="submit"
+                    style="background:#fff;color:#000;border:none;border-radius:10px;
+                        padding:12px 28px;font-size:13px;font-weight:800;letter-spacing:0.06em;
+                        text-transform:uppercase;cursor:pointer;font-family:inherit;
+                        transition:background 0.15s">
+                    Tüm Kullanıcılara Gönder
+                </button>
+            </div>
+        </div>
+    </form>
+</div>

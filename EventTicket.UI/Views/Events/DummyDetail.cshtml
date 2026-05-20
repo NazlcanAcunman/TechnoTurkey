@@ -1,0 +1,182 @@
+@{
+    ViewData["Title"] = ViewBag.EventTitle;
+    var title     = ViewBag.EventTitle as string ?? "";
+    var artist    = ViewBag.Artist    as string ?? "";
+    var venue     = ViewBag.Venue     as string ?? "";
+    var city      = ViewBag.City      as string ?? "";
+    var date      = ViewBag.Date      as string ?? "";
+    var img       = ViewBag.Img       as string ?? "";
+    var ticketUrl = ViewBag.TicketUrl as string ?? "#";
+}
+
+<style>
+.dd-hero {
+    width: 100%;
+    max-height: 480px;
+    overflow: hidden;
+    position: relative;
+    background: #0d0d0d;
+}
+.dd-hero img {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    display: block;
+    opacity: 0.75;
+}
+.dd-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 30%, #0a0a0a 100%);
+}
+.dd-body {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+}
+.dd-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.35);
+    text-decoration: none;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    transition: color 0.2s;
+}
+.dd-back:hover { color: #fff; }
+.dd-title {
+    font-size: 36px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+}
+.dd-meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 40px;
+}
+.dd-meta-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+.dd-meta-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+.dd-meta-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+}
+.dd-desc {
+    font-size: 15px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.85;
+    margin-bottom: 48px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 32px;
+}
+.dd-ticket-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.dd-ticket-info {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+    line-height: 1.6;
+    max-width: 480px;
+}
+.dd-ticket-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    color: #000;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    border-radius: 100px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.dd-ticket-btn:hover {
+    background: #e8e8e8;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(255,255,255,0.15);
+}
+@@media (max-width: 600px) {
+    .dd-title { font-size: 26px; }
+    .dd-ticket-box { flex-direction: column; align-items: flex-start; }
+}
+</style>
+
+@if (!string.IsNullOrEmpty(img))
+{
+    <div class="dd-hero">
+        <img src="@img" alt="@title" />
+        <div class="dd-hero-overlay"></div>
+    </div>
+}
+
+<div class="dd-body">
+    <a href="/Events" class="dd-back"><i class="bi bi-arrow-left"></i> Etkinliklere Dön</a>
+
+    <h1 class="dd-title">@title</h1>
+
+    <div class="dd-meta-grid">
+        <div class="dd-meta-item">
+            <div class="dd-meta-label"><i class="bi bi-calendar3"></i> Tarih</div>
+            <div class="dd-meta-value">@date</div>
+        </div>
+        <div class="dd-meta-item">
+            <div class="dd-meta-label"><i class="bi bi-person-fill"></i> Sanatçı</div>
+            <div class="dd-meta-value">@artist</div>
+        </div>
+        <div class="dd-meta-item">
+            <div class="dd-meta-label"><i class="bi bi-building"></i> Mekan</div>
+            <div class="dd-meta-value">@venue</div>
+        </div>
+        <div class="dd-meta-item">
+            <div class="dd-meta-label"><i class="bi bi-geo-alt-fill"></i> Şehir</div>
+            <div class="dd-meta-value">@city</div>
+        </div>
+    </div>
+
+    <div class="dd-desc">
+        Bu etkinlik hakkında daha fazla bilgi yakında eklenecek. Biletinizi şimdiden alarak yerinizi garantileyin.
+    </div>
+
+    <div class="dd-ticket-box">
+        <div class="dd-ticket-info">
+            <strong style="color:#fff;font-size:15px;display:block;margin-bottom:6px">Biletinizi Şimdi Alın</strong>
+            Etkinlik biletleri resmi satış platformumuz üzerinden temin edilebilir. Kapasiteler sınırlıdır.
+        </div>
+        <a href="@ticketUrl" target="_blank" rel="noopener" class="dd-ticket-btn">
+            <i class="bi bi-ticket-perforated-fill"></i> BİLET AL
+        </a>
+    </div>
+</div>

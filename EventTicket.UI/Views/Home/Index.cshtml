@@ -1,0 +1,957 @@
+@model List<EventTicket.UI.ViewModels.EventCardViewModel>
+@using EventTicket.UI.ViewModels
+@using EventTicket.Core.Entities
+@{
+    ViewData["Title"] = "Anasayfa";
+    var artists  = ViewBag.Artists as List<ArtistCardViewModel> ?? new();
+    var venues   = ViewBag.Venues  as List<VenueCardViewModel>  ?? new();
+    var banners  = ViewBag.Banners as List<BannerViewModel>     ?? new();
+    var now      = DateTime.Now;
+    var thisWeek = Model.Where(e => e.Date >= now && e.Date <= now.AddDays(7)).ToList();
+
+    // Banner data from database
+    var heroSlides     = banners.Where(b => b.Type == BannerType.HeroSlide).OrderBy(b => b.SortOrder).ToList();
+    var featuredBanner = banners.FirstOrDefault(b => b.Type == BannerType.FeaturedBanner)
+                         ?? (heroSlides.Any() ? heroSlides[0] : null);
+    var bannerSlide    = heroSlides.Any() ? heroSlides[0] : null;
+
+    // Events from database
+    var top10          = Model.OrderByDescending(e => e.SoldCount).Take(10).ToList();
+    var featuredArtists = artists.Take(8).ToList();
+    var newest         = Model.OrderByDescending(e => e.Date).Where(e => e.Date >= now).Take(8).ToList();
+    var popArtists     = artists.Take(5).ToList();
+
+    var venueImgMap = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase) {
+        { "Klein Phönix",                          "https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d" },
+        { "Life Park",                             "https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba" },
+        { "Ataköy Marina Arena",                   "https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08" },
+        { "Volkswagen Arena",                      "https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c" },
+        { "KüçükÇiftlik Park",                     "https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11" },
+        { "Zorlu PSM",                             "https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602" },
+        { "Suma Han",                              "https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81" },
+        { "Harbiye Açıkhava Tiyatrosu",            "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=80" },
+        { "Babylon İstanbul",                      "https://images.unsplash.com/photo-1598387993441-a364f854959d?w=400&q=80" },
+        { "Garajistanbul",                         "https://images.unsplash.com/photo-1493225457155-ac4c670f6513?w=400&q=80" },
+        { "Ankara Arena",                          "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&q=80" },
+        { "Congresium Ankara",                     "https://images.unsplash.com/photo-1571266752173-c23b75dfbf18?w=400&q=80" },
+        { "Ankara Atatürk Spor Salonu",            "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&q=80" },
+        { "İzmir Fuar Açıkhava",                   "https://images.unsplash.com/photo-1521537634581-0dced2fee2ef?w=400&q=80" },
+        { "Bostanlı Suat Taşer Tiyatrosu",         "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&q=80" },
+        { "Ege Üniversitesi Açıkhava",             "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&q=80" },
+        { "Antalya Expo Alanı",                    "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=400&q=80" },
+        { "Regnum Sky Bar",                        "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=400&q=80" },
+        { "Bodrum Antik Tiyatro",                  "https://images.unsplash.com/photo-1504680177321-5ac30d97b29e?w=400&q=80" },
+        { "Catamaran Bodrum",                      "https://images.unsplash.com/photo-1581961059174-d13f2f71d4ef?w=400&q=80" },
+        { "Bursa Büyükşehir Belediyesi Açıkhava",  "https://images.unsplash.com/photo-1496337589254-7e19d01cec44?w=400&q=80" },
+    };
+}
+
+
+@if (bannerSlide != null)
+{
+<!-- ════ FULL VIEWPORT HERO BANNER ════ -->
+<div class="et-fullbanner" onclick="document.querySelector('.et-hero-wrap')?.scrollIntoView({behavior:'smooth'})">
+    <img src="@bannerSlide.ImageUrl" alt="@bannerSlide.Title" class="et-fullbanner-bg">
+    <div class="et-fullbanner-overlay"></div>
+    <div class="et-fullbanner-content">
+        <div class="et-fullbanner-badge">
+            <i class="bi bi-calendar3"></i>@bannerSlide.DateText &nbsp;·&nbsp; @bannerSlide.Venue
+        </div>
+        <h1 class="et-fullbanner-title">@bannerSlide.Title</h1>
+        <p class="et-fullbanner-sub">@bannerSlide.SubTitle</p>
+        @if (!string.IsNullOrEmpty(bannerSlide.SearchQuery))
+        {
+            <a href="/Events?search=@Uri.EscapeDataString(bannerSlide.SearchQuery)" class="et-fullbanner-btn" onclick="event.stopPropagation()">
+                <i class="bi bi-ticket-perforated"></i> BİLET AL
+            </a>
+        }
+        else if (!string.IsNullOrEmpty(bannerSlide.TicketUrl))
+        {
+            <a href="@bannerSlide.TicketUrl" class="et-fullbanner-btn" onclick="event.stopPropagation()">
+                <i class="bi bi-ticket-perforated"></i> BİLET AL
+            </a>
+        }
+    </div>
+    <div class="et-fullbanner-scroll"><i class="bi bi-chevron-compact-down"></i></div>
+</div>
+
+<!-- ════ COMPACT SLIDER ════ -->
+<div class="et-hero-wrap">
+<div class="et-hero">
+    <div class="et-hero-slides" id="heroSlides">
+        @foreach (var hs in heroSlides)
+        {
+            <div class="et-hero-slide">
+                <img src="@hs.ImageUrl" alt="@hs.Title" />
+                <div class="et-hero-overlay">
+                    <div class="et-hero-content">
+                        <div class="et-hero-badge">
+                            <i class="bi bi-calendar3"></i>
+                            @hs.DateText &nbsp;·&nbsp; @hs.Venue
+                        </div>
+                        <div class="et-hero-title">@hs.Title</div>
+                        <div class="et-hero-artist">@hs.SubTitle</div>
+                        <div style="display:flex;gap:12px;align-items:center;margin-top:24px">
+                            @if (!string.IsNullOrEmpty(hs.SearchQuery))
+                            {
+                                <a href="/Events?search=@Uri.EscapeDataString(hs.SearchQuery)" class="et-hero-btn">
+                                    <i class="bi bi-ticket-perforated"></i> BİLET AL
+                                </a>
+                            }
+                            else if (!string.IsNullOrEmpty(hs.TicketUrl))
+                            {
+                                <a href="@hs.TicketUrl" class="et-hero-btn">
+                                    <i class="bi bi-ticket-perforated"></i> BİLET AL
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    <button class="et-hero-arrow et-hero-arrow-left"  onclick="heroArrow(-1)" aria-label="Önceki"><i class="bi bi-chevron-left"></i></button>
+    <button class="et-hero-arrow et-hero-arrow-right" onclick="heroArrow(1)"  aria-label="Sonraki"><i class="bi bi-chevron-right"></i></button>
+    <div class="et-hero-dots" id="heroDots">
+        @for (int i = 0; i < heroSlides.Count; i++)
+        {
+            <button class="et-hero-dot @(i == 0 ? "active" : "")" onclick="goToSlide(@i)"></button>
+        }
+    </div>
+</div>
+</div>
+}
+
+
+<!-- ════ ŞEHİR FİLTRE SEKME ÇUBUĞU ════ -->
+<div class="et-city-tab-bar">
+    <div class="et-city-tab-inner">
+        <button class="et-city-tab active" onclick="switchCity('istanbul', this)">
+            <i class="bi bi-geo-alt-fill"></i> İSTANBUL
+        </button>
+        <button class="et-city-tab" onclick="switchCity('izmir', this)">
+            <i class="bi bi-geo-alt-fill"></i> İZMİR
+        </button>
+        <button class="et-city-tab" onclick="switchCity('ankara', this)">
+            <i class="bi bi-geo-alt-fill"></i> ANKARA
+        </button>
+        <button class="et-city-tab" onclick="switchCity('bodrum', this)">
+            <i class="bi bi-geo-alt-fill"></i> BODRUM
+        </button>
+        <button class="et-city-tab" onclick="switchCity('cesme', this)">
+            <i class="bi bi-geo-alt-fill"></i> ÇEŞME
+        </button>
+    </div>
+</div>
+
+<!-- ════ İSTANBUL ════ -->
+<div class="et-city-section active" id="city-istanbul">
+    <div class="et-section">
+        <div class="et-section-header">
+            <span class="et-section-title">İstanbul</span>
+            <a href="/Events?city=İstanbul" class="et-section-more">Tümünü Gör →</a>
+        </div>
+        <div class="et-carousel">
+            <button class="et-carr-btn et-carr-l" onclick="sc('ist',-1)"><i class="bi bi-chevron-left"></i></button>
+            <div class="et-scroll-wrap" id="ist">
+                <div class="et-scroll-inner" style="gap:14px">
+                    @foreach(var e in top10)
+                    {
+                    <a href="/Events/@e.Id" class="et-ec">
+                        <div class="et-ec-img">
+                            <img src="@e.ImageUrl" alt="@e.Title" loading="lazy" />
+                        </div>
+                        <div class="et-ec-body">
+                            <div class="et-ec-title">@e.Title</div>
+                            <div class="et-ec-meta"><i class="bi bi-calendar3"></i> @e.Date.ToString("dd MMM yyyy")</div>
+                            <div class="et-ec-meta"><i class="bi bi-geo-alt"></i> @e.VenueName</div>
+                        </div>
+                    </a>
+                    }
+                </div>
+            </div>
+            <button class="et-carr-btn et-carr-r" onclick="sc('ist',1)"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- ════ İZMİR ════ -->
+@{
+    var izmirEvents = new[] {
+        new { Title="Kevin de Vries",       Date="11-12 Nis 2026", Venue="Klein Phönix",   Img="https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d", Search="Kevin de Vries" },
+        new { Title="Jeton presents Sara Landry", Date="15 Ağu 2026", Venue="Alaçatı Festival", Img="https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602", Search="Sara Landry" },
+        new { Title="I Hate Models",        Date="20 Haz 2026",    Venue="KüçükÇiftlik Park", Img="https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11", Search="I Hate Models" },
+        new { Title="Sonar Istanbul 2026",  Date="10-11 Nis 2026", Venue="İzmir Arena",    Img="https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c", Search="Sonar" },
+        new { Title="ADRIATIQUE",           Date="9 May 2026",     Venue="Zorlu PSM",      Img="https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08", Search="ADRIATIQUE" },
+        new { Title="INCORE URBAN FESTIVAL",Date="7 Tem 2026",     Venue="İzmir Park",     Img="https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165", Search="INCORE" },
+    };
+}
+<div class="et-city-section" id="city-izmir">
+    <div class="et-section">
+        <div class="et-section-header">
+            <span class="et-section-title">İzmir</span>
+            <a href="/Events?city=İzmir" class="et-section-more">Tümünü Gör →</a>
+        </div>
+        <div class="et-carousel">
+            <button class="et-carr-btn et-carr-l" onclick="sc('izm',-1)"><i class="bi bi-chevron-left"></i></button>
+            <div class="et-scroll-wrap" id="izm">
+                <div class="et-scroll-inner" style="gap:14px">
+                    @foreach(var e in izmirEvents) {
+                    <a href="/Events?search=@Uri.EscapeDataString(e.Search)" class="et-ec">
+                        <div class="et-ec-img"><img src="@e.Img" alt="@e.Title" loading="lazy" /></div>
+                        <div class="et-ec-body">
+                            <div class="et-ec-title">@e.Title</div>
+                            <div class="et-ec-meta"><i class="bi bi-calendar3"></i> @e.Date</div>
+                            <div class="et-ec-meta"><i class="bi bi-geo-alt"></i> @e.Venue</div>
+                        </div>
+                    </a>
+                    }
+                </div>
+            </div>
+            <button class="et-carr-btn et-carr-r" onclick="sc('izm',1)"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- ════ ANKARA ════ -->
+@{
+    var ankaraEvents = new[] {
+        new { Title="YE Live in Ankara",    Date="2 Haz 2026",     Venue="Ankara Atatürk Stadyumu", Img="https://cdn.bugece.co/85ea084c-ace5-4980-adb5-47055f4473ab", Search="YE Live" },
+        new { Title="Ricky Martin",         Date="15 Tem 2026",    Venue="Ankara Arena",    Img="https://cdn.bugece.co/58302bc5-8884-4fd3-ac7f-f6cc61be5e1e", Search="Ricky Martin" },
+        new { Title="Catwalk: Charlie Sparks", Date="5 Haz 2026",  Venue="Ankara Congresium", Img="https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81", Search="Charlie Sparks" },
+        new { Title="ZAMNA x Ankara",       Date="12 Haz 2026",    Venue="Ankara Park",     Img="https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba", Search="ZAMNA" },
+        new { Title="Kevin de Vries Ankara",Date="18 Haz 2026",    Venue="Ankara Club",     Img="https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d", Search="Kevin de Vries" },
+    };
+}
+<div class="et-city-section" id="city-ankara">
+    <div class="et-section">
+        <div class="et-section-header">
+            <span class="et-section-title">Ankara</span>
+            <a href="/Events?city=Ankara" class="et-section-more">Tümünü Gör →</a>
+        </div>
+        <div class="et-carousel">
+            <button class="et-carr-btn et-carr-l" onclick="sc('ank',-1)"><i class="bi bi-chevron-left"></i></button>
+            <div class="et-scroll-wrap" id="ank">
+                <div class="et-scroll-inner" style="gap:14px">
+                    @foreach(var e in ankaraEvents) {
+                    <a href="/Events?search=@Uri.EscapeDataString(e.Search)" class="et-ec">
+                        <div class="et-ec-img"><img src="@e.Img" alt="@e.Title" loading="lazy" /></div>
+                        <div class="et-ec-body">
+                            <div class="et-ec-title">@e.Title</div>
+                            <div class="et-ec-meta"><i class="bi bi-calendar3"></i> @e.Date</div>
+                            <div class="et-ec-meta"><i class="bi bi-geo-alt"></i> @e.Venue</div>
+                        </div>
+                    </a>
+                    }
+                </div>
+            </div>
+            <button class="et-carr-btn et-carr-r" onclick="sc('ank',1)"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- ════ BODRUM ════ -->
+@{
+    var bodrumEvents = new[] {
+        new { Title="ZAMNA Bodrum Festival", Date="6-8 Ağu 2026",  Venue="Bodrum Amfi Tiyatro", Img="https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba", Search="ZAMNA" },
+        new { Title="ADRIATIQUE Bodrum",    Date="14 Ağu 2026",    Venue="Bodrum Beach Club", Img="https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08", Search="ADRIATIQUE" },
+        new { Title="Sara Landry Bodrum",   Date="22 Ağu 2026",    Venue="Bodrum Marina",   Img="https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602", Search="Sara Landry" },
+        new { Title="Sonar x Bodrum",       Date="30 Tem 2026",    Venue="Bodrum Kalesi",   Img="https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c", Search="Sonar" },
+    };
+}
+<div class="et-city-section" id="city-bodrum">
+    <div class="et-section">
+        <div class="et-section-header">
+            <span class="et-section-title">Bodrum</span>
+            <a href="/Events?city=Bodrum" class="et-section-more">Tümünü Gör →</a>
+        </div>
+        <div class="et-carousel">
+            <button class="et-carr-btn et-carr-l" onclick="sc('bod',-1)"><i class="bi bi-chevron-left"></i></button>
+            <div class="et-scroll-wrap" id="bod">
+                <div class="et-scroll-inner" style="gap:14px">
+                    @foreach(var e in bodrumEvents) {
+                    <a href="/Events?search=@Uri.EscapeDataString(e.Search)" class="et-ec">
+                        <div class="et-ec-img"><img src="@e.Img" alt="@e.Title" loading="lazy" /></div>
+                        <div class="et-ec-body">
+                            <div class="et-ec-title">@e.Title</div>
+                            <div class="et-ec-meta"><i class="bi bi-calendar3"></i> @e.Date</div>
+                            <div class="et-ec-meta"><i class="bi bi-geo-alt"></i> @e.Venue</div>
+                        </div>
+                    </a>
+                    }
+                </div>
+            </div>
+            <button class="et-carr-btn et-carr-r" onclick="sc('bod',1)"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- ════ ÇEŞME ════ -->
+@{
+    var cesmeEvents = new[] {
+        new { Title="I Hate Models — Çeşme", Date="9 Ağu 2026",   Venue="Çeşme Marina",    Img="https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11", Search="I Hate Models" },
+        new { Title="Kevin de Vries Çeşme", Date="16 Ağu 2026",   Venue="Çeşme Arena",     Img="https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d", Search="Kevin de Vries" },
+        new { Title="Catwalk x Çeşme",      Date="23 Ağu 2026",   Venue="Çeşme Park",      Img="https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81", Search="Charlie Sparks" },
+        new { Title="INCORE Çeşme Edition", Date="29 Ağu 2026",   Venue="Çeşme Beach",     Img="https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165", Search="INCORE" },
+    };
+}
+<div class="et-city-section" id="city-cesme">
+    <div class="et-section">
+        <div class="et-section-header">
+            <span class="et-section-title">Çeşme</span>
+            <a href="/Events?city=Çeşme" class="et-section-more">Tümünü Gör →</a>
+        </div>
+        <div class="et-carousel">
+            <button class="et-carr-btn et-carr-l" onclick="sc('ces',-1)"><i class="bi bi-chevron-left"></i></button>
+            <div class="et-scroll-wrap" id="ces">
+                <div class="et-scroll-inner" style="gap:14px">
+                    @foreach(var e in cesmeEvents) {
+                    <a href="/Events?search=@Uri.EscapeDataString(e.Search)" class="et-ec">
+                        <div class="et-ec-img"><img src="@e.Img" alt="@e.Title" loading="lazy" /></div>
+                        <div class="et-ec-body">
+                            <div class="et-ec-title">@e.Title</div>
+                            <div class="et-ec-meta"><i class="bi bi-calendar3"></i> @e.Date</div>
+                            <div class="et-ec-meta"><i class="bi bi-geo-alt"></i> @e.Venue</div>
+                        </div>
+                    </a>
+                    }
+                </div>
+            </div>
+            <button class="et-carr-btn et-carr-r" onclick="sc('ces',1)"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+</div>
+
+<!-- ════ TOP 10 ════ -->
+@if (top10.Any())
+{
+<div class="et-section">
+    <div class="et-section-header">
+        <span class="et-section-title">TOP 10 – En Çok Satan</span>
+        <a asp-controller="Events" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
+    </div>
+    <div class="et-top10-wrap">
+        @{ int rank = 1; }
+        @foreach (var e in top10)
+        {
+            <a href="/Events/@e.Id" class="et-top10-row" style="text-decoration:none">
+                <span class="et-top10-rank @(rank <= 3 ? "gold" : "")">@rank</span>
+                <div class="et-top10-thumb">
+                    <img src="@e.ImageUrl" alt="@e.Title" />
+                </div>
+                <div class="et-top10-info">
+                    <div class="et-top10-title">@e.Title</div>
+                    <div class="et-top10-meta"><i class="bi bi-calendar3"></i> @e.Date.ToString("dd MMM yyyy") &nbsp;·&nbsp; <i class="bi bi-geo-alt"></i> @e.VenueName</div>
+                </div>
+                <span class="et-top10-btn"><i class="bi bi-ticket-perforated"></i> SATIN AL</span>
+            </a>
+            rank++;
+        }
+    </div>
+</div>
+}
+
+@if (featuredArtists.Any())
+{
+<div class="et-section" style="background:rgba(255,255,255,.012);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)">
+    <div class="et-section-header">
+        <span class="et-section-title">Sadece TechnoTurkey'de</span>
+        <a asp-controller="Artists" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
+    </div>
+    <div class="et-carousel">
+        <button class="et-carr-btn et-carr-l" onclick="sc('aw',-1)"><i class="bi bi-chevron-left"></i></button>
+        <div class="et-scroll-wrap" id="aw">
+            <div class="et-scroll-inner" style="gap:14px">
+                @foreach (var a in featuredArtists)
+                {
+                    <a href="/Artists/@a.Id" class="et-ac" style="text-decoration:none">
+                        <div class="et-ac-img">
+                            <img src="@a.ImageUrl" alt="@a.Name" />
+                            <span class="et-ac-genre">@a.Genre</span>
+                        </div>
+                        <div class="et-ac-body">
+                            <div class="et-ac-name">@a.Name</div>
+                            <div class="et-ac-sub">@a.Genre</div>
+                            <div class="et-ac-ev">@a.Name</div>
+                            <span class="et-ac-btn"><i class="bi bi-ticket-perforated"></i> BİLET AL</span>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+        <button class="et-carr-btn et-carr-r" onclick="sc('aw',1)"><i class="bi bi-chevron-right"></i></button>
+    </div>
+</div>
+}
+
+@if (newest.Any())
+{
+<div class="et-section">
+    <div class="et-section-header">
+        <span class="et-section-title">En Yeni Etkinlikler</span>
+        <a asp-controller="Events" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
+    </div>
+    <div class="et-carousel">
+        <button class="et-carr-btn et-carr-l" onclick="sc('nw',-1)"><i class="bi bi-chevron-left"></i></button>
+        <div class="et-scroll-wrap" id="nw">
+            <div class="et-scroll-inner" style="gap:14px">
+                @foreach (var n in newest)
+                {
+                    <a href="/Events/@n.Id" class="et-nc" style="text-decoration:none">
+                        <div class="et-nc-img">
+                            <img src="@n.ImageUrl" alt="@n.Title" />
+                            <span class="et-ac-genre">@n.ArtistGenre</span>
+                        </div>
+                        <div class="et-ac-body">
+                            <div class="et-ac-name" style="font-size:13px">@n.Title</div>
+                            <div class="et-ac-sub"><i class="bi bi-calendar3"></i> @n.Date.ToString("dd MMM yyyy") &nbsp;·&nbsp; @n.VenueName</div>
+                            <span class="et-ac-btn" style="margin-top:auto"><i class="bi bi-ticket-perforated"></i> BİLET AL</span>
+                        </div>
+                    </a>
+                }
+            </div>
+        </div>
+        <button class="et-carr-btn et-carr-r" onclick="sc('nw',1)"><i class="bi bi-chevron-right"></i></button>
+    </div>
+</div>
+}
+
+@if (featuredBanner != null)
+{
+<div class="et-banner-section">
+    <div class="et-banner-inner">
+        <img src="@featuredBanner.ImageUrl" alt="@featuredBanner.Title" />
+        <div class="et-feat-overlay">
+            <div class="et-banner-content">
+                <div class="et-hero-badge" style="margin-bottom:18px;font-size:11px;padding:6px 16px">
+                    <i class="bi bi-lightning-charge-fill" style="color:#fff"></i> ÖNE ÇIKAN ETKİNLİK
+                </div>
+                <div class="et-banner-title">@featuredBanner.Title</div>
+                @if (!string.IsNullOrEmpty(featuredBanner.SubTitle))
+                {
+                    <div style="font-size:15px;font-weight:400;color:rgba(255,255,255,0.6);margin-bottom:16px;letter-spacing:0.04em">@featuredBanner.SubTitle</div>
+                }
+                <div class="et-banner-meta">
+                    @if (!string.IsNullOrEmpty(featuredBanner.DateText))
+                    {
+                        <span><i class="bi bi-calendar3"></i> @featuredBanner.DateText</span>
+                    }
+                    @if (!string.IsNullOrEmpty(featuredBanner.Venue))
+                    {
+                        <span>&nbsp;·&nbsp; <i class="bi bi-geo-alt"></i> @featuredBanner.Venue</span>
+                    }
+                </div>
+                <div style="display:flex;gap:12px;align-items:center;margin-top:28px;flex-wrap:wrap">
+                    @if (!string.IsNullOrEmpty(featuredBanner.SearchQuery))
+                    {
+                        <a href="/Events?search=@Uri.EscapeDataString(featuredBanner.SearchQuery)" class="et-hero-btn">
+                            <i class="bi bi-ticket-perforated"></i> BİLET AL
+                        </a>
+                    }
+                    else if (!string.IsNullOrEmpty(featuredBanner.TicketUrl))
+                    {
+                        <a href="@featuredBanner.TicketUrl" class="et-hero-btn">
+                            <i class="bi bi-ticket-perforated"></i> BİLET AL
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@if (thisWeek.Any())
+{
+    <div class="et-section">
+        <div class="et-section-header">
+            <span class="et-section-title"><span class="et-live-dot"></span>Bu Hafta</span>
+            <a asp-controller="Events" asp-action="Index" class="et-section-more">TÜMÜNÜ GÖR →</a>
+        </div>
+        <div class="et-carousel">
+            <button class="et-carr-btn et-carr-l" onclick="sc('tw',-1)"><i class="bi bi-chevron-left"></i></button>
+            <div class="et-scroll-wrap" id="tw">
+                <div class="et-scroll-inner">
+                    @foreach (var ev in thisWeek)
+                    {
+                        @await Html.PartialAsync("_EventCard", ev)
+                    }
+                </div>
+            </div>
+            <button class="et-carr-btn et-carr-r" onclick="sc('tw',1)"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+}
+
+@if (popArtists.Any())
+{
+<div class="et-section" style="background:rgba(255,255,255,.015);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)">
+    <div class="et-section-header">
+        <span class="et-section-title">Popüler Sanatçılar</span>
+        <a asp-controller="Artists" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
+    </div>
+    <div class="et-pop-row">
+        @foreach (var pa in popArtists)
+        {
+            <div class="et-pop-card" onclick="showArtistModal('@pa.Name','@Html.Raw(pa.Genre)','@pa.ImageUrl','@Html.Raw(pa.Bio ?? pa.Genre)','@pa.Name','','@pa.Id')" style="cursor:pointer">
+                <div class="et-pop-img"><img src="@pa.ImageUrl" alt="@pa.Name" /></div>
+                <div class="et-pop-name">@pa.Name</div>
+                <div class="et-pop-genre">@pa.Genre</div>
+                <button class="et-pop-follow" onclick="event.stopPropagation();toggleFollow(this)"><i class="bi bi-person-plus"></i> Takip Et</button>
+            </div>
+        }
+    </div>
+
+    <!-- Sanatçı bilgi modalı -->
+    <div id="artistModal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px)" onclick="closeArtistModal()">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);border-radius:18px;width:min(480px,94vw);overflow:hidden" onclick="event.stopPropagation()">
+            <div id="am-img" style="width:100%;height:220px;overflow:hidden;position:relative;background:#111">
+                <img id="am-img-el" src="" style="width:100%;height:100%;object-fit:cover;opacity:0.7" />
+                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(26,26,26,1) 0%,transparent 60%)"></div>
+                <button onclick="closeArtistModal()" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:50%;width:32px;height:32px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px">&times;</button>
+            </div>
+            <div style="padding:20px 24px 28px">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px">
+                    <div>
+                        <div id="am-name" style="font-size:22px;font-weight:900;color:#fff;margin-bottom:4px"></div>
+                        <div id="am-genre" style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:#000;background:#fff;padding:3px 9px;border-radius:4px;display:inline-block"></div>
+                    </div>
+                </div>
+                <div id="am-bio" style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.75;margin-bottom:18px"></div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 16px;margin-bottom:18px">
+                    <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px">Yaklaşan Etkinlik</div>
+                    <div id="am-event-title" style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px"></div>
+                    <div id="am-event-date" style="font-size:12px;color:rgba(255,255,255,0.35)"><i class="bi bi-calendar3"></i> </div>
+                </div>
+                <div style="display:flex;gap:10px">
+                    <a id="am-ticket-btn" href="#" class="et-hero-btn" style="flex:1;justify-content:center"><i class="bi bi-ticket-perforated"></i> BİLET AL</a>
+                    <button onclick="toggleFollow(this);event.stopPropagation()" class="et-pop-follow" style="border-radius:10px;padding:12px 18px"><i class="bi bi-person-plus"></i> Takip Et</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+<div class="et-section">
+    <div class="et-section-header">
+        <span class="et-section-title">Öne Çıkan Etkinlikler</span>
+        <a asp-controller="Events" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="et-empty-state"><p>Henüz onaylanmış etkinlik bulunmuyor.</p></div>
+    }
+    else
+    {
+        <div class="et-carousel">
+            <button class="et-carr-btn et-carr-l" onclick="sc('fw',-1)"><i class="bi bi-chevron-left"></i></button>
+            <div class="et-scroll-wrap" id="fw">
+                <div class="et-scroll-inner">
+                    @foreach (var ev in Model.Take(12))
+                    {
+                        @await Html.PartialAsync("_EventCard", ev)
+                    }
+                </div>
+            </div>
+            <button class="et-carr-btn et-carr-r" onclick="sc('fw',1)"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    }
+</div>
+
+
+
+@if (User.Identity == null || !User.Identity.IsAuthenticated)
+{
+    <div class="et-cta-section">
+        <div class="et-cta-inner">
+            <div class="et-cta-title">Favori sanatçılarını ve mekanlarını takibe al</div>
+            <div class="et-cta-sub">Yeni etkinlik açıldığında anında bildirim al, hiçbir geceyi kaçırma.</div>
+            <a asp-controller="Auth" asp-action="Register" class="et-hero-btn"><i class="bi bi-person-plus"></i> HEMEN KAYDOL</a>
+        </div>
+    </div>
+}
+
+<style>
+/* ─── City filter tab bar ─── */
+.et-city-tab-bar {
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    position: sticky;
+    top: calc(var(--banner-h, 72px) + 106px);
+    z-index: 50;
+}
+.et-city-tab-inner {
+    max-width: 1280px; margin: 0 auto; padding: 0 20px;
+    display: flex; align-items: center; gap: 2px;
+    overflow-x: auto; scrollbar-width: none;
+}
+.et-city-tab-inner::-webkit-scrollbar { display: none; }
+.et-city-tab {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    padding: 15px 18px;
+    border: none; background: none; cursor: pointer;
+    font-family: inherit; white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+}
+.et-city-tab:hover { color: rgba(255,255,255,0.75); }
+.et-city-tab.active { color: #fff; border-bottom-color: #fff; }
+
+.et-city-section { display: none; }
+.et-city-section.active { display: block; }
+
+/* ─── City event cards ─── */
+.et-ec {
+    flex: 0 0 260px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px; overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+    color: inherit; text-decoration: none;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+}
+.et-ec:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.16); box-shadow: 0 0 0 1px rgba(255,255,255,0.08), 0 20px 56px rgba(0,0,0,0.9), 0 0 40px rgba(255,255,255,0.04); }
+.et-ec-img { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; flex-shrink: 0; background: #0d0d0d; }
+.et-ec-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; display: block; }
+.et-ec:hover .et-ec-img img { transform: scale(1.07); }
+.et-ec-body { padding: 13px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.et-ec-title { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.et-ec-meta { font-size: 11px; color: rgba(255,255,255,0.32); display: flex; align-items: center; gap: 5px; }
+
+/* ─── Carousel ─── */
+.et-carousel { position: relative; max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+.et-carousel .et-scroll-wrap { max-width: none; margin: 0; padding: 0; }
+.et-carr-btn {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 4;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.75); font-size: 14px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+}
+.et-carr-btn:hover { background: rgba(0,0,0,0.95); border-color: rgba(255,255,255,0.28); color: #fff; }
+.et-carr-l { left: 4px; }
+.et-carr-r { right: 4px; }
+
+/* ─── Live dot ─── */
+.et-live-dot {
+    display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+    background: #ef4444; margin-right: 8px; animation: pulse 1.8s infinite;
+}
+@@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.75)} }
+
+/* ─── TOP 10 ─── */
+.et-top10-wrap { max-width: 1280px; margin: 0 auto; padding: 0 20px; display: flex; flex-direction: column; gap: 2px; }
+.et-top10-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 14px; border-radius: 12px;
+    background: transparent; border: 1px solid transparent;
+    transition: background 0.2s, border-color 0.2s; color: inherit;
+}
+.et-top10-row:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.09); box-shadow: 0 4px 24px rgba(0,0,0,0.5); }
+.et-top10-rank { font-size: 21px; font-weight: 900; color: rgba(255,255,255,0.15); min-width: 36px; text-align: center; font-variant-numeric: tabular-nums; }
+.et-top10-rank.gold { color: rgba(255,255,255,0.9); }
+.et-top10-thumb { width: 64px; height: 64px; border-radius: 10px; overflow: hidden; flex-shrink: 0; background: #111; }
+.et-top10-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.et-top10-info { flex: 1; min-width: 0; }
+.et-top10-title { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.et-top10-meta { font-size: 11px; color: rgba(255,255,255,0.28); margin-top: 3px; }
+.et-top10-btn {
+    flex-shrink: 0; background: #fff; color: #000;
+    font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 7px 14px; border-radius: 100px; white-space: nowrap;
+    display: flex; align-items: center; gap: 5px; transition: all 0.2s;
+    box-shadow: 0 2px 12px rgba(255,255,255,0.12);
+}
+.et-top10-btn:hover { background: #e0e0e0; transform: scale(1.05); box-shadow: 0 4px 20px rgba(255,255,255,0.18); }
+
+/* ─── Artist card ─── */
+.et-ac {
+    flex: 0 0 228px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;
+    transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+}
+.et-ac:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.14); box-shadow: 0 0 0 1px rgba(255,255,255,0.07), 0 20px 56px rgba(0,0,0,0.9), 0 0 40px rgba(255,255,255,0.04); }
+.et-ac-img { width: 100%; height: 196px; position: relative; background: #0d0d0d; overflow: hidden; flex-shrink: 0; }
+.et-ac-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.et-ac:hover .et-ac-img img { transform: scale(1.06); }
+.et-ac-genre {
+    position: absolute; top: 9px; left: 9px;
+    font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #000; background: #fff; padding: 3px 8px; border-radius: 100px;
+}
+.et-ac-body { padding: 13px 13px 14px; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.et-ac-name { font-size: 13px; font-weight: 800; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.et-ac-sub  { font-size: 10px; color: rgba(255,255,255,0.28); }
+.et-ac-ev   { font-size: 11px; color: rgba(255,255,255,0.45); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px; }
+.et-ac-btn  {
+    margin-top: auto; display: flex; align-items: center; justify-content: center; gap: 5px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
+    color: #fff; font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 7px 10px; border-radius: 100px; transition: all 0.2s;
+}
+.et-ac-btn:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.3); transform: scale(1.04); box-shadow: 0 0 16px rgba(255,255,255,0.1); }
+
+/* ─── Newest card ─── */
+.et-nc {
+    flex: 0 0 248px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;
+    transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+}
+.et-nc:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.14); box-shadow: 0 0 0 1px rgba(255,255,255,0.07), 0 20px 56px rgba(0,0,0,0.9), 0 0 40px rgba(255,255,255,0.04); }
+.et-nc-img { width: 100%; height: 178px; position: relative; background: #0d0d0d; overflow: hidden; flex-shrink: 0; }
+.et-nc-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.et-nc:hover .et-nc-img img { transform: scale(1.06); }
+
+/* ─── Featured banner ─── */
+.et-banner-section { padding: 8px 0 0; }
+.et-banner-inner {
+    max-width: 1280px; margin: 0 auto; padding: 0 20px;
+    position: relative; height: 580px; overflow: hidden; border-radius: 24px;
+    box-shadow: 0 32px 96px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.05);
+}
+.et-banner-inner > img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; opacity: 0.65; border-radius: 24px;
+    transition: transform 8s ease;
+}
+.et-banner-inner:hover > img { transform: scale(1.03); }
+.et-feat-overlay {
+    position: absolute; inset: 0; border-radius: 24px;
+    background: linear-gradient(105deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.65) 45%, rgba(0,0,0,0.15) 100%);
+    display: flex; align-items: flex-end; padding: 56px 64px;
+}
+.et-banner-content { max-width: 560px; }
+.et-banner-title { font-size: 52px; font-weight: 900; color: #fff; line-height: 1.06; margin-bottom: 14px; letter-spacing: -0.025em; text-shadow: 0 4px 24px rgba(0,0,0,0.8); }
+.et-banner-meta  { font-size: 13px; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 10px; }
+
+/* ─── Popular artists row ─── */
+.et-pop-row {
+    max-width: 1280px; margin: 0 auto; padding: 0 20px;
+    display: flex; justify-content: center; gap: 44px; flex-wrap: wrap;
+}
+.et-pop-card { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 132px; cursor: pointer; }
+.et-pop-img {
+    width: 114px; height: 114px; border-radius: 50%; overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.08); background: #111;
+    transition: border-color 0.2s, transform 0.2s;
+}
+.et-pop-card:hover .et-pop-img { border-color: rgba(255,255,255,0.35); transform: scale(1.04) translateY(-2px); }
+.et-pop-img img { width: 100%; height: 100%; object-fit: cover; }
+.et-pop-name  { font-size: 12px; font-weight: 700; color: #fff; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 130px; }
+.et-pop-genre { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #000; background: #fff; padding: 2px 8px; border-radius: 100px; }
+.et-pop-follow {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 100px; padding: 5px 14px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.55); cursor: pointer; font-family: inherit;
+    display: flex; align-items: center; gap: 4px; transition: all 0.2s; white-space: nowrap;
+}
+.et-pop-follow:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: #fff; }
+
+/* ─── Venue card ─── */
+.et-vc {
+    flex: 0 0 210px;
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;
+    transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+}
+.et-vc:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.14); box-shadow: 0 0 0 1px rgba(255,255,255,0.07), 0 20px 56px rgba(0,0,0,0.9), 0 0 40px rgba(255,255,255,0.04); }
+.et-vc-img { width: 100%; aspect-ratio: 3 / 2; position: relative; background: #0d0d0d; overflow: hidden; flex-shrink: 0; }
+.et-vc-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+.et-vc:hover .et-vc-img img { transform: scale(1.06); }
+.et-vc-fade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%); }
+.et-vc-city { position: absolute; bottom: 8px; left: 10px; font-size: 9px; font-weight: 700; letter-spacing: 0.08em; color: rgba(255,255,255,0.6); text-transform: uppercase; }
+.et-vc-body { padding: 11px 13px; display: flex; flex-direction: column; gap: 5px; }
+.et-vc-name { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.et-vc-stats { display: flex; justify-content: space-between; font-size: 10px; color: rgba(255,255,255,0.28); }
+
+/* ─── Genre grid ─── */
+.et-genre-grid {
+    max-width: 1280px; margin: 0 auto; padding: 0 20px;
+    display: grid; grid-template-columns: repeat(8,1fr); gap: 10px;
+}
+.et-genre-tile {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; padding: 20px 10px;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    cursor: pointer; transition: all 0.22s; text-align: center;
+    appearance: none; -webkit-appearance: none;
+}
+button.et-genre-tile { outline: none; }
+.et-genre-chevron { font-size: 9px; color: rgba(255,255,255,0.25); }
+.et-genre-tile:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.18); transform: translateY(-5px); box-shadow: 0 12px 40px rgba(0,0,0,0.7); }
+.et-genre-tile i    { font-size: 24px; color: var(--gc); }
+.et-genre-tile span { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); text-transform: uppercase; }
+
+/* ─── CTA ─── */
+.et-cta-section { margin: 60px 0; }
+.et-cta-inner {
+    max-width: 1280px; margin: 0 auto; padding: 60px 48px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; text-align: center;
+}
+.et-cta-title { font-size: 32px; font-weight: 900; color: #fff; margin-bottom: 12px; letter-spacing: -0.02em; }
+.et-cta-sub   { font-size: 15px; color: rgba(255,255,255,0.38); margin: 0 auto 32px; max-width: 480px; line-height: 1.8; }
+
+/* ─── Responsive ─── */
+@@media (max-width:1024px) { .et-genre-grid { grid-template-columns: repeat(4,1fr); } }
+@@media (max-width:768px) {
+    .et-banner-inner { height: 340px; padding: 0; border-radius: 0; }
+    .et-banner-inner > img { border-radius: 0; }
+    .et-feat-overlay { border-radius: 0; padding: 28px 24px; }
+    .et-banner-title { font-size: 28px; }
+    .et-carousel { padding: 0 36px; }
+    .et-pop-row { gap: 22px; }
+    .et-pop-img { width: 84px; height: 84px; }
+    .et-pop-card { width: 100px; }
+}
+@@media (max-width:480px) {
+    .et-genre-grid { grid-template-columns: repeat(4,1fr); gap: 8px; }
+    .et-cta-inner { padding: 40px 20px; }
+    .et-cta-title { font-size: 24px; }
+    .et-carousel { padding: 0 28px; }
+    .et-pop-row { justify-content: flex-start; flex-wrap: nowrap; overflow-x: auto; padding: 0 20px 8px; }
+    .et-banner-inner { height: 280px; }
+    .et-banner-title { font-size: 22px; }
+}
+</style>
+
+@section Scripts {
+<script>
+    /* ── Hero slider (fade, sonsuz döngü) ── */
+    let cur = 0;
+    const slides = Array.from(document.querySelectorAll('.et-hero-slide'));
+    const dots   = Array.from(document.querySelectorAll('.et-hero-dot'));
+
+    function goToSlide(n) {
+        slides[cur].classList.remove('et-slide-active');
+        dots[cur]  && dots[cur].classList.remove('active');
+        cur = ((n % slides.length) + slides.length) % slides.length;
+        slides[cur].classList.add('et-slide-active');
+        dots[cur]  && dots[cur].classList.add('active');
+    }
+    function heroArrow(d) { goToSlide(cur + d); }
+
+    // İlk slide aktif
+    slides[0]?.classList.add('et-slide-active');
+
+    if (slides.length > 1) setInterval(() => goToSlide(cur + 1), 3000);
+
+    /* ── Per-city Top 10 data ── */
+    const cityTop10 = {
+        istanbul: [
+            { rank:1,  title:"Sonar Istanbul 2026",                    date:"10-11 Nis 2026", venue:"İstanbul",                   img:"https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c", search:"Sonar Istanbul" },
+            { rank:2,  title:"Kevin de Vries + Avis Vox + Krey + HZR", date:"11-12 Nis 2026", venue:"Klein Phönix",              img:"https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d", search:"Kevin de Vries" },
+            { rank:3,  title:"INCORE URBAN FESTIVAL: Wiz Khalifa",     date:"7 Tem 2026",     venue:"İstanbul",                   img:"https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165", search:"INCORE" },
+            { rank:4,  title:"YE Live in İstanbul",                    date:"30 May 2026",    venue:"Atatürk Olimpiyat Stadyumu", img:"https://cdn.bugece.co/85ea084c-ace5-4980-adb5-47055f4473ab", search:"YE Live" },
+            { rank:5,  title:"X by ADRIATIQUE",                        date:"9 May 2026",     venue:"Ataköy Marina Arena",        img:"https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08", search:"ADRIATIQUE" },
+            { rank:6,  title:"Ricky Martin",                           date:"11 Tem 2026",    venue:"İstanbul",                   img:"https://cdn.bugece.co/58302bc5-8884-4fd3-ac7f-f6cc61be5e1e", search:"Ricky Martin" },
+            { rank:7,  title:"ZAMNA x MO Homecoming",                  date:"6-7 Haz 2026",   venue:"Life Park",                  img:"https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba", search:"ZAMNA" },
+            { rank:8,  title:"Jeton presents Sara Landry",             date:"15 Ağu 2026",    venue:"İstanbul",                   img:"https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602", search:"Sara Landry" },
+            { rank:9,  title:"I Hate Models — Disco Inferno",          date:"4 Tem 2026",     venue:"İstanbul",                   img:"https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11", search:"I Hate Models" },
+            { rank:10, title:"Catwalk Presents: Charlie Sparks",       date:"29-30 May 2026", venue:"İstanbul",                   img:"https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81", search:"Charlie Sparks" },
+        ],
+        izmir: [
+            { rank:1, title:"Kevin de Vries",            date:"11-12 Nis 2026", venue:"Klein Phönix",     img:"https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d", search:"Kevin de Vries" },
+            { rank:2, title:"Jeton presents Sara Landry",date:"15 Ağu 2026",    venue:"Alaçatı Festival",  img:"https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602", search:"Sara Landry" },
+            { rank:3, title:"I Hate Models",             date:"20 Haz 2026",    venue:"KüçükÇiftlik Park", img:"https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11", search:"I Hate Models" },
+            { rank:4, title:"Sonar Istanbul 2026",       date:"10-11 Nis 2026", venue:"İzmir Arena",       img:"https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c", search:"Sonar" },
+            { rank:5, title:"X by ADRIATIQUE",           date:"9 May 2026",     venue:"Zorlu PSM",         img:"https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08", search:"ADRIATIQUE" },
+            { rank:6, title:"INCORE URBAN FESTIVAL",     date:"7 Tem 2026",     venue:"İzmir Park",        img:"https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165", search:"INCORE" },
+        ],
+        ankara: [
+            { rank:1, title:"YE Live in Ankara",          date:"2 Haz 2026",  venue:"Ankara Atatürk Stadyumu", img:"https://cdn.bugece.co/85ea084c-ace5-4980-adb5-47055f4473ab", search:"YE Live" },
+            { rank:2, title:"Ricky Martin",               date:"15 Tem 2026", venue:"Ankara Arena",            img:"https://cdn.bugece.co/58302bc5-8884-4fd3-ac7f-f6cc61be5e1e", search:"Ricky Martin" },
+            { rank:3, title:"Catwalk: Charlie Sparks",    date:"5 Haz 2026",  venue:"Ankara Congresium",       img:"https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81", search:"Charlie Sparks" },
+            { rank:4, title:"ZAMNA x Ankara",             date:"12 Haz 2026", venue:"Ankara Park",             img:"https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba", search:"ZAMNA" },
+            { rank:5, title:"Kevin de Vries Ankara",      date:"18 Haz 2026", venue:"Ankara Club",             img:"https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d", search:"Kevin de Vries" },
+        ],
+        bodrum: [
+            { rank:1, title:"ZAMNA Bodrum Festival", date:"6-8 Ağu 2026",  venue:"Bodrum Amfi Tiyatro", img:"https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba", search:"ZAMNA" },
+            { rank:2, title:"ADRIATIQUE Bodrum",     date:"14 Ağu 2026",   venue:"Bodrum Beach Club",   img:"https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08", search:"ADRIATIQUE" },
+            { rank:3, title:"Sara Landry Bodrum",    date:"22 Ağu 2026",   venue:"Bodrum Marina",       img:"https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602", search:"Sara Landry" },
+            { rank:4, title:"Sonar x Bodrum",        date:"30 Tem 2026",   venue:"Bodrum Kalesi",       img:"https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c", search:"Sonar" },
+        ],
+        cesme: [
+            { rank:1, title:"I Hate Models — Çeşme", date:"9 Ağu 2026",  venue:"Çeşme Marina", img:"https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11", search:"I Hate Models" },
+            { rank:2, title:"Kevin de Vries Çeşme",  date:"16 Ağu 2026", venue:"Çeşme Arena",  img:"https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d", search:"Kevin de Vries" },
+            { rank:3, title:"Catwalk x Çeşme",       date:"23 Ağu 2026", venue:"Çeşme Park",   img:"https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81", search:"Charlie Sparks" },
+            { rank:4, title:"INCORE Çeşme Edition",  date:"29 Ağu 2026", venue:"Çeşme Beach",  img:"https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165", search:"INCORE" },
+        ],
+    };
+
+    function renderTop10(city) {
+        var data = cityTop10[city] || cityTop10.istanbul;
+        var wrap = document.querySelector('.et-top10-wrap');
+        if (!wrap) return;
+        // Update section title city label
+        var titleEl = wrap.closest('.et-section')?.querySelector('.et-section-title');
+        var cityLabel = {istanbul:'İstanbul',izmir:'İzmir',ankara:'Ankara',bodrum:'Bodrum',cesme:'Çeşme'}[city] || 'Türkiye';
+        if (titleEl) titleEl.textContent = 'TOP 10 – ' + cityLabel;
+        wrap.innerHTML = data.map(function(e) {
+            return '<a href="/Events?search=' + encodeURIComponent(e.search) + '" class="et-top10-row" style="text-decoration:none">' +
+                '<span class="et-top10-rank ' + (e.rank <= 3 ? 'gold' : '') + '">' + e.rank + '</span>' +
+                '<div class="et-top10-thumb"><img src="' + e.img + '" alt="' + e.title.replace(/"/g,'') + '" loading="lazy" /></div>' +
+                '<div class="et-top10-info">' +
+                    '<div class="et-top10-title">' + e.title + '</div>' +
+                    '<div class="et-top10-meta"><i class="bi bi-calendar3"></i> ' + e.date + ' &nbsp;·&nbsp; <i class="bi bi-geo-alt"></i> ' + e.venue + '</div>' +
+                '</div>' +
+                '<span class="et-top10-btn"><i class="bi bi-ticket-perforated"></i> SATIN AL</span>' +
+            '</a>';
+        }).join('');
+    }
+
+    /* ── City tab switching ── */
+    function switchCity(city, btn) {
+        document.querySelectorAll('.et-city-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.et-city-tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('city-' + city).classList.add('active');
+        btn.classList.add('active');
+        renderTop10(city);
+    }
+
+    /* ── Section carousels ── */
+    function sc(id, dir) {
+        const el = document.getElementById(id);
+        if (el) el.scrollBy({ left: dir * 270, behavior: 'smooth' });
+    }
+
+    /* ── Follow toggle ── */
+    function toggleFollow(btn) {
+        const on = btn.dataset.f === '1';
+        btn.innerHTML = on ? '<i class="bi bi-person-plus"></i> Takip Et' : '<i class="bi bi-person-check-fill"></i> Takip Ediliyor';
+        btn.style.background   = on ? '' : 'rgba(255,255,255,0.1)';
+        btn.style.borderColor  = on ? '' : 'rgba(255,255,255,0.3)';
+        btn.style.color        = on ? '' : '#fff';
+        btn.dataset.f          = on ? '0' : '1';
+    }
+
+    /* ── Artist modal ── */
+    function showArtistModal(name, genre, img, bio, eventTitle, eventDate, artistId) {
+        document.getElementById('am-name').textContent = name;
+        document.getElementById('am-genre').textContent = genre;
+        document.getElementById('am-img-el').src = img;
+        document.getElementById('am-bio').textContent = bio;
+        document.getElementById('am-event-title').textContent = eventTitle;
+        document.getElementById('am-event-date').innerHTML = '<i class="bi bi-calendar3"></i> ' + (eventDate || '');
+        document.getElementById('am-ticket-btn').href = '/Artists/' + artistId;
+        document.getElementById('artistModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeArtistModal() {
+        document.getElementById('artistModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArtistModal(); });
+</script>
+}

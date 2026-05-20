@@ -1,0 +1,338 @@
+@model EventTicket.UI.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Giriş Yap";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Giriş Yap — TechnoTurkey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: #0a0a0a;
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* SOL PANEL */
+        .auth-left {
+            width: 45%;
+            background: #111;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            display: flex;
+            flex-direction: column;
+            padding: 48px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .auth-left::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            left: -120px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .auth-left::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.025) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .auth-brand {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-brand span { color: rgba(255,255,255,0.42); }
+
+        .auth-left-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .auth-left-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: rgba(255,255,255,0.55);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .auth-left-tag::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: rgba(255,255,255,0.55);
+        }
+
+        .auth-left-title {
+            font-size: 38px;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+        }
+
+        .auth-left-desc {
+            font-size: 14px;
+            color: rgba(255,255,255,0.4);
+            line-height: 1.75;
+            max-width: 340px;
+            margin-bottom: 40px;
+        }
+
+        .auth-stats {
+            display: flex;
+            gap: 32px;
+        }
+
+        .auth-stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .auth-stat-num {
+            font-size: 22px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .auth-stat-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 0.06em;
+        }
+
+        /* SAĞ PANEL */
+        .auth-right {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+            background: #0a0a0a;
+        }
+
+        .auth-form-wrap {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-form-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .auth-form-sub {
+            font-size: 14px;
+            color: rgba(255,255,255,0.35);
+            margin-bottom: 36px;
+        }
+
+        .auth-error-box {
+            background: rgba(248,113,113,0.1);
+            border: 1px solid rgba(248,113,113,0.2);
+            color: #f87171;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .auth-field {
+            margin-bottom: 18px;
+        }
+
+        .auth-field label {
+            display: block;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .auth-field input {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 13px 16px;
+            color: #fff;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .auth-field input:focus {
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .auth-field input::placeholder { color: rgba(255,255,255,0.2); }
+
+        .field-error {
+            font-size: 12px;
+            color: #f87171;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .auth-submit {
+            width: 100%;
+            background: #fff;
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 8px;
+        }
+
+        .auth-submit:hover { background: #e0e0e0; }
+        .auth-submit:active { transform: scale(0.99); }
+
+        .auth-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0;
+            color: rgba(255,255,255,0.15);
+            font-size: 12px;
+        }
+
+        .auth-divider::before,
+        .auth-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255,255,255,0.08);
+        }
+
+        .auth-footer-link {
+            text-align: center;
+            font-size: 13px;
+            color: rgba(255,255,255,0.3);
+        }
+
+        .auth-footer-link a {
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .auth-footer-link a:hover { color: rgba(255,255,255,0.7); }
+
+        @@media (max-width: 768px) {
+            .auth-left { display: none; }
+            .auth-right { padding: 32px 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-left">
+        <div class="auth-brand">TECHNO<span>TURKEY</span></div>
+        <div class="auth-left-content">
+            <div class="auth-left-tag">Hoş Geldiniz</div>
+            <h1 class="auth-left-title">Şehrindeki en iyi geceler seni bekliyor.</h1>
+            <p class="auth-left-desc">
+                Konserler, festivaller, clublar — binlerce etkinliği keşfet, biletini anında al.
+            </p>
+            <div class="auth-stats">
+                <div class="auth-stat-item">
+                    <span class="auth-stat-num">500+</span>
+                    <span class="auth-stat-label">Etkinlik</span>
+                </div>
+                <div class="auth-stat-item">
+                    <span class="auth-stat-num">80+</span>
+                    <span class="auth-stat-label">Mekan</span>
+                </div>
+                <div class="auth-stat-item">
+                    <span class="auth-stat-num">200+</span>
+                    <span class="auth-stat-label">Sanatçı</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="auth-right">
+        <div class="auth-form-wrap">
+            <h2 class="auth-form-title">Giriş Yap</h2>
+            <p class="auth-form-sub">Hesabına giriş yap ve etkinlikleri keşfet.</p>
+
+            @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+            {
+                <div class="auth-error-box">@Model.ErrorMessage</div>
+            }
+
+            <form asp-action="Login" method="post">
+                <input type="hidden" asp-for="ReturnUrl" />
+
+                <div class="auth-field">
+                    <label>E-posta</label>
+                    <input asp-for="Email" type="email" placeholder="ornek@mail.com" />
+                    <span asp-validation-for="Email" class="field-error"></span>
+                </div>
+
+                <div class="auth-field">
+                    <label>Şifre</label>
+                    <input asp-for="Password" type="password" placeholder="••••••••" />
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="auth-submit">Giriş Yap</button>
+            </form>
+
+            <div class="auth-divider">veya</div>
+
+            <div class="auth-footer-link">
+                Hesabın yok mu? <a asp-action="Register">Kayıt Ol</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

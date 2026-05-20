@@ -1,0 +1,931 @@
+@model EventTicket.UI.ViewModels.ProfileViewModel
+@{
+    ViewData["Title"] = "Profilim";
+    var unreadCount = Model.Notifications.Count(n => !n.IsRead);
+    var followedArtists = Model.Favorites.Where(f => f.ArtistId != null && f.ArtistId > 0).ToList();
+    var validFavorites  = Model.Favorites.Where(f => (f.ArtistId != null && f.ArtistId > 0) || (f.VenueId != null && f.VenueId > 0)).ToList();
+    var displayName = Model.DisplayName;
+    var initials = displayName.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                              .Where(w => w.Length > 0)
+                              .Take(2)
+                              .Select(w => w[0].ToString().ToUpper())
+                              .Aggregate("", (a, b) => a + b);
+    if (string.IsNullOrEmpty(initials)) initials = "U";
+}
+
+<style>
+/* ─── Profile Layout ─── */
+.profile-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+}
+
+/* ─── Cover + Header ─── */
+.profile-cover {
+    height: 180px;
+    background: linear-gradient(135deg, #0d0d0d 0%, #000 40%, #0d0d0d 100%);
+    border-radius: 0 0 0 0;
+    position: relative;
+    overflow: hidden;
+    margin: 0 -24px;
+}
+.profile-cover-pattern {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.025) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.02) 0%, transparent 40%);
+}
+
+.profile-header {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    margin: -44px 0 28px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+}
+
+.profile-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.profile-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 900;
+    border: 3px solid #000;
+    position: relative;
+    z-index: 1;
+}
+
+.profile-avatar img {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #000;
+}
+
+.profile-edit-photo {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 11px;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    z-index: 2;
+    transition: background 0.2s;
+}
+.profile-edit-photo:hover { background: rgba(255,255,255,0.16); color: #fff; }
+
+.profile-info {
+    flex: 1;
+    min-width: 0;
+    padding-bottom: 4px;
+}
+
+.profile-name {
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.profile-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.profile-email {
+    font-size: 12px;
+    color: rgba(255,255,255,0.35);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.profile-role-badge {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: #000;
+    background: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+/* ─── Stats ─── */
+.profile-stats {
+    display: flex;
+    gap: 28px;
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.profile-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    cursor: default;
+}
+
+.profile-stat-num {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+}
+
+.profile-stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+/* ─── Tabs ─── */
+.profile-tabs {
+    display: flex;
+    gap: 0;
+    margin-bottom: 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.profile-tabs::-webkit-scrollbar { display: none; }
+
+.profile-tab {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: rgba(255,255,255,0.4);
+    padding: 12px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: none;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    position: relative;
+    bottom: -1px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+}
+
+.profile-tab:hover { color: rgba(255,255,255,0.7); }
+
+.profile-tab.active {
+    color: #fff;
+    border-bottom-color: #fff;
+}
+
+.profile-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 100px;
+    background: rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.45);
+    min-width: 18px;
+    text-align: center;
+}
+
+.profile-badge-danger {
+    background: rgba(239,68,68,0.15);
+    color: #f87171;
+}
+
+.profile-pane { display: none; }
+.profile-pane.active { display: block; }
+
+/* ─── Empty State ─── */
+.profile-empty {
+    text-align: center;
+    padding: 64px 24px;
+    color: rgba(255,255,255,0.25);
+}
+.profile-empty svg { margin: 0 auto 16px; display: block; }
+.profile-empty p { font-size: 14px; line-height: 1.7; margin-bottom: 24px; }
+
+/* ─── Bilet Kartları ─── */
+.ticket-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 14px;
+}
+
+.ticket-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+.ticket-card:hover { border-color: rgba(255,255,255,0.13); }
+
+.ticket-card-img {
+    width: 100%;
+    height: 100px;
+    background: #0d0d0d;
+    overflow: hidden;
+    position: relative;
+}
+
+.ticket-card-img-inner {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.7) 100%);
+}
+
+.ticket-status {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #22c55e;
+    color: #fff;
+}
+
+.ticket-card-body {
+    padding: 14px 16px;
+    border-bottom: 1px dashed rgba(255,255,255,0.06);
+}
+
+.ticket-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ticket-card-meta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.ticket-card-footer {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.ticket-card-qr-code {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    font-family: monospace;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+}
+
+.ticket-seat-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #fff;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ─── Favori / Takip ─── */
+.follow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.follow-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.2s, transform 0.2s;
+}
+.follow-card:hover { border-color: rgba(255,255,255,0.14); transform: translateY(-2px); }
+
+.follow-card-img {
+    width: 100%;
+    height: 100px;
+    background: #0d0d0d;
+    overflow: hidden;
+    position: relative;
+    flex-shrink: 0;
+}
+.follow-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.follow-card-img-fade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.6) 100%);
+}
+.follow-card-tag {
+    position: absolute;
+    bottom: 8px;
+    left: 10px;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #000;
+    background: #fff;
+    padding: 2px 7px;
+    border-radius: 3px;
+}
+
+.follow-card-body {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+.follow-card-type {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.25);
+    text-transform: uppercase;
+}
+.follow-card-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.follow-card-action {
+    margin-top: auto;
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.3);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: color 0.2s;
+    font-family: inherit;
+    text-decoration: none;
+}
+.follow-card-action:hover { color: #f87171; }
+.follow-card-action.go:hover { color: rgba(255,255,255,0.7); }
+
+/* ─── Bildirimler ─── */
+.notif-list { display: flex; flex-direction: column; gap: 8px; }
+
+.notif-item {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 15px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    transition: border-color 0.2s;
+}
+.notif-item.unread {
+    border-color: rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.025);
+}
+
+.notif-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ef4444;
+    flex-shrink: 0;
+    margin-top: 6px;
+}
+.notif-dot.read { background: rgba(255,255,255,0.12); }
+
+.notif-body { flex: 1; min-width: 0; }
+.notif-message { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6; }
+.notif-time { font-size: 11px; color: rgba(255,255,255,0.22); margin-top: 5px; }
+
+.notif-read-btn {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 6px;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.notif-read-btn:hover { color: #fff; border-color: rgba(255,255,255,0.22); }
+
+/* ─── Ayarlar ─── */
+.settings-form {
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.settings-section-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.25);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.settings-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.settings-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+}
+
+.settings-input {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #fff;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+.settings-input:focus { border-color: rgba(255,255,255,0.3); }
+.settings-input::placeholder { color: rgba(255,255,255,0.2); }
+.settings-input:read-only {
+    background: rgba(255,255,255,0.02);
+    border-color: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.3);
+    cursor: not-allowed;
+}
+
+.settings-hint {
+    font-size: 11px;
+    color: rgba(255,255,255,0.25);
+    line-height: 1.5;
+}
+
+.settings-name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.settings-save-btn {
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 100px;
+    padding: 13px 28px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s, opacity 0.2s;
+    align-self: flex-start;
+}
+.settings-save-btn:hover { background: #d4a800; }
+
+/* ─── Alert ─── */
+.profile-alert {
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+.profile-alert-success {
+    background: rgba(34,197,94,0.08);
+    border: 1px solid rgba(34,197,94,0.18);
+    color: #4ade80;
+}
+.profile-alert-error {
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.18);
+    color: #f87171;
+}
+
+@@media (max-width: 640px) {
+    .profile-header { flex-wrap: wrap; }
+    .profile-stats { margin-left: 0; width: 100%; justify-content: flex-start; }
+    .settings-name-row { grid-template-columns: 1fr; }
+    .profile-name { font-size: 18px; }
+    .ticket-grid { grid-template-columns: 1fr; }
+    .follow-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<div class="et-section" style="padding-top:0">
+<div class="profile-page">
+
+    <!-- KAPAK -->
+    <div class="profile-cover">
+        <div class="profile-cover-pattern"></div>
+    </div>
+
+    <!-- HEADER -->
+    <div class="profile-header">
+        <div class="profile-avatar-wrap">
+            @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+            {
+                <img src="@Model.ProfilePictureUrl" alt="Profil" class="profile-avatar" style="display:block" />
+            }
+            else
+            {
+                <div class="profile-avatar">@initials</div>
+            }
+            <label for="photoInput" class="profile-edit-photo" title="Fotoğrafı Değiştir">
+                <i class="bi bi-pencil-fill"></i>
+            </label>
+        </div>
+
+        <div class="profile-info">
+            <div class="profile-name">@displayName</div>
+            <div class="profile-meta-row">
+                <span class="profile-email">
+                    <i class="bi bi-envelope" style="font-size:10px"></i>
+                    @Model.Email
+                </span>
+                @{
+                    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+                    var roleTr = role switch {
+                        "SuperAdmin"  => "YÖNETİCİ",
+                        "Admin"       => "ADMİN",
+                        "Member"      => "ÜYE",
+                        _             => role
+                    };
+                    if (!string.IsNullOrEmpty(role))
+                    {
+                        <span class="profile-role-badge">@roleTr</span>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="profile-stats">
+            <div class="profile-stat">
+                <span class="profile-stat-num">@followedArtists.Count</span>
+                <span class="profile-stat-label">Takip</span>
+            </div>
+            <div class="profile-stat">
+                <span class="profile-stat-num">@Model.Favorites.Count</span>
+                <span class="profile-stat-label">Favori</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fotoğraf yükleme formu (gizli) -->
+    <form asp-action="UploadPhoto" method="post" enctype="multipart/form-data" id="photoForm" style="display:none">
+        <input type="file" id="photoInput" name="photo" accept="image/jpeg,image/png,image/webp"
+               onchange="document.getElementById('photoForm').submit()" style="display:none" />
+    </form>
+
+    @if (TempData["ProfileError"] != null)
+    {
+        <div class="profile-alert profile-alert-error">@TempData["ProfileError"]</div>
+    }
+    @if (TempData["PurchaseSuccess"] != null)
+    {
+        <div class="profile-alert profile-alert-success">@TempData["PurchaseSuccess"]</div>
+    }
+
+    <!-- SEKMELER -->
+    <div class="profile-tabs">
+        <button class="profile-tab active" data-tab="following" onclick="switchTab('following',this)">
+            <i class="bi bi-person-check"></i>
+            Takip Ettiklerim
+            @if (followedArtists.Count > 0)
+            {
+                <span class="profile-badge">@followedArtists.Count</span>
+            }
+        </button>
+        <button class="profile-tab" data-tab="favorites" onclick="switchTab('favorites',this)">
+            <i class="bi bi-heart"></i>
+            Favorilerim
+            @if (Model.Favorites.Count > 0)
+            {
+                <span class="profile-badge">@Model.Favorites.Count</span>
+            }
+        </button>
+        <button class="profile-tab" data-tab="notifications" onclick="switchTab('notifications',this)">
+            <i class="bi bi-bell"></i>
+            Bildirimler
+            @if (unreadCount > 0)
+            {
+                <span class="profile-badge profile-badge-danger">@unreadCount</span>
+            }
+        </button>
+        <button class="profile-tab" data-tab="settings" onclick="switchTab('settings',this)">
+            <i class="bi bi-gear"></i>
+            Ayarlar
+        </button>
+    </div>
+
+    <!-- ── TAKİP ETTİKLERİM ── -->
+    <div class="profile-pane active" id="pane-following">
+        @if (followedArtists.Any())
+        {
+            <div class="follow-grid">
+                @foreach (var fav in followedArtists)
+                {
+                    var artistDisplayName = !string.IsNullOrWhiteSpace(fav.ArtistName) ? fav.ArtistName : $"Sanatçı #{fav.ArtistId}";
+                    var initFav = artistDisplayName.Length > 0 ? artistDisplayName[0].ToString().ToUpper() : "S";
+                    <div class="follow-card">
+                        <div class="follow-card-img" style="display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:rgba(255,255,255,0.12);">
+                            @initFav
+                            <div class="follow-card-img-fade"></div>
+                            <span class="follow-card-tag">SANATÇI</span>
+                        </div>
+                        <div class="follow-card-body">
+                            <div class="follow-card-type"><i class="bi bi-person-check-fill" style="color:rgba(255,255,255,0.6)"></i> Takip Ediliyor</div>
+                            <div class="follow-card-name">@artistDisplayName</div>
+                            <a asp-controller="Artists" asp-action="Index" class="follow-card-action go">
+                                <i class="bi bi-arrow-right"></i> Sanatçıya git
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="profile-empty">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                     style="color:rgba(255,255,255,0.12)">
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <p>Henüz takip ettiğiniz sanatçı yok.<br><span style="font-size:12px;color:rgba(255,255,255,0.15)">Sanatçıları takip et, etkinliklerini kaçırma.</span></p>
+                <a asp-controller="Artists" asp-action="Index" class="et-hero-btn">
+                    <i class="bi bi-music-note-beamed"></i> SANATÇILARA BAK
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- ── FAVORİLERİM ── -->
+    <div class="profile-pane" id="pane-favorites">
+        @if (validFavorites.Any())
+        {
+            <div class="follow-grid">
+                @foreach (var fav in validFavorites)
+                {
+                    var isVenue = fav.VenueId != null && fav.VenueId > 0;
+                    var favLabel = isVenue
+                        ? (!string.IsNullOrWhiteSpace(fav.VenueName) ? fav.VenueName : $"Mekan #{fav.VenueId}")
+                        : (!string.IsNullOrWhiteSpace(fav.ArtistName) ? fav.ArtistName : $"Sanatçı #{fav.ArtistId}");
+                    var favInit  = favLabel.Length > 0 ? favLabel[0].ToString().ToUpper() : "F";
+                    <div class="follow-card">
+                        <div class="follow-card-img" style="display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:rgba(255,255,255,0.12);">
+                            @favInit
+                            <div class="follow-card-img-fade"></div>
+                            <span class="follow-card-tag">@(isVenue ? "MEKAN" : "SANATÇI")</span>
+                        </div>
+                        <div class="follow-card-body">
+                            @if (isVenue)
+                            {
+                                <div class="follow-card-type"><i class="bi bi-geo-alt-fill" style="color:rgba(255,255,255,0.6)"></i> Mekan</div>
+                                <div class="follow-card-name">@favLabel</div>
+                            }
+                            else
+                            {
+                                <div class="follow-card-type"><i class="bi bi-music-note-fill" style="color:rgba(255,255,255,0.6)"></i> Sanatçı</div>
+                                <div class="follow-card-name">@favLabel</div>
+                            }
+                            <form asp-action="RemoveFavorite" method="post" style="margin-top:auto">
+                                <input type="hidden" name="id" value="@fav.Id" />
+                                <button type="submit" class="follow-card-action">
+                                    <i class="bi bi-heart-fill" style="color:#f87171;font-size:10px"></i> Favoriden Çıkar
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="profile-empty">
+                <i class="bi bi-heart" style="font-size:40px;color:rgba(255,255,255,0.1);margin-bottom:16px;display:block"></i>
+                <p>Henüz favori eklemediniz.<br><span style="font-size:12px;color:rgba(255,255,255,0.15)">Sanatçı ve mekan kartlarındaki kalp ikonuna tıklayarak favori ekleyebilirsiniz.</span></p>
+                <a asp-controller="Artists" asp-action="Index" class="et-hero-btn" style="margin-top:20px">
+                    <i class="bi bi-music-note-beamed"></i> SANATÇILARI KEŞFET
+                </a>
+            </div>
+        }
+    </div>
+
+    <!-- ── BİLDİRİMLER ── -->
+    <div class="profile-pane" id="pane-notifications">
+        @if (Model.Notifications.Any())
+        {
+            <div class="notif-list">
+                @foreach (var notif in Model.Notifications)
+                {
+                    <div class="notif-item @(!notif.IsRead ? "unread" : "")">
+                        <div class="notif-dot @(notif.IsRead ? "read" : "")"></div>
+                        <div class="notif-body">
+                            <div class="notif-message">@notif.Message</div>
+                            <div class="notif-time">@notif.CreatedAt.ToString("dd MMM yyyy, HH:mm")</div>
+                        </div>
+                        @if (!notif.IsRead)
+                        {
+                            <form asp-action="MarkNotificationRead" method="post">
+                                <input type="hidden" name="id" value="@notif.Id" />
+                                <button type="submit" class="notif-read-btn">Okundu</button>
+                            </form>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="profile-empty">
+                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                     style="color:rgba(255,255,255,0.12)">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <p>Henüz bildiriminiz bulunmuyor.</p>
+            </div>
+        }
+    </div>
+
+    <!-- ── AYARLAR ── -->
+    <div class="profile-pane" id="pane-settings">
+        @if (TempData["SettingsError"] != null)
+        {
+            <div class="profile-alert profile-alert-error">@TempData["SettingsError"]</div>
+        }
+        @if (TempData["SettingsSuccess"] != null)
+        {
+            <div class="profile-alert profile-alert-success">@TempData["SettingsSuccess"]</div>
+        }
+
+        <form asp-action="UpdateSettings" method="post" class="settings-form">
+
+            <!-- Ad Soyad -->
+            <div>
+                <div class="settings-section-title">Kişisel Bilgiler</div>
+                <div class="settings-name-row">
+                    <div class="settings-field">
+                        <label class="settings-label">Ad</label>
+                        <input type="text" name="firstName" value="@Model.FirstName"
+                               placeholder="Adınız" class="settings-input" maxlength="50" />
+                    </div>
+                    <div class="settings-field">
+                        <label class="settings-label">Soyad</label>
+                        <input type="text" name="lastName" value="@Model.LastName"
+                               placeholder="Soyadınız" class="settings-input" maxlength="50" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kullanıcı Adı -->
+            <div class="settings-field">
+                <label class="settings-label">Kullanıcı Adı</label>
+                <input type="text" name="nickname" id="nicknameInput" value="@Model.Nickname"
+                       placeholder="örn. elektrobeat42" class="settings-input"
+                       minlength="6" maxlength="12" oninput="validateNick(this)" />
+                <span id="nickHelp" class="settings-hint">6-12 karakter, en az bir harf içermeli</span>
+            </div>
+
+            <!-- Telefon -->
+            <div class="settings-field">
+                <label class="settings-label">Telefon</label>
+                <input type="tel" name="phone" value="@Model.Phone"
+                       placeholder="+90 5XX XXX XX XX" class="settings-input" />
+            </div>
+
+            <!-- E-posta (salt okunur) -->
+            <div class="settings-field">
+                <label class="settings-label">E-posta</label>
+                <input type="email" value="@Model.Email" readonly class="settings-input" />
+                <span class="settings-hint">E-posta adresi değiştirilemez.</span>
+            </div>
+
+            <button type="submit" id="settingsSubmitBtn" class="settings-save-btn">
+                KAYDET
+            </button>
+        </form>
+    </div>
+
+</div>
+</div>
+
+@section Scripts {
+<script>
+    function switchTab(name, btn) {
+        document.querySelectorAll('.profile-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.profile-pane').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('pane-' + name).classList.add('active');
+    }
+
+    function validateNick(input) {
+        const v = input.value;
+        const help = document.getElementById('nickHelp');
+        const btn  = document.getElementById('settingsSubmitBtn');
+        if (v.length === 0) {
+            help.textContent = '6-12 karakter, en az bir harf içermeli';
+            help.style.color = '';
+            btn.disabled = false; btn.style.opacity = '1';
+            return;
+        }
+        const hasLetter = /[a-zA-ZğüşöçıİĞÜŞÖÇ]/.test(v);
+        const lenOk = v.length >= 6 && v.length <= 12;
+        if (!lenOk) {
+            help.textContent = v.length < 6 ? `En az 6 karakter (${v.length}/12)` : `En fazla 12 karakter`;
+            help.style.color = '#f87171';
+            btn.disabled = true; btn.style.opacity = '0.4';
+        } else if (!hasLetter) {
+            help.textContent = 'En az bir harf içermeli';
+            help.style.color = '#f87171';
+            btn.disabled = true; btn.style.opacity = '0.4';
+        } else {
+            help.textContent = `✓ Geçerli (${v.length}/12)`;
+            help.style.color = '#4ade80';
+            btn.disabled = false; btn.style.opacity = '1';
+        }
+    }
+
+    // URL parametresine göre sekme aç (?tab=settings vb.)
+    (function () {
+        const tab = new URLSearchParams(window.location.search).get('tab');
+        if (tab) {
+            const btn = document.querySelector(`.profile-tab[data-tab="${tab}"]`);
+            if (btn) switchTab(tab, btn);
+        }
+    })();
+</script>
+}

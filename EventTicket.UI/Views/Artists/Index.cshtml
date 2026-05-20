@@ -1,0 +1,364 @@
+@model List<EventTicket.UI.ViewModels.ArtistCardViewModel>
+@using EventTicket.UI.ViewModels
+@{
+    ViewData["Title"] = "Sanatçılar";
+
+    var hardcoded = new[]
+    {
+        new ArtistCardViewModel { Id=101, Name="ADRIATIQUE",         Genre="Melodic House",  ImageUrl="https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08", Bio="İsviçreli duo ADRIATIQUE, melodik deep house ve techno alanındaki özgün sesiyle Ibiza'dan Berghain'e kadar dünya sahnelerini dolaşıyor.", IsApproved=true },
+        new ArtistCardViewModel { Id=102, Name="Kevin de Vries",     Genre="Melodic Techno", ImageUrl="https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d", Bio="Hollandalı DJ/prodüktör Kevin de Vries, karanlık ve duygusal melodic techno sounduyla giderek büyüyen bir kitleye ulaşıyor.", IsApproved=true },
+        new ArtistCardViewModel { Id=103, Name="Sara Landry",        Genre="Hard Techno",    ImageUrl="https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602", Bio="Amerikalı sanatçı Sara Landry, sert ve amansız hard techno setiyle dünya çapında tanınan ilk kadın isimlerden biri.", IsApproved=true },
+        new ArtistCardViewModel { Id=104, Name="Enrico Sangiuliano", Genre="Techno",         ImageUrl="https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c", Bio="İtalyan prodüktör Enrico Sangiuliano, bilim ve müziği harmanlayan felsefi yaklaşımıyla techno dünyasında öne çıkıyor.", IsApproved=true },
+        new ArtistCardViewModel { Id=105, Name="SPFDJ",              Genre="Hard Techno",    ImageUrl="https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11", Bio="Hollandalı hard techno ustası SPFDJ, yüksek BPM'li ve agresif setiyle festival sahnesinin en aranan isimlerinden.", IsApproved=true },
+        new ArtistCardViewModel { Id=106, Name="Wehbba",             Genre="Techno",         ImageUrl="https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81", Bio="Brezilyalı DJ/prodüktör Wehbba, karanlık ve ritmik techno setiyle Drumcode gibi prestijli labellardan destek görüyor.", IsApproved=true },
+        new ArtistCardViewModel { Id=107, Name="Alignment",          Genre="Techno",         ImageUrl="https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba", Bio="İngiliz sanatçı Alignment, çarpıcı teknik setiyle techno sahnesine hızlı bir giriş yaparak büyük festivallerin sahnesine çıktı.", IsApproved=true },
+        new ArtistCardViewModel { Id=108, Name="Dax J",              Genre="Techno",         ImageUrl="https://cdn.bugece.co/85ea084c-ace5-4980-adb5-47055f4473ab", Bio="İngiliz DJ Dax J, sert ve karanlık techno setiyle Berghain başta olmak üzere dünyanın en prestijli mekanlarında çalıyor.", IsApproved=true },
+        new ArtistCardViewModel { Id=109, Name="Ricky Martin",       Genre="Pop",            ImageUrl="https://cdn.bugece.co/58302bc5-8884-4fd3-ac7f-f6cc61be5e1e", Bio="Latin pop müziğinin efsanevi ismi Ricky Martin, enerjik sahne performansıyla dünyanın dört bir yanındaki hayranlarını coşturuyor.", IsApproved=true },
+        new ArtistCardViewModel { Id=110, Name="Wiz Khalifa",        Genre="Hip-Hop",        ImageUrl="https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165", Bio="Amerikalı rap yıldızı Wiz Khalifa, global hit şarkılarıyla milyonlarca hayranın kalbinde taht kurmuş bir sahne devi.", IsApproved=true },
+        new ArtistCardViewModel { Id=111, Name="Charlotte de Witte", Genre="Techno",         ImageUrl="https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11", Bio="Belçikalı techno sanatçısı Charlotte de Witte, karanlık ve hypnotik setiyle dünyanın en büyük techno DJ'lerinden biri.", IsApproved=true },
+        new ArtistCardViewModel { Id=112, Name="Solomun",            Genre="House",          ImageUrl="https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba", Bio="Bosna asıllı Alman DJ Solomun, Ibiza'nın efsane partisi +1 ile tanınan ve house sahnesinin en karizmatik isimlerinden.", IsApproved=true }
+    };
+
+    var displayArtists = Model.Any() ? Model : hardcoded.ToList();
+    var followedMap = ViewBag.FollowedArtistMap as Dictionary<int, int> ?? new Dictionary<int, int>();
+
+    var genreImgs = new Dictionary<string, string>
+    {
+        { "ROCK",          "https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c" },
+        { "ALTERNATİF",    "https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81" },
+        { "POP",           "https://cdn.bugece.co/58302bc5-8884-4fd3-ac7f-f6cc61be5e1e" },
+        { "HİP-HOP",       "https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165" },
+        { "HIP-HOP",       "https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165" },
+        { "Hip-Hop",       "https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165" },
+        { "TECHNO",        "https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11" },
+        { "Techno",        "https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11" },
+        { "HOUSE",         "https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08" },
+        { "House",         "https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08" },
+        { "JAZZ",          "https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81" },
+        { "Melodic House", "https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08" },
+        { "Melodic Techno","https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d" },
+        { "Hard Techno",   "https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602" },
+    };
+}
+
+<style>
+    .artist-grid {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 14px;
+    }
+
+    .artist-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 18px;
+        overflow: hidden;
+        transition: border-color 0.22s, transform 0.22s, box-shadow 0.22s;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .artist-card:hover {
+        border-color: rgba(255,255,255,0.16);
+        transform: translateY(-5px);
+        box-shadow: 0 20px 56px rgba(0,0,0,0.8);
+    }
+
+    .artist-card-img {
+        width: 100%;
+        aspect-ratio: 1;
+        background: #0d0d0d;
+        overflow: hidden;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .artist-card-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .artist-card:hover .artist-card-img img {
+        transform: scale(1.04);
+    }
+
+    .artist-card-img-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .artist-card-genre {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        color: #000;
+        background: #fff;
+        padding: 3px 8px;
+        border-radius: 100px;
+    }
+
+    .artist-card-body {
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .artist-card-name {
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .artist-card-bio {
+        font-size: 11px;
+        color: rgba(255,255,255,0.35);
+        line-height: 1.6;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 12px;
+        flex: 1;
+    }
+
+    .artist-card-stats {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .artist-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .artist-stat-num {
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .artist-stat-label {
+        font-size: 10px;
+        color: rgba(255,255,255,0.3);
+        letter-spacing: 0.04em;
+    }
+
+    .artist-follow-btn {
+        width: 100%;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 100px;
+        padding: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: rgba(255,255,255,0.7);
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .artist-follow-btn:hover,
+    .artist-follow-btn.active {
+        background: rgba(255,255,255,0.1);
+        border-color: rgba(255,255,255,0.3);
+        color: #fff;
+    }
+
+    @@media (max-width: 600px) {
+        .artist-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    }
+</style>
+
+<div class="et-section">
+    <div class="et-section-header">
+        <span class="et-section-title">Sanatçılar</span>
+        <span style="font-size:12px;color:rgba(255,255,255,0.3)">@displayArtists.Count sanatçı</span>
+    </div>
+
+    <!-- Genre filter bar -->
+    <div style="max-width:1280px;margin:0 auto;padding:0 20px 20px;display:flex;gap:8px;flex-wrap:wrap">
+        @{
+            var uniqueGenres = displayArtists.Select(a => a.Genre ?? "").Where(g => !string.IsNullOrEmpty(g)).Distinct().ToList();
+        }
+        <button onclick="filterArtist('all',this)" class="org-filter-chip active"
+                style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:rgba(255,255,255,0.45);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:7px 16px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-transform:uppercase">
+            Tümü
+        </button>
+        @foreach (var g in uniqueGenres)
+        {
+            <button onclick="filterArtist('@g.ToLower()',this)"
+                    style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:rgba(255,255,255,0.45);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:7px 16px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-transform:uppercase"
+                    class="art-genre-chip">
+                @g
+            </button>
+        }
+    </div>
+
+    @if (!displayArtists.Any())
+    {
+        <div class="et-empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                 style="color:rgba(255,255,255,0.15);margin:0 auto 16px;display:block">
+                <circle cx="12" cy="8" r="4" /><path d="M6 20v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" />
+            </svg>
+            <p>Henüz sanatçı bulunmuyor.</p>
+        </div>
+    }
+    else
+    {
+        <div class="artist-grid">
+            @foreach (var artist in displayArtists)
+            {
+                var followers = ((artist.Id * 137 + 42) % 900 + 100) * 1000;
+                var followerStr = followers >= 1000000
+                    ? $"{followers / 1000000.0:F1}M"
+                    : $"{followers / 1000}K";
+                var eventCount = (artist.Id % 8) + 3;
+                var genre = artist.Genre ?? "";
+                var gi2 = genreImgs.ContainsKey(genre) ? genreImgs[genre]
+                    : genreImgs.FirstOrDefault(kv => kv.Key.Equals(genre, StringComparison.OrdinalIgnoreCase)).Value;
+                var fallbackImg = gi2 ?? $"https://picsum.photos/seed/artist-{artist.Id}/400/400";
+                var imgSrc = !string.IsNullOrEmpty(artist.ImageUrl) ? artist.ImageUrl : fallbackImg;
+                <div class="artist-card" data-genre="@(artist.Genre?.ToLower() ?? "")">
+                    <a href="/Events?search=@Uri.EscapeDataString(artist.Name)" style="display:block;text-decoration:none">
+                    <div class="artist-card-img">
+                        <img src="@imgSrc" alt="@artist.Name" />
+                        @if (!string.IsNullOrEmpty(artist.Genre))
+                        {
+                            <span class="artist-card-genre">@artist.Genre</span>
+                        }
+                    </div>
+                    </a>
+                    <div class="artist-card-body">
+                        <a href="/Events?search=@Uri.EscapeDataString(artist.Name)" style="text-decoration:none">
+                        <div class="artist-card-name">@artist.Name</div>
+                        </a>
+                        @if (!string.IsNullOrEmpty(artist.Bio))
+                        {
+                            <div class="artist-card-bio">@artist.Bio</div>
+                        }
+                        <div class="artist-card-stats">
+                            <div class="artist-stat">
+                                <span class="artist-stat-num">@followerStr</span>
+                                <span class="artist-stat-label">Takipçi</span>
+                            </div>
+                            <div class="artist-stat" style="text-align:right">
+                                <span class="artist-stat-num">@eventCount</span>
+                                <span class="artist-stat-label">Etkinlik</span>
+                            </div>
+                        </div>
+                        @{
+                            var alreadyFollowing = followedMap.ContainsKey(artist.Id);
+                            var favId = alreadyFollowing ? followedMap[artist.Id] : 0;
+                        }
+                        <button class="artist-follow-btn @(alreadyFollowing ? "active" : "")"
+                                data-artist-id="@artist.Id"
+                                data-fav-id="@favId"
+                                data-following="@(alreadyFollowing ? "true" : "false")"
+                                onclick="toggleFollow(this)">
+                            @if (alreadyFollowing)
+                            {
+                                <i class="bi bi-heart-fill"></i> <text>Takip Ediliyor</text>
+                            }
+                            else
+                            {
+                                <i class="bi bi-heart"></i> <text>Takip Et</text>
+                            }
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function filterArtist(genre, chip) {
+            document.querySelectorAll('.art-genre-chip, .org-filter-chip').forEach(c => {
+                c.style.background = 'rgba(255,255,255,0.05)';
+                c.style.borderColor = 'rgba(255,255,255,0.1)';
+                c.style.color = 'rgba(255,255,255,0.45)';
+            });
+            chip.style.background = 'rgba(255,255,255,0.12)';
+            chip.style.borderColor = 'rgba(255,255,255,0.35)';
+            chip.style.color = '#fff';
+            document.querySelectorAll('.artist-card').forEach(card => {
+                const g = card.dataset.genre || '';
+                card.style.display = (genre === 'all' || g.includes(genre)) ? '' : 'none';
+            });
+        }
+
+        async function toggleFollow(btn) {
+            if (btn._loading) return;
+            btn._loading = true;
+            const isFollowing = btn.dataset.following === 'true';
+            const artistId = btn.dataset.artistId;
+            const favId = btn.dataset.favId;
+
+            if (isFollowing) {
+                // Optimistic UI
+                btn.innerHTML = '<i class="bi bi-heart"></i> Takip Et';
+                btn.classList.remove('active');
+                btn.dataset.following = 'false';
+
+                const fd = new FormData();
+                if (favId && favId !== '0') {
+                    fd.append('id', favId);
+                    try {
+                        await fetch('/Profile/RemoveFavorite', { method: 'POST', body: fd });
+                        btn.dataset.favId = '0';
+                    } catch (e) { }
+                } else {
+                    fd.append('artistId', artistId);
+                    try {
+                        await fetch('/Profile/RemoveFavoriteByEntity', { method: 'POST', body: fd });
+                    } catch (e) { }
+                }
+                btn._loading = false;
+                return;
+            }
+
+            if (!artistId || artistId === '0') { btn._loading = false; return; }
+            const fd = new FormData();
+            fd.append('artistId', artistId);
+            try {
+                const resp = await fetch('/Profile/AddFavorite', { method: 'POST', body: fd });
+                if (resp.redirected && resp.url.includes('/Auth/Login')) {
+                    window.location.href = '/Auth/Login';
+                } else if (resp.ok || resp.redirected) {
+                    btn.innerHTML = '<i class="bi bi-heart-fill"></i> Takip Ediliyor';
+                    btn.classList.add('active');
+                    btn.dataset.following = 'true';
+                } else if (resp.status === 401) {
+                    window.location.href = '/Auth/Login';
+                }
+            } catch (e) { }
+            btn._loading = false;
+        }
+    </script>
+}

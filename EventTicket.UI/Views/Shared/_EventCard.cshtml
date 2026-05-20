@@ -1,0 +1,209 @@
+@model EventTicket.UI.ViewModels.EventCardViewModel
+
+<div class="et-card-wrap" style="position:relative;display:block;">
+    <a asp-controller="Events" asp-action="Details"
+       asp-route-id="@Model.Id" class="et-card">
+        <div class="et-card-img-wrap">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" alt="@Model.Title" class="et-card-img" />
+            }
+            else
+            {
+                <div class="et-card-img-placeholder">
+                    <i class="bi bi-music-note-beamed"></i>
+                </div>
+            }
+            @if (Model.Capacity > 0 && Model.SoldCount >= Model.Capacity)
+            {
+                <span class="et-card-badge et-badge-soldout">TÜKENDİ</span>
+            }
+            else if (Model.Capacity > 0 && Model.SoldCount >= (int)(Model.Capacity * 0.65))
+            {
+                <span class="et-card-badge et-badge-hot">SATIŞTA</span>
+            }
+            else if (Model.Date >= DateTime.Now && Model.Date <= DateTime.Now.AddDays(7))
+            {
+                <span class="et-card-badge et-badge-thisweek">BU HAFTA</span>
+            }
+            else if (Model.Date >= DateTime.Now && Model.Date <= DateTime.Now.AddDays(45))
+            {
+                <span class="et-card-badge et-badge-new">YAKINDA</span>
+            }
+            else
+            {
+                <span class="et-card-badge et-badge-upcoming">@Model.Date.Year</span>
+            }
+            <div class="et-card-date-badge">
+                <span class="et-card-date-day">@Model.Date.Day</span>
+                <span class="et-card-date-mon">@Model.Date.ToString("MMM", new System.Globalization.CultureInfo("tr-TR"))</span>
+            </div>
+        </div>
+        <div class="et-card-body">
+            <div class="et-card-title">@Model.Title</div>
+            <div class="et-card-meta">
+                @if (!string.IsNullOrEmpty(Model.ArtistName))
+                {
+                    <span>@Model.ArtistName</span>
+                    <span class="et-card-dot">·</span>
+                }
+                <span>@Model.VenueName</span>
+            </div>
+            <div class="et-card-footer">
+                <span class="et-card-location"><i class="bi bi-geo-alt"></i> @Model.VenueName</span>
+                @if (!string.IsNullOrEmpty(Model.PromoCode))
+                {
+                    var badgeColor = string.IsNullOrEmpty(Model.PromoCodeColor) ? "#ef4444" : Model.PromoCodeColor;
+                    var badgeText = (badgeColor == "#ffffff" || badgeColor == "#eab308") ? "#000" : "#fff";
+                    <span class="et-promo-badge" style="background:@badgeColor;color:@badgeText">
+                        <i class="bi bi-tag-fill"></i>
+                        @Model.PromoCode@(Model.DiscountPercent.HasValue ? " %" + Model.DiscountPercent : "")
+                    </span>
+                }
+            </div>
+        </div>
+    </a>
+    <button class="et-fav-btn"
+            data-artist-id="@Model.ArtistId"
+            data-venue-id="@Model.VenueId"
+            onclick="toggleEventFav(this)" title="Favorilere Ekle">
+        <i class="bi bi-heart"></i>
+    </button>
+</div>
+
+<style>
+    .et-fav-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.60);
+        border: 1px solid rgba(255,255,255,0.18);
+        color: rgba(255,255,255,0.8);
+        font-size: 14px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s;
+        backdrop-filter: blur(8px);
+        z-index: 2;
+    }
+    .et-fav-btn:hover {
+        background: rgba(239,68,68,0.18);
+        border-color: rgba(239,68,68,0.5);
+        color: #ff6b6b;
+        transform: scale(1.12);
+    }
+    .et-fav-btn.active {
+        background: rgba(239,68,68,0.18);
+        border-color: rgba(239,68,68,0.5);
+        color: #ff6b6b;
+        transform: scale(1.12);
+    }
+    .et-badge-soldout {
+        background: rgba(255,255,255,0.90);
+        color: #000;
+        border: 1px solid rgba(255,255,255,0.5);
+    }
+    .et-promo-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: #ef4444;
+        color: #fff;
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        padding: 3px 10px;
+        border-radius: 100px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+</style>
+
+<script>
+    if (!window._etFavReady) { window._etFavReady = true;
+
+    function _etShowToast(msg, color) {
+        var t = document.createElement('div');
+        t.textContent = msg;
+        t.style.cssText = 'position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:rgba(10,10,10,0.95);border:1px solid ' + (color||'rgba(255,255,255,0.15)') + ';color:#fff;font-size:12px;font-weight:600;padding:10px 22px;border-radius:100px;z-index:99999;pointer-events:none;backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.7);animation:etToastIn 0.25s ease';
+        if (!document.querySelector('#etToastKf')) {
+            var s = document.createElement('style');
+            s.id = 'etToastKf';
+            s.textContent = '@@keyframes etToastIn{from{opacity:0;transform:translateX(-50%) translateY(10px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}';
+            document.head.appendChild(s);
+        }
+        document.body.appendChild(t);
+        setTimeout(function(){ t.style.transition='opacity 0.3s'; t.style.opacity='0'; setTimeout(function(){ t.remove(); }, 300); }, 2200);
+    }
+
+    window.toggleEventFav = async function toggleEventFav(btn) {
+        if (btn._loading) return;
+        btn._loading = true;
+        const isActive = btn.classList.contains('active');
+        const icon = btn.querySelector('i');
+        const artistId = (btn.dataset.artistId && btn.dataset.artistId !== '0') ? btn.dataset.artistId : '';
+        const venueId  = (btn.dataset.venueId  && btn.dataset.venueId  !== '0') ? btn.dataset.venueId  : '';
+
+        if (isActive) {
+            // Optimistic UI — önce kaldır göster
+            btn.classList.remove('active');
+            if (icon) icon.className = 'bi bi-heart';
+            btn.title = 'Favorilere Ekle';
+            _etShowToast('Favorilerden çıkarıldı');
+
+            const fd = new FormData();
+            if (artistId) fd.append('artistId', artistId);
+            if (venueId)  fd.append('venueId',  venueId);
+            try {
+                await fetch('/Profile/RemoveFavoriteByEntity', { method: 'POST', body: fd });
+            } catch (e) { }
+            btn._loading = false;
+            return;
+        }
+
+        if (!artistId && !venueId) {
+            _etShowToast('Etkinlik bilgisi eksik', 'rgba(255,255,255,0.2)');
+            btn._loading = false;
+            return;
+        }
+
+        // Optimistic UI — ekle
+        btn.classList.add('active');
+        if (icon) icon.className = 'bi bi-heart-fill';
+        btn.title = 'Favorilerden Çıkar';
+
+        const fd = new FormData();
+        if (artistId) fd.append('artistId', artistId);
+        if (venueId)  fd.append('venueId',  venueId);
+        try {
+            const resp = await fetch('/Profile/AddFavorite', { method: 'POST', body: fd });
+            if (resp.redirected && resp.url.includes('/Auth/Login')) {
+                btn.classList.remove('active');
+                if (icon) icon.className = 'bi bi-heart';
+                window.location.href = '/Auth/Login';
+            } else if (resp.ok || resp.redirected) {
+                _etShowToast('Favorilere eklendi ♥', 'rgba(239,68,68,0.4)');
+            } else if (resp.status === 401) {
+                btn.classList.remove('active');
+                if (icon) icon.className = 'bi bi-heart';
+                window.location.href = '/Auth/Login';
+            } else {
+                btn.classList.remove('active');
+                if (icon) icon.className = 'bi bi-heart';
+                _etShowToast('Bir hata oluştu');
+            }
+        } catch (e) {
+            btn.classList.remove('active');
+            if (icon) icon.className = 'bi bi-heart';
+            _etShowToast('Bağlantı hatası');
+        }
+        btn._loading = false;
+    };
+    } // end guard
+</script>

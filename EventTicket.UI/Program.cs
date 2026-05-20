@@ -1,0 +1,89 @@
+using EventTicket.Core.Interfaces;
+using EventTicket.UI.Services;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// MVC
+builder.Services.AddControllersWithViews();
+
+// HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
+
+// Cookie Auth — UI tarafı için
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
+        options.AccessDeniedPath = "/Auth/Login";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
+        // MaxAge makes the browser persist the cookie across restarts
+        // (ExpireTimeSpan alone is not enough without IsPersistent on each SignIn,
+        //  but MaxAge ensures the browser honours the lifetime even when set).
+        options.Cookie.MaxAge = TimeSpan.FromDays(7);
+        options.Cookie.SameSite = SameSiteMode.Lax;
+    });
+
+builder.Services.AddAuthorization();
+
+// ApiService — API'ye istek atmak için
+builder.Services.AddHttpClient<IApiService, ApiService>(client =>
+{
+    client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+{
+    // Development'ta self-signed sertifikaya izin ver
+    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+});
+
+builder.Services.AddScoped<IEventUlService, EventUlService>();
+builder.Services.AddScoped<IAdminUlService, AdminUlService>();
+builder.Services.AddScoped<IAuthUlService, AuthUlService>();
+builder.Services.AddScoped<IVenueUlService, VenueUlService>();
+builder.Services.AddScoped<IArtistUlService, ArtistUlService>();
+builder.Services.AddScoped<ICommentUlService, CommentUlService>();
+builder.Services.AddScoped<ITicketUlService, TicketUlService>();
+builder.Services.AddScoped<IMessagesUlService, MessagesUlService>();
+builder.Services.AddScoped<IProfileUlService, ProfileUlService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IAcademyUlService, AcademyUlService>();
+builder.Services.AddScoped<INotificationUlService, NotificationUlService>();
+builder.Services.AddScoped<IBannerUlService, BannerUlService>();
+
+
+// Session — sepet için
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+var app = builder.Build();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+app.UseRouting();
+app.UseSession();
+app.UseAuthentication();
+app.UseAuthorization();
+
+// Area route — üstte olmalı
+app.MapControllerRoute(
+    name: "areas",
+    pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
+
+// Normal route
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

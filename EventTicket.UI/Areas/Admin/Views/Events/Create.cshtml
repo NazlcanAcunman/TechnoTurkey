@@ -1,0 +1,232 @@
+@model EventTicket.UI.ViewModels.Admin.CreateEventViewModel
+@{
+    ViewData["Title"] = "Yeni Etkinlik Ekle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+
+    var cities = new[] {
+        "İstanbul","Ankara","İzmir","Antalya","Eskişehir","Bodrum","Bursa","Adana",
+        "Trabzon","Konya","Kayseri","Gaziantep","Mersin","Muğla","Çeşme","Alanya"
+    };
+}
+
+<div class="admin-table-wrap" style="max-width:760px">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Yeni Etkinlik Ekle</span>
+        <a asp-action="Index" class="btn-admin btn-sm" style="background:#444">← Geri</a>
+    </div>
+
+    <div style="padding:28px">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;
+                padding:12px 16px;margin-bottom:20px;color:#f87171;font-size:13px">
+                <ul style="margin:0;padding-left:16px">
+                    @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@err.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            @* Başlık *@
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Etkinlik Başlığı *</label>
+                <input asp-for="Title" class="admin-field-input" placeholder="Etkinlik adı" />
+                <span asp-validation-for="Title" style="color:#f87171;font-size:12px"></span>
+            </div>
+
+            @* Açıklama *@
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Açıklama</label>
+                <textarea asp-for="Description" class="admin-field-input" rows="3"
+                          placeholder="Etkinlik hakkında kısa bilgi..."></textarea>
+            </div>
+
+            @* Tarih + Kapasite *@
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+                <div>
+                    <label class="admin-field-label">Tarih & Saat *</label>
+                    <input asp-for="Date" type="datetime-local" class="admin-field-input" />
+                    <span asp-validation-for="Date" style="color:#f87171;font-size:12px"></span>
+                </div>
+                <div>
+                    <label class="admin-field-label">Kapasite *</label>
+                    <input asp-for="Capacity" type="number" class="admin-field-input" placeholder="500" />
+                    <span asp-validation-for="Capacity" style="color:#f87171;font-size:12px"></span>
+                </div>
+            </div>
+
+            @* Görsel URL + Bilet URL *@
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+                <div>
+                    <label class="admin-field-label">Görsel URL</label>
+                    <input asp-for="ImageUrl" class="admin-field-input" placeholder="https://..." />
+                </div>
+                <div>
+                    <label class="admin-field-label">Bilet Satış URL</label>
+                    <input asp-for="TicketUrl" class="admin-field-input" placeholder="https://biletix.com/..." />
+                </div>
+            </div>
+
+            @* Promosyon Kodu *@
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:18px;margin-bottom:18px">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:14px">
+                    Promosyon Kodu (Opsiyonel)
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                    <div>
+                        <label class="admin-field-label">Promosyon Kodu</label>
+                        <input asp-for="PromoCode" class="admin-field-input promo-input"
+                               placeholder="Örn: TK10"
+                               style="text-transform:uppercase;letter-spacing:0.08em;font-weight:700" />
+                        <span asp-validation-for="PromoCode" style="color:#f87171;font-size:12px"></span>
+                        <span style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:5px;display:block">Büyük harf ve rakam, maks. 20 karakter</span>
+                    </div>
+                    <div>
+                        <label class="admin-field-label">İndirim Yüzdesi (%)</label>
+                        <input asp-for="DiscountPercent" type="number" min="1" max="99" class="admin-field-input"
+                               placeholder="Örn: 10" />
+                        <span asp-validation-for="DiscountPercent" style="color:#f87171;font-size:12px"></span>
+                        <span style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:5px;display:block">1-99 arasında bir değer girin</span>
+                    </div>
+                </div>
+                <div style="margin-top:14px">
+                    <label class="admin-field-label">Badge Rengi</label>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px" id="color-swatches">
+                        @{
+                            var colors = new[] {
+                                ("#ef4444","Kırmızı"), ("#f97316","Turuncu"), ("#eab308","Sarı"),
+                                ("#22c55e","Yeşil"), ("#3b82f6","Mavi"), ("#a855f7","Mor"),
+                                ("#ec4899","Pembe"), ("#ffffff","Beyaz")
+                            };
+                        }
+                        @foreach (var (hex, name) in colors)
+                        {
+                            <button type="button" class="color-swatch" data-color="@hex" title="@name"
+                                    style="width:28px;height:28px;border-radius:50%;background:@hex;border:2px solid transparent;cursor:pointer;transition:all 0.15s;flex-shrink:0"></button>
+                        }
+                    </div>
+                    <input asp-for="PromoCodeColor" type="hidden" id="promo-color-input" />
+                </div>
+                <div id="promo-preview" style="display:none;margin-top:12px">
+                    <span style="font-size:11px;color:rgba(255,255,255,0.35)">Önizleme: </span>
+                    <span id="promo-badge" style="display:inline-flex;align-items:center;gap:6px;background:#ef4444;color:#fff;font-size:11px;font-weight:800;letter-spacing:0.1em;padding:4px 12px;border-radius:100px;text-transform:uppercase"></span>
+                </div>
+            </div>
+
+            @* Mekan + Sanatçı *@
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+                <div>
+                    <label class="admin-field-label">Mekan *</label>
+                    <select asp-for="VenueId" class="admin-field-input">
+                        <option value="0">-- Mekan Seçin --</option>
+                        @foreach (var v in Model.Venues)
+                        {
+                            <option value="@v.Id">@v.Name — @v.City</option>
+                        }
+                    </select>
+                    <span asp-validation-for="VenueId" style="color:#f87171;font-size:12px"></span>
+                </div>
+                <div>
+                    <label class="admin-field-label">Sanatçı *</label>
+                    <select asp-for="ArtistId" class="admin-field-input">
+                        <option value="0">-- Sanatçı Seçin --</option>
+                        @foreach (var a in Model.Artists)
+                        {
+                            <option value="@a.Id">@a.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="ArtistId" style="color:#f87171;font-size:12px"></span>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:8px">
+                <button type="submit" class="btn-admin" style="background:#fff;color:#000">
+                    ✓ Etkinliği Oluştur
+                </button>
+                <a asp-action="Index" class="btn-admin" style="background:#444">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.admin-field-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 7px;
+}
+.admin-field-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px 13px;
+    color: #fff;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+}
+.admin-field-input:focus { border-color: rgba(255,255,255,0.25); }
+.admin-field-input option { background: #1a1a1a; }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var codeInput   = document.querySelector('[name="PromoCode"]');
+            var pctInput    = document.querySelector('[name="DiscountPercent"]');
+            var colorInput  = document.getElementById('promo-color-input');
+            var preview     = document.getElementById('promo-preview');
+            var badge       = document.getElementById('promo-badge');
+            var swatches    = document.querySelectorAll('.color-swatch');
+            var activeColor = colorInput.value || '#ef4444';
+
+            // Seçili rengi işaretle
+            function selectColor(hex) {
+                activeColor = hex;
+                colorInput.value = hex;
+                var textColor = (hex === '#ffffff' || hex === '#eab308') ? '#000' : '#fff';
+                badge.style.background = hex;
+                badge.style.color = textColor;
+                swatches.forEach(function(s) {
+                    s.style.border = s.dataset.color === hex
+                        ? '2px solid rgba(255,255,255,0.8)'
+                        : '2px solid transparent';
+                    s.style.transform = s.dataset.color === hex ? 'scale(1.2)' : 'scale(1)';
+                });
+            }
+
+            swatches.forEach(function(s) {
+                s.addEventListener('click', function() { selectColor(s.dataset.color); });
+            });
+
+            // Varsayılan renk seç
+            selectColor(activeColor);
+
+            function updatePreview() {
+                var code = codeInput.value.trim().toUpperCase();
+                var pct  = pctInput.value.trim();
+                codeInput.value = code;
+                if (code) {
+                    preview.style.display = 'block';
+                    badge.textContent = pct ? code + ' — %' + pct + ' İNDİRİM' : code;
+                } else {
+                    preview.style.display = 'none';
+                }
+            }
+            codeInput.addEventListener('input', updatePreview);
+            pctInput.addEventListener('input', updatePreview);
+        })();
+    </script>
+}

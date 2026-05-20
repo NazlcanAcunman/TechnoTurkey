@@ -1,0 +1,126 @@
+﻿@model EventTicket.UI.ViewModels.Admin.PendingViewModel
+@{
+    ViewData["Title"] = "Onay Bekleyenler";
+}
+
+<!-- ETKİNLİKLER -->
+<div class="admin-table-wrap mb-4">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Onay Bekleyen Etkinlikler (@Model.Events.Count)</span>
+    </div>
+    @if (Model.Events.Any())
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Etkinlik</th>
+                    <th>Tarih</th>
+                    <th>Şehir</th>
+                    <th>Mekan</th>
+                    <th>Sanatçı</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model.Events)
+                {
+                    <tr>
+                        <td>@e.Title</td>
+                        <td>@e.Date.ToString("dd MMM yyyy")</td>
+                        <td>@e.VenueCity</td>
+                        <td>@e.VenueName</td>
+                        <td>@e.ArtistName</td>
+                        <td>
+                            <form asp-action="ApproveEvent" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@e.Id" />
+                                <button type="submit" class="btn-admin btn-success btn-sm">Onayla</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="p-3 text-muted">Onay bekleyen etkinlik yok.</p>
+    }
+</div>
+
+<!-- MEKANLAR -->
+<div class="admin-table-wrap mb-4">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Onay Bekleyen Mekanlar (@Model.Venues.Count)</span>
+    </div>
+    @if (Model.Venues.Any())
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Mekan</th>
+                    <th>Şehir</th>
+                    <th>Adres</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var v in Model.Venues)
+                {
+                    <tr>
+                        <td>@v.Name</td>
+                        <td>@v.City</td>
+                        <td>@v.Address</td>
+                        <td>
+                            <form asp-action="ApproveVenue" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@v.Id" />
+                                <button type="submit" class="btn-admin btn-success btn-sm">Onayla</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="p-3 text-muted">Onay bekleyen mekan yok.</p>
+    }
+</div>
+
+<!-- SANATÇILAR -->
+<div class="admin-table-wrap">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Onay Bekleyen Sanatçılar (@Model.Artists.Count)</span>
+    </div>
+    @if (Model.Artists.Any())
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Sanatçı</th>
+                    <th>Tür</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in Model.Artists)
+                {
+                    <tr>
+                        <td>@a.Name</td>
+                        <td>@a.Genre</td>
+                        <td>
+                            <form asp-action="ApproveArtist" method="post" style="display:inline">
+                                <input type="hidden" name="id" value="@a.Id" />
+                                <button type="submit" class="btn-admin btn-success btn-sm">Onayla</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="p-3 text-muted">Onay bekleyen sanatçı yok.</p>
+    }
+</div>

@@ -1,0 +1,96 @@
+@model List<EventTicket.UI.ViewModels.Admin.UserViewModel>
+@{
+    ViewData["Title"] = "Kullanıcılar";
+}
+
+<div class="admin-table-wrap">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Tüm Kullanıcılar (@Model.Count)</span>
+    </div>
+
+    @if (Model.Any())
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>E-posta</th>
+                    <th>Rol</th>
+                    <th>Kayıt Tarihi</th>
+                    @if (User.IsInRole("SuperAdmin"))
+                    {
+                        <th>İşlem</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.UserName</td>
+                        <td style="color:rgba(255,255,255,0.5)">@user.Email</td>
+                        <td>
+                            @{
+                                var badgeClass = user.Role switch
+                                {
+                                    "SuperAdmin" => "badge-danger",
+                                    "Admin" => "badge-warning",
+                                    _ => "badge-info"
+                                };
+                                var roleLabel = user.Role switch
+                                {
+                                    "SuperAdmin" => "Süper Admin",
+                                    "Admin" => "ADMİN",
+                                    _ => "Üye"
+                                };
+                            }
+                            <span class="badge @badgeClass">@roleLabel</span>
+                        </td>
+                        <td style="color:rgba(255,255,255,0.4)">@user.CreatedAt.ToString("dd MMM yyyy")</td>
+                        @if (User.IsInRole("SuperAdmin"))
+                        {
+                            <td>
+                                @if (user.Role != "SuperAdmin")
+                                {
+                                    <div style="display:flex;gap:6px;flex-wrap:wrap">
+                                        @if (user.Role != "Admin")
+                                        {
+                                            <form asp-action="AssignAdmin" method="post" style="margin:0">
+                                                <input type="hidden" name="id" value="@user.Id" />
+                                                <button type="submit" class="btn-admin btn-sm"
+                                                    style="background:rgba(234,179,8,0.15);border-color:rgba(234,179,8,0.3);color:#eab308">
+                                                    Admin Yap
+                                                </button>
+                                            </form>
+                                        }
+                                        @if (user.Role == "Admin")
+                                        {
+                                            <form asp-action="AssignMember" method="post" style="margin:0">
+                                                <input type="hidden" name="id" value="@user.Id" />
+                                                <button type="submit" class="btn-admin btn-sm"
+                                                    style="background:rgba(99,102,241,0.15);border-color:rgba(99,102,241,0.3);color:#818cf8">
+                                                    Üye Yap
+                                                </button>
+                                            </form>
+                                        }
+                                        <form asp-action="Delete" method="post" style="margin:0" class="delete-form">
+                                            <input type="hidden" name="id" value="@user.Id" />
+                                            <button type="button" class="btn-admin btn-danger btn-sm"
+                                                    onclick="confirmDelete(this.closest('form'), '@user.UserName silinecek. Emin misiniz?')">
+                                                Sil
+                                            </button>
+                                        </form>
+                                    </div>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="p-3 text-muted">Henüz kullanıcı yok.</p>
+    }
+</div>

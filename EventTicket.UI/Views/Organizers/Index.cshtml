@@ -1,0 +1,570 @@
+@{
+    ViewData["Title"] = "Organizatörler";
+
+    var organizers = new[]
+    {
+        new {
+            Name = "Bugece Production",
+            Slug = "bugece",
+            Cover = "https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c",
+            Description = "İstanbul'un en büyük elektronik müzik etkinliklerini organize eden Bugece Production, 2015'ten bu yana binlerce müzikseveri buluşturuyor. Sonar Istanbul, ZAMNA ve daha onlarca büyük ismi Türkiye'ye kazandırdı.",
+            EventCount = 48,
+            Followers = "12.4K",
+            Tags = new[] { "Techno", "House", "Electronic" },
+            Location = "İstanbul",
+            Verified = true,
+            Events = new[] {
+                new { Img="https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c", Title="Sonar Istanbul 2026", Date="10-11 Nis", Venue="İstanbul" },
+                new { Img="https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08", Title="X by ADRIATIQUE",     Date="9 May",   Venue="Ataköy Marina" },
+                new { Img="https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba", Title="ZAMNA x MO Homecoming",Date="6-7 Haz", Venue="Life Park" },
+            }
+        },
+        new {
+            Name = "Bia Production",
+            Slug = "bia",
+            Cover = "https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165",
+            Description = "Türkiye'nin önde gelen müzik organizasyon şirketlerinden biri olan Bia Production, yurt içi ve uluslararası sanatçılarla büyük organizasyonlar düzenliyor. INCORE Urban Festival'in yaratıcıları.",
+            EventCount = 31,
+            Followers = "8.9K",
+            Tags = new[] { "Rock", "Pop", "Festival", "Hip-Hop" },
+            Location = "İstanbul",
+            Verified = true,
+            Events = new[] {
+                new { Img="https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165", Title="INCORE Urban Festival",  Date="7 Tem",   Venue="İstanbul" },
+                new { Img="https://cdn.bugece.co/85ea084c-ace5-4980-adb5-47055f4473ab", Title="YE Live in İstanbul",    Date="30 May",  Venue="Olimpiyat Stadı" },
+                new { Img="https://cdn.bugece.co/58302bc5-8884-4fd3-ac7f-f6cc61be5e1e", Title="Ricky Martin",           Date="11 Tem",  Venue="İstanbul" },
+            }
+        },
+        new {
+            Name = "Spectrum Events",
+            Slug = "spectrum",
+            Cover = "https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11",
+            Description = "Underground müzik sahnesinin öncü organizatörlerinden Spectrum Events, Türkiye'nin dört bir yanında elektronik müzik etkinlikleri düzenliyor. I Hate Models, SPFDJ ve daha nicelerini Türkiye'ye taşıdı.",
+            EventCount = 22,
+            Followers = "6.2K",
+            Tags = new[] { "Techno", "Minimal", "Hard Techno", "Industrial" },
+            Location = "Ankara",
+            Verified = false,
+            Events = new[] {
+                new { Img="https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11", Title="I Hate Models – Disco Inferno", Date="4 Tem",   Venue="İstanbul" },
+                new { Img="https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81", Title="Catwalk: Charlie Sparks",      Date="29 May",  Venue="İstanbul" },
+                new { Img="https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602", Title="Jeton: Sara Landry",            Date="15 Ağu",  Venue="İstanbul" },
+            }
+        },
+        new {
+            Name = "Mori Events",
+            Slug = "mori",
+            Cover = "https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08",
+            Description = "İzmir merkezli Mori Events, Ege bölgesinde festival kültürünü yaşatan organizasyon firması. Klein Phönix'teki haftalık etkinlikleri ve yaz festivalleriyle tanınıyor.",
+            EventCount = 14,
+            Followers = "5.7K",
+            Tags = new[] { "Festival", "Melodic", "House", "Afro" },
+            Location = "İzmir",
+            Verified = false,
+            Events = new[] {
+                new { Img="https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d", Title="Kevin de Vries at Klein Phönix", Date="11-12 Nis", Venue="Klein Phönix" },
+                new { Img="https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08", Title="ADRIATIQUE İzmir",               Date="9 May",    Venue="Zorlu PSM" },
+                new { Img="https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602", Title="Sara Landry Çeşme",              Date="16 Ağu",   Venue="Alaçatı" },
+            }
+        },
+        new {
+            Name = "Neon Nights",
+            Slug = "neon",
+            Cover = "https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba",
+            Description = "İstanbul'un gece hayatına renk katan Neon Nights, özellikle Bosphorus kıyısında düzenlediği açık hava partileriyle büyük ilgi görüyor. Tech house ve disko konusunda Türkiye'nin referans organizatörü.",
+            EventCount = 26,
+            Followers = "9.3K",
+            Tags = new[] { "Tech House", "Disco & Funk", "House", "Bosphorus" },
+            Location = "İstanbul",
+            Verified = true,
+            Events = new[] {
+                new { Img="https://cdn.bugece.co/77724539-d7a1-4999-9e1e-50fe62c951ba", Title="ZAMNA Bodrum Edition",   Date="6-8 Ağu", Venue="Bodrum Amfi" },
+                new { Img="https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c", Title="Bosphorus Nights Vol.12", Date="21 Haz",  Venue="Ataköy Marina" },
+                new { Img="https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81", Title="Summer Disco Series",     Date="28 Haz",  Venue="Suma Han" },
+            }
+        },
+        new {
+            Name = "Deep Collective",
+            Slug = "deep",
+            Cover = "https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d",
+            Description = "Deep Collective, Türkiye'nin derin elektronik müzik sahnesinin temsilcisi. Küçük ölçekli ama etkili etkinlikleriyle underground kültürü yaşatıyor. Kevin de Vries ve Avis Vox gibi isimleri Türkiye'ye getirdi.",
+            EventCount = 19,
+            Followers = "3.8K",
+            Tags = new[] { "Deep House", "Melodic", "Minimal", "Downtempo" },
+            Location = "İstanbul",
+            Verified = false,
+            Events = new[] {
+                new { Img="https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d", Title="Kevin de Vries + Avis Vox", Date="11 Nis", Venue="Klein Phönix" },
+                new { Img="https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08", Title="Melodic Nights 002",         Date="18 May", Venue="Garajistanbul" },
+                new { Img="https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11", Title="Nocturnal: Dark Techno",     Date="25 May", Venue="KüçükÇiftlik" },
+            }
+        },
+        new {
+            Name = "Global Stage",
+            Slug = "global",
+            Cover = "https://cdn.bugece.co/85ea084c-ace5-4980-adb5-47055f4473ab",
+            Description = "Türkiye'nin her şehrinde etkinlik düzenleyen Global Stage, uluslararası sanatçıları Anadolu'nun her köşesine taşıyor. Kanye West'in İstanbul konserinin organizatörü.",
+            EventCount = 35,
+            Followers = "7.6K",
+            Tags = new[] { "Pop", "Hip-Hop", "Rock", "Arena" },
+            Location = "Türkiye Geneli",
+            Verified = true,
+            Events = new[] {
+                new { Img="https://cdn.bugece.co/85ea084c-ace5-4980-adb5-47055f4473ab", Title="YE Live in İstanbul",  Date="30 May", Venue="Olimpiyat Stadı" },
+                new { Img="https://cdn.bugece.co/58302bc5-8884-4fd3-ac7f-f6cc61be5e1e", Title="Ricky Martin Tour",    Date="11 Tem", Venue="İstanbul" },
+                new { Img="https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165", Title="INCORE Urban Fest",    Date="7 Tem",  Venue="İstanbul" },
+            }
+        },
+        new {
+            Name = "Peron Events",
+            Slug = "peron",
+            Cover = "https://cdn.bugece.co/58302bc5-8884-4fd3-ac7f-f6cc61be5e1e",
+            Description = "Gaziantep ve Güneydoğu Anadolu'nun en köklü etkinlik organizatörü. Yerel sanatçıları desteklemek ve uluslararası isimleri bölgeye getirmek için çalışıyor.",
+            EventCount = 17,
+            Followers = "4.1K",
+            Tags = new[] { "Electronic", "Alternative", "Pop", "Yerel" },
+            Location = "Gaziantep",
+            Verified = false,
+            Events = new[] {
+                new { Img="https://cdn.bugece.co/58302bc5-8884-4fd3-ac7f-f6cc61be5e1e", Title="Ricky Martin Gaziantep",  Date="14 Tem", Venue="GAZİANTEP Arena" },
+                new { Img="https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81", Title="Güneydoğu Rock Fest",     Date="5 Eyl",  Venue="Gaziantep Park" },
+                new { Img="https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c", Title="Electronic Nights GAP",   Date="19 Eyl", Venue="Zeugma Sahne" },
+            }
+        },
+    };
+}
+
+<style>
+    .org-wrap {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 20px 80px;
+    }
+
+    /* ─── Filter bar ─── */
+    .org-filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 32px;
+    }
+
+    .org-filter-chip {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        color: rgba(255,255,255,0.45);
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 100px;
+        padding: 7px 16px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+        text-transform: uppercase;
+    }
+
+    .org-filter-chip:hover,
+    .org-filter-chip.active {
+        background: rgba(255,255,255,0.12);
+        border-color: rgba(255,255,255,0.35);
+        color: #fff;
+    }
+
+    /* ─── Organizer grid ─── */
+    .org-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(370px, 1fr));
+        gap: 20px;
+    }
+
+    /* ─── Card ─── */
+    .org-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: border-color 0.22s, transform 0.22s, box-shadow 0.22s;
+    }
+
+    .org-card:hover {
+        border-color: rgba(255,255,255,0.16);
+        transform: translateY(-4px);
+        box-shadow: 0 24px 64px rgba(0,0,0,0.8);
+    }
+
+    /* ─── Cover image ─── */
+    .org-cover {
+        position: relative;
+        width: 100%;
+        height: 180px;
+        overflow: hidden;
+        background: #0d0d0d;
+    }
+
+    .org-cover img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.5s;
+        filter: brightness(0.55);
+    }
+
+    .org-card:hover .org-cover img {
+        transform: scale(1.05);
+    }
+
+    .org-cover-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.9) 100%);
+        display: flex;
+        align-items: flex-end;
+        padding: 16px;
+    }
+
+    .org-logo-badge {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        background: rgba(0,0,0,0.75);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        font-weight: 900;
+        color: #fff;
+        letter-spacing: -0.02em;
+        flex-shrink: 0;
+    }
+
+    .org-cover-info {
+        margin-left: 12px;
+    }
+
+    .org-cover-name {
+        font-size: 17px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.2;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .org-verified {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #fff;
+        color: #000;
+        font-size: 9px;
+        flex-shrink: 0;
+    }
+
+    .org-cover-city {
+        font-size: 11px;
+        color: rgba(255,255,255,0.5);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 2px;
+    }
+
+    /* ─── Card body ─── */
+    .org-body {
+        padding: 18px 20px 20px;
+    }
+
+    .org-desc {
+        font-size: 12.5px;
+        color: rgba(255,255,255,0.42);
+        line-height: 1.7;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 14px;
+    }
+
+    .org-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 16px;
+    }
+
+    .org-tag {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        color: #000;
+        background: #fff;
+        padding: 3px 8px;
+        border-radius: 4px;
+        text-transform: uppercase;
+    }
+
+    /* ─── Mini event list ─── */
+    .org-events-title {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.25);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    .org-events-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 16px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+
+    .org-events-row::-webkit-scrollbar { display: none; }
+
+    .org-ev-card {
+        flex: 0 0 110px;
+        border-radius: 10px;
+        overflow: hidden;
+        background: #0d0d0d;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .org-ev-card img {
+        width: 100%;
+        height: 72px;
+        object-fit: cover;
+        display: block;
+        filter: brightness(0.7);
+        transition: filter 0.2s;
+    }
+
+    .org-ev-card:hover img { filter: brightness(0.9); }
+
+    .org-ev-info {
+        padding: 6px 8px 8px;
+        background: rgba(255,255,255,0.03);
+    }
+
+    .org-ev-title {
+        font-size: 10px;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.3;
+        margin-bottom: 2px;
+    }
+
+    .org-ev-date {
+        font-size: 9px;
+        color: rgba(255,255,255,0.35);
+    }
+
+    /* ─── Stats + Follow ─── */
+    .org-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        gap: 12px;
+    }
+
+    .org-stats {
+        display: flex;
+        gap: 20px;
+    }
+
+    .org-stat {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+    }
+
+    .org-stat-num {
+        font-size: 15px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+    }
+
+    .org-stat-label {
+        font-size: 9px;
+        color: rgba(255,255,255,0.28);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .org-follow-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        color: rgba(255,255,255,0.65);
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 100px;
+        padding: 8px 18px;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .org-follow-btn:hover,
+    .org-follow-btn.following {
+        background: rgba(255,255,255,0.12);
+        border-color: rgba(255,255,255,0.35);
+        color: #fff;
+    }
+
+    @@media (max-width: 800px) {
+        .org-grid { grid-template-columns: 1fr; }
+    }
+
+    @@media (max-width: 500px) {
+        .org-wrap { padding: 0 12px 60px; }
+    }
+</style>
+
+<div class="et-section" style="padding-bottom:0">
+    <div class="et-section-header">
+        <span class="et-section-title">Organizatörler</span>
+        <span style="font-size:12px;color:rgba(255,255,255,0.3)">@organizers.Length organizatör</span>
+    </div>
+</div>
+
+<div class="org-wrap">
+
+    <!-- Filter -->
+    <div class="org-filter-bar">
+        <button class="org-filter-chip active" onclick="filterOrg('all',this)">Tümü</button>
+        <button class="org-filter-chip" onclick="filterOrg('istanbul',this)">İstanbul</button>
+        <button class="org-filter-chip" onclick="filterOrg('izmir',this)">İzmir</button>
+        <button class="org-filter-chip" onclick="filterOrg('ankara',this)">Ankara</button>
+        <button class="org-filter-chip" onclick="filterOrg('techno',this)">Techno</button>
+        <button class="org-filter-chip" onclick="filterOrg('house',this)">House</button>
+        <button class="org-filter-chip" onclick="filterOrg('festival',this)">Festival</button>
+        <button class="org-filter-chip" onclick="filterOrg('verified',this)">✓ Onaylı</button>
+    </div>
+
+    <!-- Grid -->
+    <div class="org-grid" id="orgGrid">
+        @foreach (var org in organizers)
+        {
+            var initials = string.Join("", org.Name.Split(' ').Take(2).Select(w => w[0]));
+            var tagStr   = string.Join(" ", org.Tags).ToLower();
+            var locStr   = org.Location.ToLower();
+            var dataAttr = $"all {locStr} {tagStr} {(org.Verified ? "verified" : "")}";
+
+            <div class="org-card" data-filter="@dataAttr">
+
+                <!-- Cover -->
+                <div class="org-cover">
+                    <img src="@org.Cover" alt="@org.Name" loading="lazy" />
+                    <div class="org-cover-overlay">
+                        <div class="org-logo-badge">@initials</div>
+                        <div class="org-cover-info">
+                            <div class="org-cover-name">
+                                @org.Name
+                                @if (org.Verified)
+                                {
+                                    <span class="org-verified" title="Onaylı Organizatör">
+                                        <i class="bi bi-check"></i>
+                                    </span>
+                                }
+                            </div>
+                            <div class="org-cover-city">
+                                <i class="bi bi-geo-alt"></i> @org.Location
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Body -->
+                <div class="org-body">
+                    <div class="org-desc">@org.Description</div>
+
+                    <div class="org-tags">
+                        @foreach (var tag in org.Tags)
+                        {
+                            <span class="org-tag">@tag</span>
+                        }
+                    </div>
+
+                    <!-- Mini event row -->
+                    <div class="org-events-title">Yaklaşan Etkinlikler</div>
+                    <div class="org-events-row">
+                        @foreach (var ev in org.Events)
+                        {
+                            <a href="/Events?search=@Uri.EscapeDataString(ev.Title)" class="org-ev-card" style="text-decoration:none">
+                                <img src="@ev.Img" alt="@ev.Title" loading="lazy" />
+                                <div class="org-ev-info">
+                                    <div class="org-ev-title">@ev.Title</div>
+                                    <div class="org-ev-date">@ev.Date · @ev.Venue</div>
+                                </div>
+                            </a>
+                        }
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="org-footer">
+                        <div class="org-stats">
+                            <div class="org-stat">
+                                <span class="org-stat-num">@org.EventCount</span>
+                                <span class="org-stat-label">Etkinlik</span>
+                            </div>
+                            <div class="org-stat">
+                                <span class="org-stat-num">@org.Followers</span>
+                                <span class="org-stat-label">Takipçi</span>
+                            </div>
+                        </div>
+                        <button class="org-follow-btn" onclick="toggleOrgFollow(this)">
+                            <i class="bi bi-bookmark"></i> Takip Et
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function toggleOrgFollow(btn) {
+            const following = btn.dataset.following === 'true';
+            btn.dataset.following = following ? 'false' : 'true';
+            btn.innerHTML = following
+                ? '<i class="bi bi-bookmark"></i> Takip Et'
+                : '<i class="bi bi-bookmark-fill"></i> Takip Ediliyor';
+            btn.classList.toggle('following', !following);
+        }
+
+        function filterOrg(key, chip) {
+            document.querySelectorAll('.org-filter-chip').forEach(c => c.classList.remove('active'));
+            chip.classList.add('active');
+            document.querySelectorAll('.org-card').forEach(card => {
+                const filter = card.dataset.filter || '';
+                card.style.display = (key === 'all' || filter.includes(key)) ? '' : 'none';
+            });
+        }
+    </script>
+}

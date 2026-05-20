@@ -1,0 +1,427 @@
+@model EventTicket.UI.ViewModels.EventDetailViewModel
+@{
+    ViewData["Title"] = Model.Event.Title;
+}
+
+<div class="event-detail">
+
+    @if (!string.IsNullOrEmpty(Model.Event.ImageUrl))
+    {
+        <div class="event-detail-img">
+            <img src="@Model.Event.ImageUrl" alt="@Model.Event.Title" />
+        </div>
+    }
+
+    <div class="event-detail-body">
+        <div class="event-detail-info">
+            <h1 class="event-detail-title">@Model.Event.Title</h1>
+            <div class="event-detail-meta">
+                <div class="event-detail-meta-item">
+                    <span>Tarih</span>@Model.Event.Date.ToString("dd MMMM yyyy, HH:mm")
+                </div>
+                <div class="event-detail-meta-item">
+                    <span>Mekan</span>@Model.Event.VenueName
+                </div>
+                <div class="event-detail-meta-item">
+                    <span>Sanatçı</span>@Model.Event.ArtistName
+                </div>
+                <div class="event-detail-meta-item">
+                    <span>Kapasite</span>@Model.Event.SoldCount / @Model.Event.Capacity
+                </div>
+            </div>
+        </div>
+
+        <div class="event-ticket-box">
+            <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:16px;">
+                <form asp-controller="Profile" asp-action="AddFavorite" method="post" style="display:inline">
+                    <input type="hidden" name="artistId" value="@Model.Event.ArtistId" />
+                    <input type="hidden" name="venueId" value="@Model.Event.VenueId" />
+                    <input type="hidden" name="returnEventId" value="@Model.Event.Id" />
+                    <button type="submit" class="et-fav-detail-btn" id="favBtn" title="Favorilere Ekle">
+                        <i class="bi bi-heart"></i> Favorile
+                    </button>
+                </form>
+            </div>
+
+            @if (Model.Event.SoldCount >= Model.Event.Capacity)
+            {
+                <div class="event-ticket-sold-out">TÜKENDİ</div>
+            }
+            else if (!string.IsNullOrEmpty(Model.Event.TicketUrl))
+            {
+                @if (Model.Event.AgeRestriction)
+                {
+                    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:rgba(255,255,255,0.7)">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Bu etkinlik 18 yaş ve üzeri içindir
+                    </div>
+                }
+                <a href="@Model.Event.TicketUrl" target="_blank" rel="noopener" class="event-ticket-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none">
+                    <i class="bi bi-ticket-perforated-fill"></i> BİLET AL
+                </a>
+                <div class="event-ticket-remaining" style="margin-top:10px">
+                    @(Model.Event.Capacity - Model.Event.SoldCount) bilet kaldı
+                </div>
+            }
+            else
+            {
+                <div style="font-size:13px;color:rgba(255,255,255,0.35);text-align:center;padding:12px 0">
+                    Bilet satışı yakında başlayacak.
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Model.Event.Description))
+    {
+        <div class="event-description">
+            <div class="event-description-title">Etkinlik Hakkında</div>
+            <p>@Model.Event.Description</p>
+        </div>
+    }
+</div>
+
+<!-- YORUM BÖLÜMÜ -->
+<div class="ev-comments">
+    <div class="ev-comments-inner">
+        <div class="ev-comments-title">Yorumlar <span>(@Model.Comments.Count)</span></div>
+
+        @if (Model.Comments.Any())
+        {
+            <div class="ev-comment-list">
+                @foreach (var comment in Model.Comments)
+                {
+                    <div class="ev-comment-card">
+                        <div class="ev-comment-header">
+                            <div>
+                                <div class="ev-comment-author">@comment.UserFullName</div>
+                                <div class="ev-comment-stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <span class="@(i <= comment.Rating ? "star-on" : "star-off")">★</span>
+                                    }
+                                </div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:12px">
+                                <span class="ev-comment-date">@comment.CreatedAt.ToString("dd MMM yyyy, HH:mm")</span>
+                                @if (User.IsInRole("SuperAdmin"))
+                                {
+                                    <form asp-controller="Comments" asp-action="Delete" method="post">
+                                        <input type="hidden" name="id" value="@comment.Id" />
+                                        <input type="hidden" name="returnEventId" value="@Model.Event.Id" />
+                                        <button type="submit" class="ev-delete-btn"
+                                                onclick="return confirm('Yorumu silmek istediğinize emin misiniz?')">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                        <div class="ev-comment-text">@comment.Content</div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="ev-comment-empty">Henüz yorum yapılmamış. İlk yorumu sen yap!</div>
+        }
+
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+            <div class="ev-comment-form">
+                <div class="ev-comment-form-title">Yorum Yap</div>
+                <form asp-action="AddComment" asp-controller="Events" method="post">
+                    <input type="hidden" asp-for="NewComment.EventId" />
+                    <div class="ev-form-row">
+                        <div class="ev-form-field" style="width:160px">
+                            <label class="et-label">Puanınız</label>
+                            <select asp-for="NewComment.Rating" class="ev-select">
+                                <option value="5">★★★★★ (5)</option>
+                                <option value="4">★★★★☆ (4)</option>
+                                <option value="3">★★★☆☆ (3)</option>
+                                <option value="2">★★☆☆☆ (2)</option>
+                                <option value="1">★☆☆☆☆ (1)</option>
+                            </select>
+                        </div>
+                        <div class="ev-form-field" style="flex:1">
+                            <label class="et-label">Yorumunuz</label>
+                            <textarea asp-for="NewComment.Content" class="et-input" rows="3"
+                                      placeholder="Bu etkinlik hakkında ne düşünüyorsunuz?"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit" class="et-btn-primary" style="margin-top:12px">
+                        Yorum Gönder
+                    </button>
+                </form>
+            </div>
+        }
+        else
+        {
+            <div class="ev-login-prompt">
+                Yorum yapmak için <a asp-controller="Auth" asp-action="Login">giriş yapın</a>.
+            </div>
+        }
+    </div>
+</div>
+
+<style>
+    .et-fav-detail-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 8px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 700;
+        color: rgba(255,255,255,0.6);
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+    }
+    .et-fav-detail-btn:hover, .et-fav-detail-btn.active {
+        background: rgba(239,68,68,0.12);
+        border-color: rgba(239,68,68,0.35);
+        color: #ff6b6b;
+    }
+    .ev-alert {
+        padding: 10px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .ev-alert-success {
+        background: rgba(34,197,94,0.1);
+        border: 1px solid rgba(34,197,94,0.2);
+        color: #4ade80;
+    }
+
+    .ev-alert-error {
+        background: rgba(248,113,113,0.1);
+        border: 1px solid rgba(248,113,113,0.2);
+        color: #f87171;
+    }
+
+    .ev-qty-select {
+        width: 70px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 8px;
+        padding: 8px 10px;
+        color: #fff;
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+    }
+
+    .ev-qty-select option {
+        background: rgba(255,255,255,0.05);
+        color: #fff;
+    }
+
+    .ev-comments {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px 60px;
+        border-top: 1px solid rgba(255,255,255,0.06);
+        margin-top: 40px;
+    }
+
+    .ev-comments-inner {
+        padding-top: 32px;
+    }
+
+    .ev-comments-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 24px;
+    }
+
+    .ev-comments-title span {
+        color: rgba(255,255,255,0.3);
+        font-weight: 400;
+        font-size: 15px;
+    }
+
+    .ev-comment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 32px;
+    }
+
+    .ev-comment-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 12px;
+        padding: 16px;
+    }
+
+    .ev-comment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+
+    .ev-comment-author {
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+    }
+
+    .ev-comment-stars { font-size: 14px; }
+    .star-on { color: #f5a623; }
+    .star-off { color: rgba(255,255,255,0.15); }
+
+    .ev-comment-date {
+        font-size: 11px;
+        color: rgba(255,255,255,0.25);
+    }
+
+    .ev-comment-text {
+        font-size: 14px;
+        color: rgba(255,255,255,0.6);
+        line-height: 1.7;
+    }
+
+    .ev-delete-btn {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        border: 1px solid rgba(248,113,113,0.2);
+        background: rgba(248,113,113,0.05);
+        color: #f87171;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        transition: all 0.2s;
+    }
+
+    .ev-delete-btn:hover {
+        background: rgba(248,113,113,0.15);
+    }
+
+    .ev-comment-empty {
+        font-size: 13px;
+        color: rgba(255,255,255,0.25);
+        padding: 24px 0;
+    }
+
+    .ev-comment-form {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 14px;
+        padding: 24px;
+        margin-top: 24px;
+    }
+
+    .ev-comment-form-title {
+        font-size: 14px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 16px;
+    }
+
+    .ev-form-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .ev-form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .ev-select {
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        padding: 11px 14px;
+        color: #fff;
+        font-size: 13px;
+        font-family: inherit;
+        outline: none;
+    }
+
+    .ev-login-prompt {
+        font-size: 13px;
+        color: rgba(255,255,255,0.3);
+        padding: 20px;
+        background: rgba(255,255,255,0.03);
+        border-radius: 10px;
+        margin-top: 20px;
+    }
+
+    .ev-login-prompt a {
+        color: #fff;
+        font-weight: 600;
+    }
+</style>
+
+<script>
+    function renderAttendees(count, ageRestricted) {
+        const container = document.getElementById('attendeesForms');
+        const totalQty = parseInt(count) || 1;
+        const isAge = ageRestricted === true || ageRestricted === 'true';
+
+        let html = '<div style="border-top:1px solid rgba(255,255,255,0.06);padding-top:14px;margin-top:4px">';
+        html += '<div style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:12px">Bilet Sahibi Bilgileri</div>';
+        html += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;margin-bottom:10px">';
+        if (totalQty > 1) {
+            html += `<div style="font-size:11px;color:rgba(255,255,255,0.55);margin-bottom:10px;font-weight:600"><i class="bi bi-info-circle"></i> ${totalQty} bilet için aynı kişi bilgileri kullanılacak</div>`;
+        }
+        html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">`;
+        html += `<div><label style="display:block;font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase">Ad Soyad</label>
+                  <input type="text" name="attendees[0].FullName" class="et-input" style="width:100%;padding:8px 10px;font-size:12px" placeholder="Ad Soyad" /></div>`;
+        html += `<div><label style="display:block;font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase">Telefon</label>
+                  <input type="tel" name="attendees[0].Phone" class="et-input" style="width:100%;padding:8px 10px;font-size:12px" placeholder="05xx xxx xx xx" /></div>`;
+        html += `</div>`;
+
+        if (isAge) {
+            html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">`;
+            html += `<div>
+                <label style="display:block;font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase">
+                    TC Kimlik No <span style="color:#fb923c">*</span>
+                </label>
+                <input type="text" name="attendees[0].TcNo" id="tcNoField" class="et-input"
+                       style="width:100%;padding:8px 10px;font-size:12px" placeholder="11 haneli TC No"
+                       maxlength="11" inputmode="numeric" pattern="[0-9]{11}"
+                       oninput="validateTc(this)" required />
+                <span id="tcMsg" style="font-size:10px;color:#f87171;display:none;margin-top:4px">Geçerli bir 11 haneli TC kimlik numarası giriniz.</span>
+            </div>`;
+            html += `<div>
+                <label style="display:block;font-size:10px;color:rgba(255,255,255,0.3);margin-bottom:5px;letter-spacing:0.05em;text-transform:uppercase">
+                    Doğum Tarihi <span style="color:#fb923c">*</span>
+                </label>
+                <input type="date" name="attendees[0].BirthDate" class="et-input"
+                       style="width:100%;padding:8px 10px;font-size:12px" required />
+            </div>`;
+            html += `</div>`;
+        }
+
+        html += '</div></div>';
+        container.innerHTML = html;
+    }
+
+    function validateTc(input) {
+        const val = input.value.replace(/\D/g, '');
+        input.value = val;
+        const msg = document.getElementById('tcMsg');
+        if (!msg) return;
+        const valid = val.length === 11 && val[0] !== '0';
+        msg.style.display = (val.length > 0 && !valid) ? 'block' : 'none';
+        input.style.borderColor = (val.length > 0 && !valid) ? 'rgba(248,113,113,0.5)' : '';
+    }
+
+    // İlk yüklemede form göster
+    renderAttendees(1, @(Model.Event.AgeRestriction ? "true" : "false"));
+</script>

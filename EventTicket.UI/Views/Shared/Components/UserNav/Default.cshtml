@@ -1,0 +1,23 @@
+@model EventTicket.UI.ViewComponents.UserNavViewModel
+
+@if (Model.IsAuthenticated)
+{
+    <div class="et-usernav d-flex align-items-center gap-2">
+        <span class="et-role-badge">@Model.RoleBadge</span>
+        <span class="et-username">@Model.DisplayName</span>
+        @if (Model.IsAdmin)
+        {
+            <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"
+               class="btn et-btn-ghost btn-sm">Dashboard</a>
+        }
+        <a asp-controller="Profile" asp-action="Index" class="btn et-btn-ghost btn-sm">Profil</a>
+        <a asp-controller="Auth" asp-action="Logout" class="btn et-btn-ghost btn-sm">Çıkış</a>
+    </div>
+}
+else
+{
+    <div class="et-usernav d-flex gap-2">
+        <a asp-controller="Auth" asp-action="Login" class="btn et-btn-ghost btn-sm">Giriş</a>
+        <a asp-controller="Auth" asp-action="Register" class="btn et-btn-primary btn-sm">Kayıt Ol</a>
+    </div>
+}

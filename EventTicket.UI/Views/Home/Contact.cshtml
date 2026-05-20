@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = "İletişim";
+}
+
+<div style="max-width:680px;margin:60px auto;padding:0 20px 80px">
+
+    <div style="margin-bottom:32px">
+        <h1 style="font-size:26px;font-weight:800;color:#fff;margin-bottom:8px">İletişim</h1>
+        <p style="font-size:14px;color:rgba(255,255,255,0.4);line-height:1.7">
+            Sorularınız, önerileriniz veya şikayetleriniz için bize yazın. En kısa sürede size dönüş yapacağız.
+        </p>
+    </div>
+
+    @if (ViewBag.Success != null)
+    {
+        <div style="background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.2);border-radius:12px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px">
+            <i class="bi bi-check-circle-fill" style="color:#4ade80;font-size:18px;flex-shrink:0"></i>
+            <span style="font-size:14px;color:#4ade80;font-weight:600">@ViewBag.Success</span>
+        </div>
+    }
+
+    @if (ViewBag.Error != null)
+    {
+        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;gap:12px">
+            <i class="bi bi-exclamation-circle-fill" style="color:#f87171;font-size:18px;flex-shrink:0"></i>
+            <span style="font-size:14px;color:#f87171;font-weight:600">@ViewBag.Error</span>
+        </div>
+    }
+
+    <form asp-controller="Home" asp-action="Contact" method="post"
+          style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:20px;padding:32px">
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+            <div>
+                <label class="et-label">Ad Soyad <span style="color:#f87171">*</span></label>
+                <input type="text" name="name" class="et-input" placeholder="Adınız Soyadınız"
+                       required style="width:100%;margin-top:6px" />
+            </div>
+            <div>
+                <label class="et-label">E-posta <span style="color:#f87171">*</span></label>
+                <input type="email" name="email" class="et-input" placeholder="ornek@mail.com"
+                       required style="width:100%;margin-top:6px" />
+            </div>
+        </div>
+
+        <div style="margin-bottom:16px">
+            <label class="et-label">Konu</label>
+            <input type="text" name="subject" class="et-input" placeholder="Mesajınızın konusu"
+                   style="width:100%;margin-top:6px" />
+        </div>
+
+        <div style="margin-bottom:24px">
+            <label class="et-label">Mesaj <span style="color:#f87171">*</span></label>
+            <textarea name="message" class="et-input" rows="6"
+                      placeholder="Mesajınızı buraya yazın..."
+                      required style="width:100%;margin-top:6px;resize:vertical;min-height:140px"></textarea>
+        </div>
+
+        <button type="submit" class="et-btn-primary" style="width:100%">
+            <i class="bi bi-send-fill"></i> Mesaj Gönder
+        </button>
+    </form>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;text-align:center">
+            <i class="bi bi-envelope" style="font-size:22px;color:rgba(255,255,255,0.4);display:block;margin-bottom:10px"></i>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.07em;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:6px">E-posta</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.55)">info@technoturkey.net</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;text-align:center">
+            <i class="bi bi-telephone" style="font-size:22px;color:rgba(255,255,255,0.4);display:block;margin-bottom:10px"></i>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.07em;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:6px">Telefon</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.55)">+90 (212) 000 00 00</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:20px;text-align:center">
+            <i class="bi bi-geo-alt" style="font-size:22px;color:rgba(255,255,255,0.4);display:block;margin-bottom:10px"></i>
+            <div style="font-size:11px;font-weight:700;letter-spacing:0.07em;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:6px">Adres</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.55)">İstanbul, Türkiye</div>
+        </div>
+    </div>
+</div>

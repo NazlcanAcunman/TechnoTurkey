@@ -1,0 +1,129 @@
+@model List<EventTicket.UI.ViewModels.AcademyContentViewModel>
+@{
+    ViewData["Title"] = "Akademi Yönetimi";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<!-- Yeni İçerik Ekle -->
+<div class="admin-table-wrap" style="margin-bottom:32px">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Yeni İçerik Ekle</span>
+    </div>
+    <div style="padding:24px">
+        <form asp-area="Admin" asp-controller="Academy" asp-action="Create" method="post">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:16px">
+                <div>
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">TÜR</label>
+                    <select name="Type" required style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit">
+                        <option value="info">Bilgi (info)</option>
+                        <option value="photo">Fotoğraf (photo)</option>
+                        <option value="student">Öğrenci (student)</option>
+                        <option value="video">Video (video)</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">BAŞLIK</label>
+                    <input type="text" name="Title" required placeholder="Başlık girin..."
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
+                </div>
+                <div>
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">MEDYA URL</label>
+                    <input type="text" name="MediaUrl" placeholder="https://..."
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
+                </div>
+                <div>
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">SIRA</label>
+                    <input type="number" name="DisplayOrder" value="0" min="0"
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
+                </div>
+            </div>
+            <div style="margin-bottom:16px">
+                <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">AÇIKLAMA</label>
+                <textarea name="Description" rows="3" placeholder="Açıklama girin..."
+                          style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box;resize:vertical"></textarea>
+            </div>
+            <div style="display:flex;align-items:center;gap:20px">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:rgba(255,255,255,0.7)">
+                    <input type="checkbox" name="IsActive" value="true" checked style="width:16px;height:16px;accent-color:#7c3aed" />
+                    Aktif
+                </label>
+                <button type="submit" class="btn-admin btn-primary">
+                    + İçerik Ekle
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Mevcut İçerikler -->
+<div class="admin-table-wrap">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Mevcut İçerikler</span>
+        <span style="font-size:12px;color:rgba(255,255,255,0.35)">@Model.Count adet</span>
+    </div>
+    @if (!Model.Any())
+    {
+        <div style="padding:40px;text-align:center;color:rgba(255,255,255,0.3);font-size:14px">
+            Henüz içerik eklenmemiş.
+        </div>
+    }
+    else
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Tür</th>
+                    <th>Başlık</th>
+                    <th>Medya URL</th>
+                    <th>Sıra</th>
+                    <th>Aktif</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.OrderBy(x => x.DisplayOrder))
+                {
+                    <tr>
+                        <td>
+                            @{
+                                var badgeColor = item.Type switch
+                                {
+                                    "info"    => "#3b82f6",
+                                    "photo"   => "#10b981",
+                                    "student" => "#f59e0b",
+                                    "video"   => "#ef4444",
+                                    _         => "#6b7280"
+                                };
+                            }
+                            <span style="background:@(badgeColor)22;color:@badgeColor;border:1px solid @(badgeColor)44;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase">
+                                @item.Type
+                            </span>
+                        </td>
+                        <td style="font-weight:600;color:#fff">@item.Title</td>
+                        <td style="color:rgba(255,255,255,0.45);font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">
+                            @(string.IsNullOrEmpty(item.MediaUrl) ? "—" : (item.MediaUrl.Length > 40 ? item.MediaUrl.Substring(0, 40) + "…" : item.MediaUrl))
+                        </td>
+                        <td style="color:rgba(255,255,255,0.6)">@item.DisplayOrder</td>
+                        <td>
+                            @if (item.IsActive)
+                            {
+                                <span style="color:#10b981;font-size:16px">&#10003;</span>
+                            }
+                            else
+                            {
+                                <span style="color:rgba(255,255,255,0.2);font-size:16px">&#10005;</span>
+                            }
+                        </td>
+                        <td style="display:flex;align-items:center;gap:8px">
+                            <form asp-area="Admin" asp-controller="Academy" asp-action="Delete" method="post"
+                                  onsubmit="confirmDelete(this, '@item.Title içeriğini silmek istediğinize emin misiniz?'); return false;">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button type="submit" class="btn-admin btn-danger btn-sm">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

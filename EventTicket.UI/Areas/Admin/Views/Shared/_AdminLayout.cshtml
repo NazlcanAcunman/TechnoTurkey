@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - TechnoTurkey Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+@{
+    var adminDisplayName = User.Identity?.Name ?? "";
+    var adminRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+    if (!string.IsNullOrEmpty(adminRole) && adminDisplayName == adminRole)
+    {
+        var adminEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? "";
+        adminDisplayName = adminEmail.Contains('@') ? adminEmail.Split('@')[0] : adminEmail;
+    }
+}
+<body class="admin-body">
+
+    <!-- SOL SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar-logo">
+            TECHNO<span>TURKEY</span>
+            <small>Admin Panel</small>
+        </div>
+
+        <nav class="admin-nav">
+            <div class="admin-nav-group">
+                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index"
+                       class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Dashboard" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                        <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+                    </svg>
+                    Dashboard
+                </a>
+            </div>
+
+            <div class="admin-nav-group">
+                <span class="admin-nav-label">İçerik</span>
+                <a asp-area="Admin" asp-controller="Events" asp-action="Index"
+                       class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Events" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Etkinlikler
+                </a>
+                <a asp-area="Admin" asp-controller="Venues" asp-action="Index"
+                       class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Venues" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9 22 9 12 15 12 15 22"/>
+                    </svg>
+                    Mekanlar
+                </a>
+                <a asp-area="Admin" asp-controller="Artists" asp-action="Index"
+                       class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Artists" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"/>
+                        <circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+                    </svg>
+                    Sanatçılar
+                </a>
+                <a asp-area="Admin" asp-controller="Pending" asp-action="Index"
+                       class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Pending" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    Onay Kuyruğu
+                </a>
+            </div>
+
+            <div class="admin-nav-group">
+                <span class="admin-nav-label">Kullanıcılar</span>
+                <a asp-area="Admin" asp-controller="Users" asp-action="Index"
+                       class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Users" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Kullanıcılar
+                </a>
+                <a asp-area="Admin" asp-controller="Messages" asp-action="Index"
+                       class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Messages" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Mesajlar
+                </a>
+            </div>
+
+            @if (adminRole == "SuperAdmin")
+            {
+                <div class="admin-nav-group">
+                    <span class="admin-nav-label">SuperAdmin</span>
+                    <a asp-area="Admin" asp-controller="Banners" asp-action="Index"
+                           class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Banners" ? "active" : "")">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="5" width="18" height="14" rx="2"/>
+                            <path d="M3 10h18"/>
+                        </svg>
+                        Bannerlar
+                    </a>
+                    <a asp-area="Admin" asp-controller="Notifications" asp-action="Index"
+                           class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Notifications" ? "active" : "")">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        Bildirimler
+                    </a>
+                    <a asp-area="Admin" asp-controller="Academy" asp-action="Index"
+                           class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Academy" ? "active" : "")">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                            <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                        </svg>
+                        Akademi
+                    </a>
+                    <a asp-area="Admin" asp-controller="Settings" asp-action="Index"
+                           class="admin-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Settings" ? "active" : "")">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                        </svg>
+                        Ayarlar
+                    </a>
+                </div>
+            }
+        </nav>
+
+        <div class="admin-sidebar-footer">
+            <a asp-area="" asp-controller="Home" asp-action="Index" class="admin-back-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5" />
+                    <path d="M12 19l-7-7 7-7" />
+                </svg>
+                Siteye Dön
+            </a>
+            <a asp-area="" asp-controller="Auth" asp-action="Logout" class="admin-logout-btn">Çıkış Yap</a>
+        </div>
+    </aside>
+
+    <!-- SAĞ İÇERİK -->
+    <div class="admin-content">
+        <header class="admin-header">
+            <h1 class="admin-page-title">@ViewData["Title"]</h1>
+            <div class="admin-header-right">
+                <span class="admin-user">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                        <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    @adminDisplayName
+                </span>
+            </div>
+        </header>
+
+        <main class="admin-main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- Silme Onay Modalı -->
+    <div id="deleteModal" style="
+        display:none; position:fixed; inset:0; z-index:9999;
+        background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);
+        align-items:center; justify-content:center;">
+        <div style="
+            background:#1a1a1a; border:1px solid rgba(255,255,255,0.1);
+            border-radius:16px; padding:32px; max-width:420px; width:90%;
+            box-shadow:0 40px 80px rgba(0,0,0,0.6);">
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+                <div style="width:44px;height:44px;border-radius:50%;background:rgba(239,68,68,0.12);
+                    border:1px solid rgba(239,68,68,0.25);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                    </svg>
+                </div>
+                <div>
+                    <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:4px">Silmek istediğinize emin misiniz?</div>
+                    <div id="deleteModalDesc" style="font-size:13px;color:rgba(255,255,255,0.4)">Bu işlem geri alınamaz.</div>
+                </div>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end">
+                <button onclick="closeDeleteModal()"
+                    style="padding:9px 20px;border-radius:8px;border:1px solid rgba(255,255,255,0.12);
+                        background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.7);font-size:13px;
+                        font-weight:600;cursor:pointer;font-family:inherit">
+                    İptal
+                </button>
+                <button id="deleteModalConfirm"
+                    style="padding:9px 20px;border-radius:8px;border:none;
+                        background:#ef4444;color:#fff;font-size:13px;
+                        font-weight:700;cursor:pointer;font-family:inherit">
+                    Evet, Sil
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        var _pendingDeleteForm = null;
+
+        function confirmDelete(formEl, desc) {
+            _pendingDeleteForm = formEl;
+            document.getElementById('deleteModalDesc').textContent = desc || 'Bu işlem geri alınamaz.';
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            _pendingDeleteForm = null;
+        }
+
+        document.getElementById('deleteModalConfirm').addEventListener('click', function () {
+            if (_pendingDeleteForm) _pendingDeleteForm.submit();
+        });
+
+        document.getElementById('deleteModal').addEventListener('click', function (e) {
+            if (e.target === this) closeDeleteModal();
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

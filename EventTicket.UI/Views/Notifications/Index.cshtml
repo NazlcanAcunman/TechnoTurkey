@@ -1,0 +1,204 @@
+@using EventTicket.Core.DTOs
+@model List<NotificationResponseDto>
+@{
+    ViewData["Title"] = "Bildirimler";
+    var unread = Model.Count(n => !n.IsRead);
+}
+
+<style>
+.notif-page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+}
+.notif-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.notif-title {
+    font-size: 28px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.02em;
+}
+.notif-badge {
+    background: #e24b4a;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+.notif-mark-all {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.5);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+.notif-mark-all:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.notif-empty {
+    text-align: center;
+    padding: 80px 24px;
+    color: rgba(255,255,255,0.3);
+    font-size: 15px;
+}
+.notif-empty svg { margin-bottom: 16px; opacity: 0.3; }
+.notif-list { display: flex; flex-direction: column; gap: 10px; }
+.notif-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px;
+    padding: 16px 18px;
+    transition: background 0.2s;
+    position: relative;
+}
+.notif-item.unread {
+    background: rgba(255,255,255,0.07);
+    border-color: rgba(255,255,255,0.12);
+}
+.notif-item.unread::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 14px;
+    bottom: 14px;
+    width: 3px;
+    background: #e24b4a;
+    border-radius: 0 3px 3px 0;
+}
+.notif-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.notif-body { flex: 1; min-width: 0; }
+.notif-msg {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.5;
+    margin-bottom: 6px;
+}
+.notif-item.unread .notif-msg { color: #fff; font-weight: 600; }
+.notif-time {
+    font-size: 11px;
+    color: rgba(255,255,255,0.3);
+    font-weight: 500;
+}
+.notif-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+    align-items: center;
+}
+.notif-btn {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    transition: all 0.15s;
+}
+.notif-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+.notif-btn.delete:hover { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); color: #ef4444; }
+</style>
+
+<div class="notif-page">
+    <div class="notif-header">
+        <div>
+            <span class="notif-title">Bildirimler</span>
+            @if (unread > 0)
+            {
+                <span class="notif-badge">@unread okunmadı</span>
+            }
+        </div>
+        @if (unread > 0)
+        {
+            <form asp-action="MarkAllAsRead" method="post" style="margin:0">
+                <button type="submit" class="notif-mark-all">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    Tümünü Okundu İşaretle
+                </button>
+            </form>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="notif-empty">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" display="block" style="margin:0 auto 16px">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+            Henüz bildiriminiz yok.
+        </div>
+    }
+    else
+    {
+        <div class="notif-list">
+            @foreach (var n in Model)
+            {
+                <div class="notif-item @(!n.IsRead ? "unread" : "")">
+                    <div class="notif-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                    </div>
+                    <div class="notif-body">
+                        <div class="notif-msg">@n.Message</div>
+                        <div class="notif-time">@n.CreatedAt.ToString("dd MMM yyyy, HH:mm")</div>
+                    </div>
+                    <div class="notif-actions">
+                        @if (!n.IsRead)
+                        {
+                            <form asp-action="MarkAsRead" method="post" style="margin:0">
+                                <input type="hidden" name="id" value="@n.Id" />
+                                <button type="submit" class="notif-btn">Okundu</button>
+                            </form>
+                        }
+                        <form asp-action="Delete" method="post" style="margin:0">
+                            <input type="hidden" name="id" value="@n.Id" />
+                            <button type="submit" class="notif-btn delete">Sil</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

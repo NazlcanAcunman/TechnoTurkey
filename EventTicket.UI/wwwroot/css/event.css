@@ -1,0 +1,148 @@
+/* =====================
+   EVENT DETAIL — Premium Dark Glass
+   ===================== */
+
+.event-detail {
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 0 20px 72px;
+}
+
+.event-detail-img {
+    border-radius: 20px;
+    overflow: hidden;
+    margin-bottom: 36px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.8);
+}
+.event-detail-img img {
+    width: 100%;
+    height: 440px;
+    object-fit: cover;
+    display: block;
+}
+
+.event-detail-body {
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin-bottom: 32px;
+}
+
+.event-detail-info {
+    flex: 1;
+    min-width: 260px;
+}
+
+.event-detail-title {
+    font-size: 30px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 18px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+}
+
+.event-detail-meta { display: flex; flex-direction: column; gap: 10px; }
+.event-detail-meta-item { font-size: 14px; color: rgba(255,255,255,0.5); }
+.event-detail-meta-item span { color: rgba(255,255,255,0.22); margin-right: 5px; }
+
+.event-ticket-box {
+    background: rgba(255,255,255,0.04);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.09);
+    border-radius: 20px;
+    padding: 26px;
+    width: 280px;
+    flex-shrink: 0;
+    height: fit-content;
+    box-shadow: 0 20px 48px rgba(0,0,0,0.6);
+}
+
+.event-ticket-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.28);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.event-ticket-price {
+    font-size: 38px;
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 22px;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+.event-ticket-free { font-size: 22px; }
+
+.event-ticket-sold-out {
+    background: rgba(248,113,113,0.07);
+    border: 1px solid rgba(248,113,113,0.18);
+    color: #f87171;
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.event-ticket-btn {
+    width: 100%;
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 100px;
+    padding: 14px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.event-ticket-btn:hover { background: #e0e0e0; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(255,255,255,0.18); }
+
+.event-ticket-remaining {
+    font-size: 11px;
+    color: rgba(255,255,255,0.2);
+    text-align: center;
+    margin-top: 12px;
+}
+
+.event-description {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 26px;
+}
+
+.event-description-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.28);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+}
+
+.event-description p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.85;
+}
+
+@media (max-width: 768px) {
+    .event-detail-body { flex-direction: column; }
+    .event-ticket-box { width: 100%; }
+    .event-detail-img img { height: 260px; }
+    .event-detail-img { border-radius: 12px; }
+    .event-detail-title { font-size: 24px; }
+}

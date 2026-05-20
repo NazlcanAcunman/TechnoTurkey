@@ -1,0 +1,95 @@
+@model List<EventTicket.UI.ViewModels.EventCardViewModel>
+@{
+    ViewData["Title"] = "Etkinlikler";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-table-wrap">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Tüm Etkinlikler (@Model.Count)</span>
+        <a asp-action="Create" class="btn-admin" style="background:#6c5ce7">+ Yeni Etkinlik</a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:8px;
+            padding:12px 16px;margin:16px 16px 0;color:#4ade80;font-size:13px">✓ @TempData["Success"]</div>
+    }
+
+    @if (Model.Any())
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Etkinlik</th>
+                    <th>Tarih</th>
+                    <th>Şehir</th>
+                    <th>Mekan</th>
+                    <th>Sanatçı</th>
+                    <th>Kapasite</th>
+                    <th>Bilet URL</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model)
+                {
+                    <tr>
+                        <td style="font-weight:600">@e.Title</td>
+                        <td>@e.Date.ToString("dd MMM yyyy")</td>
+                        <td>@e.VenueCity</td>
+                        <td>@e.VenueName</td>
+                        <td>@e.ArtistName</td>
+                        <td style="color:rgba(255,255,255,0.5)">@e.SoldCount / @e.Capacity</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(e.TicketUrl))
+                            {
+                                <a href="@e.TicketUrl" target="_blank"
+                                   style="color:#818cf8;font-size:12px;text-decoration:none">
+                                    Bağlantı ↗
+                                </a>
+                            }
+                            else
+                            {
+                                <span style="color:rgba(255,255,255,0.25);font-size:12px">—</span>
+                            }
+                        </td>
+                        <td>
+                            @if (e.IsApproved)
+                            {
+                                <span class="badge badge-success">Onaylı</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Bekliyor</span>
+                            }
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap">
+                                <a asp-action="Edit" asp-route-id="@e.Id"
+                                   class="btn-admin btn-sm" style="background:#2d6a4f">
+                                    Düzenle
+                                </a>
+                                @if (User.IsInRole("SuperAdmin"))
+                                {
+                                    <form asp-action="Delete" method="post" style="margin:0" class="delete-form">
+                                        <input type="hidden" name="id" value="@e.Id" />
+                                        <button type="button" class="btn-admin btn-danger btn-sm"
+                                                onclick="confirmDelete(this.closest('form'), '@e.Title silinecek. Emin misiniz?')">
+                                            Sil
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p style="padding:24px;color:rgba(255,255,255,0.4)">Henüz etkinlik yok.</p>
+    }
+</div>

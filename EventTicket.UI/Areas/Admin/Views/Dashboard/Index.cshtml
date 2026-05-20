@@ -1,0 +1,102 @@
+@model EventTicket.UI.ViewModels.Admin.StatsViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="admin-stats">
+    <div class="admin-stat-card purple">
+        <div class="admin-stat-label">Toplam Etkinlik</div>
+        <div class="admin-stat-value">@Model.TotalEvents</div>
+        <div class="admin-stat-sub">Veritabanındaki tüm etkinlikler</div>
+    </div>
+    <div class="admin-stat-card green">
+        <div class="admin-stat-label">Toplam Mekan</div>
+        <div class="admin-stat-value">@Model.TotalVenues</div>
+        <div class="admin-stat-sub">Kayıtlı mekanlar</div>
+    </div>
+    <div class="admin-stat-card amber">
+        <div class="admin-stat-label">Toplam Sanatçı</div>
+        <div class="admin-stat-value">@Model.TotalArtists</div>
+        <div class="admin-stat-sub">Kayıtlı sanatçılar</div>
+    </div>
+    <div class="admin-stat-card blue">
+        <div class="admin-stat-label">Toplam Kullanıcı</div>
+        <div class="admin-stat-value">@Model.TotalUsers</div>
+        <div class="admin-stat-sub">Kayıtlı üyeler</div>
+    </div>
+</div>
+
+<div class="admin-table-wrap">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Hızlı Erişim</span>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Bölüm</th>
+                <th>Açıklama</th>
+                <th>İşlem</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Onay Kuyruğu</td>
+                <td>Onay bekleyen etkinlik, mekan ve sanatçılar</td>
+                <td style="display:flex;align-items:center;gap:8px">
+                    <a asp-area="Admin" asp-controller="Pending" asp-action="Index"
+                       class="btn-admin btn-warning btn-sm">Görüntüle</a>
+                    @if ((int)ViewBag.PendingCount > 0)
+                    {
+                        <span style="background:#ef4444;color:#fff;font-size:11px;font-weight:800;
+                                     padding:2px 8px;border-radius:20px;line-height:1.6">
+                            @ViewBag.PendingCount
+                        </span>
+                    }
+                </td>
+            </tr>
+            <tr>
+                <td>Etkinlikler</td>
+                <td>Tüm etkinlikleri listele, oluştur ve yönet</td>
+                <td>
+                    <a asp-area="Admin" asp-controller="Events" asp-action="Index"
+                       class="btn-admin btn-primary btn-sm">Görüntüle</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Kullanıcılar</td>
+                <td>Kayıtlı üyeleri yönet, rol ata</td>
+                <td>
+                    <a asp-area="Admin" asp-controller="Users" asp-action="Index"
+                       class="btn-admin btn-primary btn-sm">Görüntüle</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Mesajlar</td>
+                <td>Kullanıcılardan gelen mesajlar</td>
+                <td>
+                    <a asp-area="Admin" asp-controller="Messages" asp-action="Index"
+                       class="btn-admin btn-primary btn-sm">Görüntüle</a>
+                </td>
+            </tr>
+            @if (User.IsInRole("SuperAdmin"))
+            {
+                <tr>
+                    <td>Akademi</td>
+                    <td>Akademi içeriklerini (fotoğraf, video, bilgi) yönet</td>
+                    <td>
+                        <a asp-area="Admin" asp-controller="Academy" asp-action="Index"
+                           class="btn-admin btn-primary btn-sm">Yönet</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Bildirim Gönder</td>
+                    <td>Tüm kullanıcılara toplu bildirim gönder</td>
+                    <td>
+                        <a asp-area="Admin" asp-controller="Notifications" asp-action="Index"
+                           class="btn-admin btn-primary btn-sm">Gönder</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,75 @@
+@{
+    var unreadCount = ViewBag.UnreadNotifications as int? ?? 0;
+
+    // Navbar'da ViewBag.DisplayName varsa onu kullan (BaseController'da ayarlandı)
+    var navDisplayName = ViewBag.DisplayName as string ?? User.Identity?.Name ?? "";
+}
+
+<nav class="et-navbar">
+    <div class="et-navbar-main">
+        <div class="et-navbar-main-inner">
+            <a class="et-logo" asp-controller="Home" asp-action="Index">
+                TECHNO<span>TURKEY</span>
+            </a>
+            <div class="et-search-box">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                </svg>
+                <input type="text" id="mainSearch" placeholder="Etkinlik, Mekan, Sanatçı Ara"
+                       onkeydown="if(event.key==='Enter') window.location='/Events?search='+this.value" />
+                <span class="et-search-kbd">⌘K</span>
+            </div>
+            <div class="et-nav-right">
+
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="et-user-menu">
+                        <button class="et-user-btn" onclick="toggleUserMenu()">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            @navDisplayName
+                            @if (unreadCount > 0)
+                            {
+                                <span style="background:#e24b4a;color:#fff;border-radius:50%;
+                                    font-size:10px;padding:1px 5px;margin-left:4px">
+                                    @unreadCount
+                                </span>
+                            }
+                        </button>
+                        <div class="et-dropdown" id="userDropdown">
+                            <a asp-controller="Profile" asp-action="Index">Profilim</a>
+                            <a asp-controller="Profile" asp-action="Index">Biletlerim</a>
+                            <a href="/Profile?tab=favorites">Favorilerim</a>
+                            <a asp-controller="Notifications" asp-action="Index">
+                                Bildirimler
+                                @if (unreadCount > 0)
+                                {
+                                    <span style="background:#e24b4a;color:#fff;border-radius:10px;
+                                        font-size:10px;padding:1px 6px;margin-left:4px">
+                                        @unreadCount
+                                    </span>
+                                }
+                            </a>
+                            @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+                            {
+                                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                                    Admin Panel
+                                </a>
+                            }
+                            <div class="et-dropdown-divider"></div>
+                            <a asp-controller="Auth" asp-action="Logout">ÇIKIŞ YAP</a>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="Auth" asp-action="Login" class="et-login-btn">GİRİŞ YAP</a>
+                }
+            </div>
+        </div>
+    </div>
+    @await Html.PartialAsync("_NavCategories")
+</nav>

@@ -1,0 +1,150 @@
+@model EventTicket.UI.ViewModels.BannerViewModel
+@using EventTicket.Core.Entities
+@{
+    ViewData["Title"] = "Banner Düzenle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-table-wrap" style="max-width:760px">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Banner Düzenle</span>
+        <a asp-action="Index" class="btn-admin btn-sm" style="background:#444">&#x2190; Geri</a>
+    </div>
+
+    <div style="padding:28px">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;
+                padding:12px 16px;margin-bottom:20px;color:#f87171;font-size:13px">
+                <ul style="margin:0;padding-left:16px">
+                    @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@err.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <form asp-action="Edit" asp-route-id="@Model.Id" method="post">
+            @Html.AntiForgeryToken()
+
+            @* Başlık *@
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Başlık *</label>
+                <input asp-for="Title" class="admin-field-input" placeholder="Banner başlığı" />
+                <span asp-validation-for="Title" style="color:#f87171;font-size:12px"></span>
+            </div>
+
+            @* Alt Başlık *@
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Alt Başlık</label>
+                <input asp-for="SubTitle" class="admin-field-input" placeholder="Örn: MELODIC HOUSE &amp; TECHNO" />
+            </div>
+
+            @* Tarih Metni + Mekan *@
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+                <div>
+                    <label class="admin-field-label">Tarih Metni</label>
+                    <input asp-for="DateText" class="admin-field-input" placeholder="Örn: 6-7 Haziran 2026" />
+                </div>
+                <div>
+                    <label class="admin-field-label">Mekan</label>
+                    <input asp-for="Venue" class="admin-field-input" placeholder="Örn: Life Park İstanbul" />
+                </div>
+            </div>
+
+            @* Görsel URL *@
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Görsel URL *</label>
+                <input asp-for="ImageUrl" class="admin-field-input" placeholder="https://cdn.example.com/image.jpg"
+                       oninput="updatePreview(this.value)" />
+                <span asp-validation-for="ImageUrl" style="color:#f87171;font-size:12px"></span>
+                <div id="img-preview" style="margin-top:10px;border-radius:10px;overflow:hidden;max-height:160px">
+                    <img id="img-preview-el" src="@Model.ImageUrl" alt="Önizleme"
+                         style="width:100%;max-height:160px;object-fit:cover;border-radius:10px;display:block" />
+                </div>
+            </div>
+
+            @* Arama Sorgusu + Bilet URL *@
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+                <div>
+                    <label class="admin-field-label">Arama Sorgusu</label>
+                    <input asp-for="SearchQuery" class="admin-field-input" placeholder="Örn: ZAMNA" />
+                    <span style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:5px;display:block">Etkinlik arama sayfasına yönlendirir</span>
+                </div>
+                <div>
+                    <label class="admin-field-label">Bilet URL</label>
+                    <input asp-for="TicketUrl" class="admin-field-input" placeholder="https://biletix.com/..." />
+                </div>
+            </div>
+
+            @* Tür + Sıralama *@
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+                <div>
+                    <label class="admin-field-label">Tür *</label>
+                    <select asp-for="Type" class="admin-field-input">
+                        <option value="0">Hero Slider</option>
+                        <option value="1">Öne Çıkan Banner</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="admin-field-label">Sıralama</label>
+                    <input asp-for="SortOrder" type="number" min="0" class="admin-field-input" placeholder="0" />
+                    <span style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:5px;display:block">0 = en önce, büyük = sonra</span>
+                </div>
+            </div>
+
+            @* Aktif *@
+            <div style="margin-bottom:24px;display:flex;align-items:center;gap:10px">
+                <input asp-for="IsActive" type="checkbox" id="isActive"
+                       style="width:16px;height:16px;accent-color:#6c5ce7;cursor:pointer" />
+                <label for="isActive" class="admin-field-label" style="margin:0;cursor:pointer">Aktif</label>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:8px">
+                <button type="submit" class="btn-admin" style="background:#fff;color:#000">
+                    &#x2713; Değişiklikleri Kaydet
+                </button>
+                <a asp-action="Index" class="btn-admin" style="background:#444">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.admin-field-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 7px;
+}
+.admin-field-input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 10px 13px;
+    color: #fff;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+}
+.admin-field-input:focus { border-color: rgba(255,255,255,0.25); }
+.admin-field-input option { background: #1a1a1a; }
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function updatePreview(url) {
+            var img = document.getElementById('img-preview-el');
+            if (url && url.startsWith('http')) {
+                img.src = url;
+            }
+        }
+    </script>
+}

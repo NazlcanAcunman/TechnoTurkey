@@ -1,0 +1,17 @@
+@model List<EventTicket.UI.ViewModels.EventCardViewModel>
+
+@if (Model != null && Model.Any())
+{
+    <div class="et-scroll-inner">
+        @foreach (var ev in Model)
+        {
+            <div class="et-card-wrap">
+                <partial name="_EventCard" model="ev" />
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p class="text-muted text-center py-4">Yaklaşan etkinlik bulunamadı.</p>
+}

@@ -1,0 +1,100 @@
+﻿<script>
+    function toggleUserMenu() {
+        document.getElementById('userDropdown').classList.toggle('active');
+    }
+
+    function toggleCityMenu() {
+        document.getElementById('cityDropdown').classList.toggle('active');
+        if (document.getElementById('cityDropdown').classList.contains('active')) {
+            document.getElementById('citySearch').focus();
+        }
+    }
+
+    function selectCity(city, el) {
+        document.getElementById('selectedCity').textContent = city.toUpperCase();
+        document.querySelectorAll('.et-city-item').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('cityDropdown').classList.remove('active');
+        window.location.href = city === 'Tümü' ? '/' : '/Events?city=' + encodeURIComponent(city);
+    }
+
+    function filterCities(val) {
+        document.querySelectorAll('.et-city-item').forEach(btn => {
+            btn.style.display = btn.textContent.toLowerCase().includes(val.toLowerCase()) ? '' : 'none';
+        });
+    }
+
+    // ── Active category based on current URL ──
+    (function() {
+        var path = window.location.pathname.toLowerCase();
+        var qs   = window.location.search.toLowerCase();
+        document.querySelectorAll('.et-cat').forEach(c => c.classList.remove('active'));
+        var key = 'all';
+        if      (path.startsWith('/events'))    key = 'events';
+        else if (path.startsWith('/venues'))    key = 'venues';
+        else if (path.startsWith('/artists'))   key = 'artists';
+        else if (path.startsWith('/magazine'))  key = 'magazine';
+        else if (path.startsWith('/organizer')) key = 'organizers';
+        else if (qs.includes('type=festival'))  key = 'festivals';
+        var el = document.querySelector('.et-cat[data-cat="' + key + '"]');
+        if (el) el.classList.add('active');
+    })();
+
+    var _activeCat = null;
+    function switchCat(e, cat) {
+        e.preventDefault();
+        document.querySelectorAll('.et-cat').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+
+        const subMap = { events: 'sub-events', festivals: 'sub-festivals', venues: 'sub-venues', artists: 'sub-artists' };
+        const urls   = { all: '/', events: '/Events', venues: '/Venues',
+                         festivals: '/Events?type=festival', artists: '/Artists',
+                         organizers: '/Organizers', magazine: '/Magazine' };
+
+        if (subMap[cat]) {
+            const panel = document.getElementById(subMap[cat]);
+            // Aynı kategoriye 2. kez tıklayınca veya alt menü yoksa sayfaya git
+            if (_activeCat === cat && panel.style.display !== 'none') {
+                window.location.href = urls[cat] || '/';
+                return;
+            }
+            document.querySelectorAll('.et-sub-row').forEach(r => r.style.display = 'none');
+            panel.style.display = 'flex';
+            _activeCat = cat;
+        } else {
+            document.querySelectorAll('.et-sub-row').forEach(r => r.style.display = 'none');
+            _activeCat = null;
+            if (urls[cat]) window.location.href = urls[cat];
+        }
+    }
+
+    document.querySelectorAll('.et-cat-genre').forEach(btn => {
+        btn.addEventListener('click', function () {
+            this.closest('.et-sub-row').querySelectorAll('.et-cat-genre').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            // Navigasyon href üzerinden gerçekleşir, preventDefault yok
+        });
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!document.querySelector('.et-user-menu')?.contains(e.target))
+            document.getElementById('userDropdown')?.classList.remove('active');
+        if (!document.querySelector('.et-city-wrap')?.contains(e.target))
+            document.getElementById('cityDropdown')?.classList.remove('active');
+    });
+
+    // Scroll edilince kategori bar'ı gizle
+    let lastScroll = 0;
+    const catsEl = document.querySelector('.et-navbar-cats');
+    window.addEventListener('scroll', function () {
+        const current = window.scrollY;
+        if (catsEl) {
+            if (current > 60) {
+                catsEl.classList.add('hidden');
+            } else {
+                catsEl.classList.remove('hidden');
+            }
+        }
+        lastScroll = current;
+    }, { passive: true });
+</script>

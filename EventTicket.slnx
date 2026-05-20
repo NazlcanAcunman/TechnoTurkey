@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="EventTicket.API/EventTicket.API.csproj" />
+  <Project Path="EventTicket.Core/EventTicket.Core.csproj" />
+  <Project Path="EventTicket.Data/EventTicket.Data.csproj" />
+  <Project Path="EventTicket.UI/EventTicket.UI.csproj" />
+</Solution>

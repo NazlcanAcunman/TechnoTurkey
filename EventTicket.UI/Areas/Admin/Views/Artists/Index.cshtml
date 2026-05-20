@@ -1,0 +1,78 @@
+﻿@model List<EventTicket.UI.ViewModels.ArtistCardViewModel>
+@using EventTicket.UI.ViewModels
+@{
+    ViewData["Title"] = "Sanatçılar";
+
+    var hardcoded = new List<ArtistCardViewModel>
+    {
+        new() { Id=101, Name="ADRIATIQUE",          Genre="Melodic House",  IsApproved=true },
+        new() { Id=102, Name="Kevin de Vries",       Genre="Melodic Techno", IsApproved=true },
+        new() { Id=103, Name="Sara Landry",          Genre="Hard Techno",    IsApproved=true },
+        new() { Id=104, Name="Enrico Sangiuliano",   Genre="Techno",         IsApproved=true },
+        new() { Id=105, Name="SPFDJ",                Genre="Hard Techno",    IsApproved=true },
+        new() { Id=106, Name="Wehbba",               Genre="Techno",         IsApproved=true },
+        new() { Id=107, Name="Alignment",            Genre="Techno",         IsApproved=true },
+        new() { Id=108, Name="Dax J",                Genre="Techno",         IsApproved=true },
+        new() { Id=109, Name="Ricky Martin",         Genre="Pop",            IsApproved=true },
+        new() { Id=110, Name="Wiz Khalifa",          Genre="Hip-Hop",        IsApproved=true },
+        new() { Id=111, Name="Charlotte de Witte",   Genre="Techno",         IsApproved=true },
+        new() { Id=112, Name="Solomun",              Genre="House",          IsApproved=true },
+    };
+
+    var isHardcoded = !Model.Any();
+    var displayList = isHardcoded ? hardcoded : Model;
+}
+
+<div class="admin-table-wrap">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Tüm Sanatçılar (@displayList.Count)</span>
+    </div>
+    @if (displayList.Any())
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Sanatçı</th>
+                    <th>Tür</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var a in displayList)
+                {
+                    <tr>
+                        <td>@a.Name</td>
+                        <td>@a.Genre</td>
+                        <td>
+                            @if (a.IsApproved)
+                            {
+                                <span class="badge badge-success">Onaylı</span>
+                            }
+                            else
+                            {
+                                <span class="badge badge-warning">Bekliyor</span>
+                            }
+                        </td>
+                        <td>
+                            @if (User.IsInRole("SuperAdmin") && !isHardcoded)
+                            {
+                                <form asp-action="Delete" method="post" style="display:inline" class="delete-form">
+                                    <input type="hidden" name="id" value="@a.Id" />
+                                    <button type="button" class="btn-admin btn-danger btn-sm"
+                                            onclick="confirmDelete(this.closest('form'), '@a.Name silinecek. Emin misiniz?')">
+                                        Sil
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="p-3 text-muted">Henüz sanatçı yok.</p>
+    }
+</div>

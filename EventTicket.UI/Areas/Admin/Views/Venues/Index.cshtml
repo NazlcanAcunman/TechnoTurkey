@@ -1,0 +1,60 @@
+﻿@model List<EventTicket.UI.ViewModels.VenueCardViewModel>
+@{
+    ViewData["Title"] = "Mekanlar";
+}
+
+<div class="admin-table-wrap">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Tüm Mekanlar (@Model.Count)</span>
+    </div>
+    @if (Model.Any())
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Mekan</th>
+                    <th>Şehir</th>
+                    <th>Adres</th>
+                    <th>Durum</th>
+                    <th>İşlem</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var v in Model)
+                {
+                    <tr>
+                        <td>@v.Name</td>
+                        <td>@v.City</td>
+                        <td>@v.Address</td>
+                        <td>
+                            @if (v.IsApproved)
+                            {
+                                <span class="badge bg-success">Onaylı</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning text-dark">Bekliyor</span>
+                            }
+                        </td>
+                        <td>
+                            @if (User.IsInRole("SuperAdmin"))
+                            {
+                                <form asp-action="Delete" method="post" style="display:inline" class="delete-form">
+                                    <input type="hidden" name="id" value="@v.Id" />
+                                    <button type="button" class="btn-admin btn-danger btn-sm"
+                                            onclick="confirmDelete(this.closest('form'), '@v.Name silinecek. Emin misiniz?')">
+                                        Sil
+                                    </button>
+                                </form>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="p-3 text-muted">Henüz mekan yok.</p>
+    }
+</div>

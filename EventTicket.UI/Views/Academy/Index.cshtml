@@ -1,0 +1,305 @@
+@model List<EventTicket.UI.ViewModels.AcademyContentViewModel>
+@{
+    ViewData["Title"] = "Akademi";
+    var infoItems    = Model.Where(x => x.Type == "info"    && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
+    var photoItems   = Model.Where(x => x.Type == "photo"   && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
+    var studentItems = Model.Where(x => x.Type == "student" && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
+    var videoItems   = Model.Where(x => x.Type == "video"   && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
+}
+
+<style>
+    .academy-page {
+        background: #0a0a0a;
+        min-height: 100vh;
+        color: #fff;
+        font-family: inherit;
+    }
+    .academy-hero {
+        text-align: center;
+        padding: 80px 24px 60px;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .academy-hero h1 {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        color: #fff;
+        margin: 0 0 16px;
+    }
+    .academy-hero p {
+        font-size: 1.1rem;
+        color: rgba(255,255,255,0.5);
+        margin: 0;
+    }
+    .academy-section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 60px 24px;
+    }
+    .academy-section-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 32px;
+        padding-bottom: 16px;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+        letter-spacing: -0.01em;
+    }
+    /* Glass card */
+    .glass-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 24px;
+    }
+    /* Info items */
+    .info-list {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+    .info-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 24px 28px;
+    }
+    .info-card h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 8px;
+    }
+    .info-card p {
+        font-size: 0.92rem;
+        color: rgba(255,255,255,0.5);
+        margin: 0;
+        line-height: 1.6;
+    }
+    /* Photo grid */
+    .photo-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 16px;
+    }
+    .photo-grid img {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        display: block;
+    }
+    /* Student cards */
+    .student-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    .student-card {
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 24px 20px;
+        text-align: center;
+    }
+    .student-card img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255,255,255,0.12);
+        margin: 0 auto 14px;
+        display: block;
+    }
+    .student-card .student-avatar-placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.08);
+        border: 2px solid rgba(255,255,255,0.12);
+        margin: 0 auto 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        color: rgba(255,255,255,0.3);
+    }
+    .student-card h3 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 8px;
+    }
+    .student-card p {
+        font-size: 0.82rem;
+        color: rgba(255,255,255,0.45);
+        margin: 0;
+        line-height: 1.5;
+    }
+    /* Video grid */
+    .video-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 20px;
+    }
+    .video-wrapper {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(0,0,0,0.4);
+    }
+    .video-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        border-radius: 14px;
+    }
+    /* Section divider */
+    .section-divider {
+        border: none;
+        border-top: 1px solid rgba(255,255,255,0.07);
+        margin: 0;
+    }
+</style>
+
+<div class="academy-page">
+
+    <!-- HERO -->
+    <div class="academy-hero">
+        <h1>TechnoTurkey Akademi</h1>
+        <p>Müzik dünyasına adım atmak isteyenler için.</p>
+    </div>
+
+    @if (infoItems.Any())
+    {
+        <div class="academy-section">
+            <div class="academy-section-title">Hakkımızda</div>
+            <div class="info-list">
+                @foreach (var item in infoItems)
+                {
+                    <div class="info-card">
+                        <h3>@item.Title</h3>
+                        @if (!string.IsNullOrEmpty(item.Description))
+                        {
+                            <p>@item.Description</p>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        <hr class="section-divider" />
+    }
+
+    @if (photoItems.Any())
+    {
+        <div class="academy-section">
+            <div class="academy-section-title">Fotoğraflar</div>
+            <div class="photo-grid">
+                @foreach (var item in photoItems)
+                {
+                    @if (!string.IsNullOrEmpty(item.MediaUrl))
+                    {
+                        <img src="@item.MediaUrl" alt="@item.Title" title="@item.Title" loading="lazy" />
+                    }
+                }
+            </div>
+        </div>
+        <hr class="section-divider" />
+    }
+
+    @if (studentItems.Any())
+    {
+        <div class="academy-section">
+            <div class="academy-section-title">Öğrencilerimiz</div>
+            <div class="student-grid">
+                @foreach (var item in studentItems)
+                {
+                    <div class="student-card">
+                        @if (!string.IsNullOrEmpty(item.MediaUrl))
+                        {
+                            <img src="@item.MediaUrl" alt="@item.Title" />
+                        }
+                        else
+                        {
+                            <div class="student-avatar-placeholder">&#128100;</div>
+                        }
+                        <h3>@item.Title</h3>
+                        @if (!string.IsNullOrEmpty(item.Description))
+                        {
+                            <p>@item.Description</p>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+        <hr class="section-divider" />
+    }
+
+    @if (videoItems.Any())
+    {
+        <div class="academy-section">
+            <div class="academy-section-title">Videolar</div>
+            <div class="video-grid">
+                @foreach (var item in videoItems)
+                {
+                    @if (!string.IsNullOrEmpty(item.MediaUrl))
+                    {
+                        <div>
+                            @if (!string.IsNullOrEmpty(item.Title))
+                            {
+                                <div style="font-size:0.9rem;font-weight:600;color:rgba(255,255,255,0.7);margin-bottom:10px">@item.Title</div>
+                            }
+                            <div class="video-wrapper">
+                                <iframe src="@item.MediaUrl" allowfullscreen loading="lazy"></iframe>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <hr class="section-divider" />
+    }
+
+    <!-- CTA -->
+    <div style="text-align:center;padding:60px 24px;border-top:1px solid rgba(255,255,255,0.07)">
+        <p style="font-size:0.95rem;color:rgba(255,255,255,0.4);margin:0 0 20px">Akademi hakkında daha fazla bilgi almak ister misiniz?</p>
+        <button onclick="document.getElementById('contactModal').style.display='flex'"
+                style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#000;
+                       font-weight:700;font-size:14px;padding:14px 28px;border-radius:100px;
+                       border:none;cursor:pointer;font-family:inherit;transition:opacity .2s"
+                onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+            <i class="bi bi-chat-dots-fill"></i> Detaylı Bilgi Al
+        </button>
+    </div>
+
+</div>
+
+<!-- Contact Modal -->
+<div id="contactModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center"
+     onclick="if(event.target===this)this.style.display='none'">
+    <div style="background:#111;border:1px solid rgba(255,255,255,0.12);border-radius:20px;padding:36px;width:min(360px,92vw);text-align:center">
+        <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:8px">Bize Ulaşın</div>
+        <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-bottom:28px">Akademi hakkında bilgi almak için tercih ettiğiniz platformu seçin.</div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+            <a href="https://wa.me/905000000000" target="_blank"
+               style="display:flex;align-items:center;justify-content:center;gap:10px;background:#25D366;color:#fff;font-weight:700;font-size:14px;padding:14px;border-radius:12px;text-decoration:none">
+                <i class="bi bi-whatsapp" style="font-size:18px"></i> WhatsApp ile Yaz
+            </a>
+            <a href="https://instagram.com/technoturkey" target="_blank"
+               style="display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);color:#fff;font-weight:700;font-size:14px;padding:14px;border-radius:12px;text-decoration:none">
+                <i class="bi bi-instagram" style="font-size:18px"></i> Instagram'dan Yaz
+            </a>
+        </div>
+        <button onclick="document.getElementById('contactModal').style.display='none'"
+                style="margin-top:20px;background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:13px;font-family:inherit">
+            Kapat
+        </button>
+    </div>
+</div>

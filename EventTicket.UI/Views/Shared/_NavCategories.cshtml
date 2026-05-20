@@ -1,0 +1,112 @@
+@{
+    var mainCats = new[]
+    {
+        ("all",        "TÜMÜ",           "/"),
+        ("events",     "ETKİNLİKLER",    "/Events"),
+        ("festivals",  "FESTİVALLER",   "#"),
+        ("magazine",   "MAGAZİN",       "/Magazine"),
+        ("academy",    "AKADEMİ",       "/Academy")
+    };
+
+    var eventGenres = new[] {
+        "TECHNO","HOUSE","ROCK & METAL","MELODİK","MİNİMAL","HARD TECHNO",
+        "ALTERNATİF","ELEKTRONİK","TÜRKÇE","POP","AFRO","TECH HOUSE",
+        "DİSKO & FUNK","PSİKEDELİK","HİP-HOP & R&B","JAZZ","EDM",
+        "BOUNCE","AKUSTİK","DOWNTEMPO"
+    };
+
+    var festivalGenres = new[] {
+        "AÇIK HAVA","KAPALÜ ALAN","BEACH PARTY","OUTDOOR FESTIVAL",
+        "CLUB GECESİ","AFTER PARTİ","ELECTRONIC FESTIVAL","HİP-HOP FEST",
+        "ROCK FESTİVAL","JAZZ FESTİVAL","SUMMER SERIES","MULTI-STAGE",
+        "UNDERGROUND","VIP","BOĞAZİÇİ","BODRUM","ÇEŞME","İBİZA TARZINDA"
+    };
+
+    var venueGenres = new[] {
+        "CANLI MÜZİK","TERAS","RESTORAN","BAR","PUB","AFTER PARTİ",
+        "OTEL","KAPALI ALAN","AÇIK ALAN","PLAJ","ETKİNLİK ALANI",
+        "UNDERGROUND","HOUSE","TECH HOUSE","DEEP HOUSE"
+    };
+
+    var artistGenres = new[] {
+        "TECHNO","HOUSE","ROCK & METAL","MELODİK","MİNİMAL","HARD TECHNO",
+        "ALTERNATİF","ELEKTRONİK","TÜRKÇE","POP","AFRO","TECH HOUSE",
+        "DİSKO & FUNK","PSİKEDELİK","HİP-HOP & R&B","JAZZ","EDM",
+        "BOUNCE","AKUSTİK","DOWNTEMPO","MELODİK TECHNO","MELODİK HOUSE","ASİT TECHNO"
+    };
+
+    var cities = new[] {
+        "Tümü","Adana","Adıyaman","Afyonkarahisar","Ağrı","Amasya",
+        "Ankara","Antalya","Artvin","Aydın","Balıkesir","Bilecik",
+        "Bingöl","Bitlis","Bolu","Burdur","Bursa","Çanakkale","Çankırı",
+        "Çorum","Denizli","Diyarbakır","Edirne","Elazığ","Erzincan",
+        "Erzurum","Eskişehir","Gaziantep","Giresun","Gümüşhane","Hakkari",
+        "Hatay","Isparta","Mersin","İstanbul","İzmir","Kars","Kastamonu",
+        "Kayseri","Kırklareli","Kırşehir","Kocaeli","Konya","Kütahya",
+        "Malatya","Manisa","Kahramanmaraş","Mardin","Muğla","Muş",
+        "Nevşehir","Niğde","Ordu","Rize","Sakarya","Samsun","Siirt",
+        "Sinop","Sivas","Tekirdağ","Tokat","Trabzon","Tunceli","Şanlıurfa",
+        "Uşak","Van","Yozgat","Zonguldak","Aksaray","Bayburt","Karaman",
+        "Kırıkkale","Batman","Şırnak","Bartın","Ardahan","Iğdır","Yalova",
+        "Karabük","Kilis","Osmaniye","Düzce"
+    };
+}
+
+<div class="et-navbar-cats">
+    <div class="et-navbar-cats-inner">
+
+        <div class="et-cat-row">
+            <div class="et-city-wrap">
+                <button class="et-city-btn" onclick="toggleCityMenu()">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                        <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    <span id="selectedCity">TÜMÜ</span>
+                </button>
+                <div class="et-city-dropdown" id="cityDropdown">
+                    <div class="et-city-search">
+                        <input type="text" placeholder="Şehir ara..." id="citySearch"
+                               oninput="filterCities(this.value)" />
+                    </div>
+                    <div class="et-city-list" id="cityList">
+                        @foreach (var city in cities)
+                        {
+                            <button class="et-city-item @(city == "Tümü" ? "active" : "")"
+                                    onclick="selectCity('@city', this)">
+                                @city
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            @foreach (var (key, label, href) in mainCats)
+            {
+                if (href != "#")
+                {
+                    <a href="@href" class="et-cat" data-cat="@key">@label</a>
+                }
+                else
+                {
+                    <a href="#" class="et-cat" data-cat="@key" onclick="switchCat(event,'@key')">@label</a>
+                }
+            }
+        </div>
+
+        <div class="et-cat-row et-sub-row" id="sub-events" style="display:none;margin-top:8px">
+            @foreach (var g in eventGenres)
+            {
+                <a href="/Events?search=@Uri.EscapeDataString(g)" class="et-cat-genre">@g</a>
+            }
+        </div>
+
+<div class="et-cat-row et-sub-row" id="sub-festivals" style="display:none;margin-top:8px">
+            @foreach (var g in festivalGenres)
+            {
+                <a href="/Events?search=@Uri.EscapeDataString(g)" class="et-cat-genre">@g</a>
+            }
+        </div>
+
+    </div>
+</div>

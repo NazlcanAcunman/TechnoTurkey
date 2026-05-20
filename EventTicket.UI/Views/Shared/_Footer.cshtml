@@ -1,0 +1,105 @@
+<footer class="et-footer">
+    <div class="et-footer-inner">
+
+        <div class="et-footer-top">
+
+            <!-- Sol: Logo + açıklama + sosyal -->
+            <div class="et-footer-brand">
+                <div class="et-footer-logo">TECHNO<span>TURKEY</span></div>
+                <p>Şehrinizdeki en iyi etkinlikleri keşfet,<br>biletini anında al.</p>
+                <div class="et-footer-social">
+                    <a href="#" class="et-social-btn" title="Instagram" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="et-social-btn" title="Facebook"  aria-label="Facebook" ><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="et-social-btn" title="X"         aria-label="X"        ><i class="bi bi-twitter-x"></i></a>
+                    <a href="#" class="et-social-btn" title="TikTok"    aria-label="TikTok"   ><i class="bi bi-tiktok"></i></a>
+                    <a href="#" class="et-social-btn" title="LinkedIn"  aria-label="LinkedIn" ><i class="bi bi-linkedin"></i></a>
+                </div>
+                <!-- Uygulama rozetleri -->
+                <div class="et-app-badges">
+                    <a href="#" class="et-app-badge">
+                        <i class="bi bi-apple" style="font-size:18px"></i>
+                        <div>
+                            <div style="font-size:9px;letter-spacing:0.04em;color:rgba(255,255,255,0.5)">App Store'dan İndir</div>
+                            <div style="font-size:12px;font-weight:700">iPhone</div>
+                        </div>
+                    </a>
+                    <a href="#" class="et-app-badge">
+                        <i class="bi bi-google-play" style="font-size:18px"></i>
+                        <div>
+                            <div style="font-size:9px;letter-spacing:0.04em;color:rgba(255,255,255,0.5)">Google Play'den İndir</div>
+                            <div style="font-size:12px;font-weight:700">Android</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Sağ: Linkler -->
+            <div class="et-footer-links">
+                <div class="et-footer-col">
+                    <h4>Şirket</h4>
+                    <a href="#">Çerez Politikası</a>
+                    <a href="#">KVKK</a>
+                    <a href="#">Aydınlatma Metni</a>
+                    <a href="#">Kullanım Şartları</a>
+                    <a href="#">Mesafeli Satış</a>
+                    <a href="#">Ön Bilgilendirme</a>
+                    <a href="#">Gizlilik Politikası</a>
+                </div>
+                <div class="et-footer-col">
+                    <h4>Topluluklar</h4>
+                    <a asp-controller="Events" asp-action="Index">Etkinlikler</a>
+                    <a asp-controller="Events" asp-action="Index" asp-route-type="festival">Festivaller</a>
+                    <a asp-controller="Magazine" asp-action="Index">Magazin</a>
+                </div>
+                <div class="et-footer-col">
+                    <h4>Popüler Şehirler</h4>
+                    <a asp-controller="Events" asp-action="Index" asp-route-city="İstanbul">İstanbul</a>
+                    <a asp-controller="Events" asp-action="Index" asp-route-city="İzmir">İzmir</a>
+                    <a asp-controller="Events" asp-action="Index" asp-route-city="Ankara">Ankara</a>
+                    <a asp-controller="Events" asp-action="Index" asp-route-city="Bodrum">Bodrum</a>
+                    <a asp-controller="Events" asp-action="Index" asp-route-city="Çeşme">Çeşme</a>
+                    <a asp-controller="Events" asp-action="Index" style="color:#fff">Tümünü Gör →</a>
+                </div>
+                <div class="et-footer-col">
+                    <h4>Destek</h4>
+                    <a href="#">Yardım Merkezi</a>
+                    <a href="#">Bize Ulaşın</a>
+                    @if (User.Identity == null || !User.Identity.IsAuthenticated)
+                    {
+                        <a asp-controller="Auth" asp-action="Register">Kayıt Ol</a>
+                        <a asp-controller="Auth" asp-action="Login">Giriş Yap</a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Profile" asp-action="Index">Profilim</a>
+                        <a asp-controller="Auth" asp-action="Logout">Çıkış Yap</a>
+                    }
+                </div>
+            </div>
+
+        </div>
+
+        <!-- TechnoTurkey PRO -->
+        <div class="et-footer-pro">
+            <div class="et-footer-pro-inner">
+                <div>
+                    <div class="et-footer-pro-title">Etkinliklerinizi Daha Akıllıca Yönetin</div>
+                    <div class="et-footer-pro-sub">TechnoTurkey PRO ile organizatör hesabı açın, etkinliklerinizi kolayca yönetin.</div>
+                </div>
+                <a href="/Organizers" class="et-footer-pro-btn">
+                    TechnoTurkey <span style="color:rgba(255,255,255,0.5)">PRO</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="et-footer-bottom">
+            <span>© 2026 TechnoTurkey. Tüm hakları saklıdır.</span>
+            <div class="et-footer-bottom-links">
+                <a href="#">Gizlilik</a>
+                <a href="#">Çerezler</a>
+                <a href="#">Şartlar</a>
+            </div>
+        </div>
+
+    </div>
+</footer>

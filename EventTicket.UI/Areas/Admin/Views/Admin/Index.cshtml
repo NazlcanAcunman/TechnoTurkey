@@ -1,0 +1,89 @@
+﻿@model EventTicket.UI.ViewModels.Admin.StatsViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="admin-stats">
+    <div class="admin-stat-card purple">
+        <div class="admin-stat-label">Toplam Etkinlik</div>
+        <div class="admin-stat-value">@Model.TotalEvents</div>
+        <div class="admin-stat-sub">Veritabanindaki tum etkinlikler</div>
+    </div>
+    <div class="admin-stat-card green">
+        <div class="admin-stat-label">Toplam Mekan</div>
+        <div class="admin-stat-value">@Model.TotalVenues</div>
+        <div class="admin-stat-sub">Kayitli mekanlar</div>
+    </div>
+    <div class="admin-stat-card amber">
+        <div class="admin-stat-label">Toplam Sanatci</div>
+        <div class="admin-stat-value">@Model.TotalArtists</div>
+        <div class="admin-stat-sub">Kayitli sanatcilar</div>
+    </div>
+    <div class="admin-stat-card blue">
+        <div class="admin-stat-label">Satilan Bilet</div>
+        <div class="admin-stat-value">@Model.TotalTickets</div>
+        <div class="admin-stat-sub">Toplam bilet satisi</div>
+    </div>
+    <div class="admin-stat-card red">
+        <div class="admin-stat-label">Toplam Kullanici</div>
+        <div class="admin-stat-value">@Model.TotalUsers</div>
+        <div class="admin-stat-sub">Kayitli uyeler</div>
+    </div>
+</div>
+
+<div class="admin-table-wrap">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Hizli Erisim</span>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Bolum</th>
+                <th>Aciklama</th>
+                <th>Islem</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Onay Kuyrugu</td>
+                <td>Onay bekleyen etkinlik, mekan ve sanatcilar</td>
+                <td>
+                    <a asp-area="Admin" asp-controller="Pending" asp-action="Index"
+                       class="btn-admin btn-success btn-sm">Goruntule</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Etkinlikler</td>
+                <td>Tum etkinlikleri listele ve yonet</td>
+                <td>
+                    <a asp-area="Admin" asp-controller="Events" asp-action="Index"
+                       class="btn-admin btn-primary btn-sm">Goruntule</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Mekanlar</td>
+                <td>Tum mekanlari listele ve yonet</td>
+                <td>
+                    <a asp-area="Admin" asp-controller="Venues" asp-action="Index"
+                       class="btn-admin btn-primary btn-sm">Goruntule</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Sanatcilar</td>
+                <td>Tum sanatcilari listele ve yonet</td>
+                <td>
+                    <a asp-area="Admin" asp-controller="Artists" asp-action="Index"
+                       class="btn-admin btn-primary btn-sm">Goruntule</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Mesajlar</td>
+                <td>Iletisim formundan gelen mesajlar</td>
+                <td>
+                    <a asp-area="Admin" asp-controller="Messages" asp-action="Index"
+                       class="btn-admin btn-primary btn-sm">Goruntule</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
