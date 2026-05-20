@@ -26,7 +26,7 @@ public class CommentConfiguration : IEntityTypeConfiguration<Comment>
 
         builder.ToTable(t => t.HasCheckConstraint(
             "CK_Comment_Rating",
-            "[Rating] >= 1 AND [Rating] <= 5"));
+            "\"Rating\" >= 1 AND \"Rating\" <= 5"));
 
         builder.HasOne(c => c.Event)
             .WithMany()

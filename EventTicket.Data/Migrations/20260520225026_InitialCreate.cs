@@ -413,7 +413,7 @@ namespace EventTicket.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
-                    table.CheckConstraint("CK_Comment_Rating", "[Rating] >= 1 AND [Rating] <= 5");
+                    table.CheckConstraint("CK_Comment_Rating", "\"Rating\" >= 1 AND \"Rating\" <= 5");
                     table.ForeignKey(
                         name: "FK_Comments_Events_EventId",
                         column: x => x.EventId,

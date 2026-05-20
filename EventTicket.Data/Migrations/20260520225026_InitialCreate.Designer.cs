@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EventTicket.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260520205546_InitialCreate")]
+    [Migration("20260520225026_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -343,7 +343,7 @@ namespace EventTicket.Data.Migrations
 
                     b.ToTable("Comments", t =>
                         {
-                            t.HasCheckConstraint("CK_Comment_Rating", "[Rating] >= 1 AND [Rating] <= 5");
+                            t.HasCheckConstraint("CK_Comment_Rating", "\"Rating\" >= 1 AND \"Rating\" <= 5");
                         });
                 });
 
