@@ -26,11 +26,11 @@ public class FavoriteConfiguration : IEntityTypeConfiguration<Favorite>
 
         builder.HasIndex(f => new { f.UserId, f.VenueId })
             .IsUnique()
-            .HasFilter("[VenueId] IS NOT NULL");
+            .HasFilter("\"VenueId\" IS NOT NULL");
 
         builder.HasIndex(f => new { f.UserId, f.ArtistId })
             .IsUnique()
-            .HasFilter("[ArtistId] IS NOT NULL");
+            .HasFilter("\"ArtistId\" IS NOT NULL");
 
         builder.HasQueryFilter(f => !f.IsDeleted);
     }

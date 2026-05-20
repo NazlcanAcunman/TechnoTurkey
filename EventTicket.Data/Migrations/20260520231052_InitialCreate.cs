@@ -535,14 +535,14 @@ namespace EventTicket.Data.Migrations
                 table: "Favorites",
                 columns: new[] { "UserId", "ArtistId" },
                 unique: true,
-                filter: "[ArtistId] IS NOT NULL");
+                filter: "\"ArtistId\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Favorites_UserId_VenueId",
                 table: "Favorites",
                 columns: new[] { "UserId", "VenueId" },
                 unique: true,
-                filter: "[VenueId] IS NOT NULL");
+                filter: "\"VenueId\" IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Favorites_VenueId",

@@ -516,11 +516,11 @@ namespace EventTicket.Data.Migrations
 
                     b.HasIndex("UserId", "ArtistId")
                         .IsUnique()
-                        .HasFilter("[ArtistId] IS NOT NULL");
+                        .HasFilter("\"ArtistId\" IS NOT NULL");
 
                     b.HasIndex("UserId", "VenueId")
                         .IsUnique()
-                        .HasFilter("[VenueId] IS NOT NULL");
+                        .HasFilter("\"VenueId\" IS NOT NULL");
 
                     b.ToTable("Favorites");
                 });
