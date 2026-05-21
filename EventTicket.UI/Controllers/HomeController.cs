@@ -37,6 +37,13 @@ public class HomeController : BaseController
     }
 
     public IActionResult Privacy() => View();
+    public IActionResult Kvkk() { ViewData["Title"] = "KVKK"; return View(); }
+    public IActionResult Gizlilik() { ViewData["Title"] = "Gizlilik Politikası"; return View(); }
+    public IActionResult Cerez() { ViewData["Title"] = "Çerez Politikası"; return View(); }
+    public IActionResult KullanimSartlari() { ViewData["Title"] = "Kullanım Şartları"; return View(); }
+    public IActionResult MesafeliSatis() { ViewData["Title"] = "Mesafeli Satış Sözleşmesi"; return View(); }
+    public IActionResult OnBilgilendirme() { ViewData["Title"] = "Ön Bilgilendirme Formu"; return View(); }
+    public IActionResult AydinlatmaMetni() { ViewData["Title"] = "Aydınlatma Metni"; return View(); }
 
     public IActionResult Contact()
     {

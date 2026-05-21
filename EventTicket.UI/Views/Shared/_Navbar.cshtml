@@ -21,6 +21,12 @@
                 <span class="et-search-kbd">⌘K</span>
             </div>
             <div class="et-nav-right">
+                <button class="et-mobile-search-btn" onclick="toggleMobileSearch()" aria-label="Ara">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="m21 21-4.35-4.35" />
+                    </svg>
+                </button>
 
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
@@ -72,4 +78,15 @@
         </div>
     </div>
     @await Html.PartialAsync("_NavCategories")
+    <div class="et-mobile-search-panel" id="mobileSearchPanel">
+        <div class="et-mobile-search-inner">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+            </svg>
+            <input type="text" id="mobileSearchInput" placeholder="Etkinlik, Mekan, Sanatçı Ara"
+                   onkeydown="if(event.key==='Enter') window.location='/Events?search='+this.value" />
+            <button onclick="toggleMobileSearch()" style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;font-size:20px;line-height:1">&times;</button>
+        </div>
+    </div>
 </nav>

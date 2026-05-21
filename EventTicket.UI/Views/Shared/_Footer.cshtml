@@ -8,28 +8,11 @@
                 <div class="et-footer-logo">TECHNO<span>TURKEY</span></div>
                 <p>Şehrinizdeki en iyi etkinlikleri keşfet,<br>biletini anında al.</p>
                 <div class="et-footer-social">
-                    <a href="#" class="et-social-btn" title="Instagram" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-                    <a href="#" class="et-social-btn" title="Facebook"  aria-label="Facebook" ><i class="bi bi-facebook"></i></a>
-                    <a href="#" class="et-social-btn" title="X"         aria-label="X"        ><i class="bi bi-twitter-x"></i></a>
-                    <a href="#" class="et-social-btn" title="TikTok"    aria-label="TikTok"   ><i class="bi bi-tiktok"></i></a>
-                    <a href="#" class="et-social-btn" title="LinkedIn"  aria-label="LinkedIn" ><i class="bi bi-linkedin"></i></a>
-                </div>
-                <!-- Uygulama rozetleri -->
-                <div class="et-app-badges">
-                    <a href="#" class="et-app-badge">
-                        <i class="bi bi-apple" style="font-size:18px"></i>
-                        <div>
-                            <div style="font-size:9px;letter-spacing:0.04em;color:rgba(255,255,255,0.5)">App Store'dan İndir</div>
-                            <div style="font-size:12px;font-weight:700">iPhone</div>
-                        </div>
-                    </a>
-                    <a href="#" class="et-app-badge">
-                        <i class="bi bi-google-play" style="font-size:18px"></i>
-                        <div>
-                            <div style="font-size:9px;letter-spacing:0.04em;color:rgba(255,255,255,0.5)">Google Play'den İndir</div>
-                            <div style="font-size:12px;font-weight:700">Android</div>
-                        </div>
-                    </a>
+                    <a href="https://www.instagram.com/technoturkeey" target="_blank" class="et-social-btn" title="Instagram" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                    <a href="https://www.instagram.com/technoturkeystudio" target="_blank" class="et-social-btn" title="Instagram Akademi" aria-label="Instagram Akademi"><i class="bi bi-camera"></i></a>
+                    <a href="https://wa.me/905312913925" target="_blank" class="et-social-btn" title="WhatsApp" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>
+                    <a href="https://www.tiktok.com/@technoturkeey" target="_blank" class="et-social-btn" title="TikTok" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>
+                    <a href="mailto:info@technoturkey.net" class="et-social-btn" title="E-posta" aria-label="E-posta"><i class="bi bi-envelope"></i></a>
                 </div>
             </div>
 
@@ -37,13 +20,13 @@
             <div class="et-footer-links">
                 <div class="et-footer-col">
                     <h4>Şirket</h4>
-                    <a href="#">Çerez Politikası</a>
-                    <a href="#">KVKK</a>
-                    <a href="#">Aydınlatma Metni</a>
-                    <a href="#">Kullanım Şartları</a>
-                    <a href="#">Mesafeli Satış</a>
-                    <a href="#">Ön Bilgilendirme</a>
-                    <a href="#">Gizlilik Politikası</a>
+                    <a asp-controller="Home" asp-action="Cerez">Çerez Politikası</a>
+                    <a asp-controller="Home" asp-action="Kvkk">KVKK</a>
+                    <a asp-controller="Home" asp-action="AydinlatmaMetni">Aydınlatma Metni</a>
+                    <a asp-controller="Home" asp-action="KullanimSartlari">Kullanım Şartları</a>
+                    <a asp-controller="Home" asp-action="MesafeliSatis">Mesafeli Satış</a>
+                    <a asp-controller="Home" asp-action="OnBilgilendirme">Ön Bilgilendirme</a>
+                    <a asp-controller="Home" asp-action="Gizlilik">Gizlilik Politikası</a>
                 </div>
                 <div class="et-footer-col">
                     <h4>Topluluklar</h4>
@@ -62,8 +45,8 @@
                 </div>
                 <div class="et-footer-col">
                     <h4>Destek</h4>
-                    <a href="#">Yardım Merkezi</a>
-                    <a href="#">Bize Ulaşın</a>
+                    <a asp-controller="Home" asp-action="Contact">Yardım Merkezi</a>
+                    <a asp-controller="Home" asp-action="Contact">Bize Ulaşın</a>
                     @if (User.Identity == null || !User.Identity.IsAuthenticated)
                     {
                         <a asp-controller="Auth" asp-action="Register">Kayıt Ol</a>
@@ -95,9 +78,9 @@
         <div class="et-footer-bottom">
             <span>© 2026 TechnoTurkey. Tüm hakları saklıdır.</span>
             <div class="et-footer-bottom-links">
-                <a href="#">Gizlilik</a>
-                <a href="#">Çerezler</a>
-                <a href="#">Şartlar</a>
+                <a asp-controller="Home" asp-action="Gizlilik">Gizlilik</a>
+                <a asp-controller="Home" asp-action="Cerez">Çerezler</a>
+                <a asp-controller="Home" asp-action="KullanimSartlari">Şartlar</a>
             </div>
         </div>
 
