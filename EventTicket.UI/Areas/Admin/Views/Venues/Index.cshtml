@@ -6,6 +6,10 @@
 <div class="admin-table-wrap">
     <div class="admin-table-header">
         <span class="admin-table-title">Tüm Mekanlar (@Model.Count)</span>
+        @if (User.IsInRole("SuperAdmin"))
+        {
+            <a asp-action="Create" class="btn-admin btn-primary btn-sm">+ Yeni Mekan</a>
+        }
     </div>
     @if (Model.Any())
     {
@@ -39,6 +43,7 @@
                         <td>
                             @if (User.IsInRole("SuperAdmin"))
                             {
+                                <a asp-action="Edit" asp-route-id="@v.Id" class="btn-admin btn-sm" style="background:#444;margin-right:4px">Düzenle</a>
                                 <form asp-action="Delete" method="post" style="display:inline" class="delete-form">
                                     <input type="hidden" name="id" value="@v.Id" />
                                     <button type="button" class="btn-admin btn-danger btn-sm"

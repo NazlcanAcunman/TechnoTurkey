@@ -1,4 +1,5 @@
-﻿using EventTicket.UI.Services;
+﻿using EventTicket.Core.DTOs;
+using EventTicket.UI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,41 @@ public class ArtistsController : Controller
         ViewData["Title"] = "Sanatçılar";
         var artists = await _adminService.GetAllArtistsAsync();
         return View(artists);
+    }
+
+    [Authorize(Roles = "SuperAdmin")]
+    public IActionResult Create() => View(new CreateArtistDto());
+
+    [HttpPost]
+    [Authorize(Roles = "SuperAdmin")]
+    public async Task<IActionResult> Create(CreateArtistDto dto)
+    {
+        if (!ModelState.IsValid) return View(dto);
+        await _adminService.CreateArtistAsync(dto);
+        return RedirectToAction("Index");
+    }
+
+    [Authorize(Roles = "SuperAdmin")]
+    public async Task<IActionResult> Edit(int id)
+    {
+        var artist = await _adminService.GetArtistByIdAsync(id);
+        if (artist == null) return NotFound();
+        return View(new UpdateArtistDto
+        {
+            Name = artist.Name,
+            Bio = artist.Bio,
+            Genre = artist.Genre,
+            ImageUrl = artist.ImageUrl
+        });
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "SuperAdmin")]
+    public async Task<IActionResult> Edit(int id, UpdateArtistDto dto)
+    {
+        if (!ModelState.IsValid) return View(dto);
+        await _adminService.UpdateArtistAsync(id, dto);
+        return RedirectToAction("Index");
     }
 
     [HttpPost]

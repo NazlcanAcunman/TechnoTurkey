@@ -1,0 +1,55 @@
+@model EventTicket.Core.DTOs.UpdateArtistDto
+@{
+    ViewData["Title"] = "Sanatçıyı Düzenle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-table-wrap" style="max-width:680px">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Sanatçıyı Düzenle</span>
+        <a asp-action="Index" class="btn-admin btn-sm" style="background:#444">← Geri</a>
+    </div>
+
+    <div style="padding:28px">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;
+                padding:12px 16px;margin-bottom:20px;color:#f87171;font-size:13px">
+                <ul style="margin:0;padding-left:16px">
+                    @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@err.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <form asp-action="Edit" method="post">
+            @Html.AntiForgeryToken()
+
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Sanatçı Adı *</label>
+                <input asp-for="Name" class="admin-field-input" />
+                <span asp-validation-for="Name" style="color:#f87171;font-size:12px"></span>
+            </div>
+
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Tür *</label>
+                <input asp-for="Genre" class="admin-field-input" />
+                <span asp-validation-for="Genre" style="color:#f87171;font-size:12px"></span>
+            </div>
+
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Biyografi</label>
+                <textarea asp-for="Bio" class="admin-field-input" rows="4"></textarea>
+            </div>
+
+            <div style="margin-bottom:24px">
+                <label class="admin-field-label">Görsel URL</label>
+                <input asp-for="ImageUrl" class="admin-field-input" />
+            </div>
+
+            <button type="submit" class="btn-admin btn-primary" style="width:100%">Güncelle</button>
+        </form>
+    </div>
+</div>

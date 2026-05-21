@@ -59,6 +59,24 @@ public class AdminUlService : IAdminUlService
     public async Task<EventCardViewModel?> GetEventByIdAsync(int id)
         => await _api.GetAsync<EventCardViewModel>($"api/events/{id}");
 
+    public async Task CreateArtistAsync(CreateArtistDto dto)
+        => await _api.PostAsync<object>("api/artists", dto);
+
+    public async Task UpdateArtistAsync(int id, UpdateArtistDto dto)
+        => await _api.PutAsync($"api/artists/{id}", dto);
+
+    public async Task<ArtistCardViewModel?> GetArtistByIdAsync(int id)
+        => await _api.GetAsync<ArtistCardViewModel>($"api/artists/{id}");
+
+    public async Task CreateVenueAsync(CreateVenueDto dto)
+        => await _api.PostAsync<object>("api/venues", dto);
+
+    public async Task UpdateVenueAsync(int id, UpdateVenueDto dto)
+        => await _api.PutAsync($"api/venues/{id}", dto);
+
+    public async Task<VenueCardViewModel?> GetVenueByIdAsync(int id)
+        => await _api.GetAsync<VenueCardViewModel>($"api/venues/{id}");
+
     public async Task<List<UserViewModel>> GetAllUsersAsync()
         => await _api.GetAsync<List<UserViewModel>>("api/admin/users") ?? new();
 

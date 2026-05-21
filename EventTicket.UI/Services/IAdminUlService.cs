@@ -26,6 +26,16 @@ public interface IAdminUlService
     Task CreateEventAsync(CreateEventDto dto);
     Task UpdateEventAsync(int id, UpdateEventDto dto);
     Task<EventCardViewModel?> GetEventByIdAsync(int id);
+
+    // Sanatçı Oluşturma / Düzenleme
+    Task CreateArtistAsync(CreateArtistDto dto);
+    Task UpdateArtistAsync(int id, UpdateArtistDto dto);
+    Task<ArtistCardViewModel?> GetArtistByIdAsync(int id);
+
+    // Mekan Oluşturma / Düzenleme
+    Task CreateVenueAsync(CreateVenueDto dto);
+    Task UpdateVenueAsync(int id, UpdateVenueDto dto);
+    Task<VenueCardViewModel?> GetVenueByIdAsync(int id);
     Task<List<UserViewModel>> GetAllUsersAsync();
     Task DeleteUserAsync(string id);
     Task AssignAdminAsync(string id);

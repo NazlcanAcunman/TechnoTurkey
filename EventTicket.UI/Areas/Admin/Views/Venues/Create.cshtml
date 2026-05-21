@@ -1,0 +1,58 @@
+@model EventTicket.Core.DTOs.CreateVenueDto
+@{
+    ViewData["Title"] = "Yeni Mekan Ekle";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="admin-table-wrap" style="max-width:680px">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Yeni Mekan Ekle</span>
+        <a asp-action="Index" class="btn-admin btn-sm" style="background:#444">← Geri</a>
+    </div>
+
+    <div style="padding:28px">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;
+                padding:12px 16px;margin-bottom:20px;color:#f87171;font-size:13px">
+                <ul style="margin:0;padding-left:16px">
+                    @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@err.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Mekan Adı *</label>
+                <input asp-for="Name" class="admin-field-input" placeholder="Mekan adı" />
+                <span asp-validation-for="Name" style="color:#f87171;font-size:12px"></span>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+                <div>
+                    <label class="admin-field-label">Şehir *</label>
+                    <input asp-for="City" class="admin-field-input" placeholder="İstanbul" />
+                    <span asp-validation-for="City" style="color:#f87171;font-size:12px"></span>
+                </div>
+                <div>
+                    <label class="admin-field-label">Adres *</label>
+                    <input asp-for="Address" class="admin-field-input" placeholder="Mahalle, Cadde..." />
+                    <span asp-validation-for="Address" style="color:#f87171;font-size:12px"></span>
+                </div>
+            </div>
+
+            <div style="margin-bottom:24px">
+                <label class="admin-field-label">Açıklama</label>
+                <textarea asp-for="Description" class="admin-field-input" rows="4"
+                          placeholder="Mekan hakkında bilgi..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-admin btn-primary" style="width:100%">Kaydet</button>
+        </form>
+    </div>
+</div>

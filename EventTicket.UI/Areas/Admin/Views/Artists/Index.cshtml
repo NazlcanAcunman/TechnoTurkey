@@ -26,6 +26,10 @@
 <div class="admin-table-wrap">
     <div class="admin-table-header">
         <span class="admin-table-title">Tüm Sanatçılar (@displayList.Count)</span>
+        @if (User.IsInRole("SuperAdmin"))
+        {
+            <a asp-action="Create" class="btn-admin btn-primary btn-sm">+ Yeni Sanatçı</a>
+        }
     </div>
     @if (displayList.Any())
     {
@@ -57,6 +61,7 @@
                         <td>
                             @if (User.IsInRole("SuperAdmin") && !isHardcoded)
                             {
+                                <a asp-action="Edit" asp-route-id="@a.Id" class="btn-admin btn-sm" style="background:#444;margin-right:4px">Düzenle</a>
                                 <form asp-action="Delete" method="post" style="display:inline" class="delete-form">
                                     <input type="hidden" name="id" value="@a.Id" />
                                     <button type="button" class="btn-admin btn-danger btn-sm"
