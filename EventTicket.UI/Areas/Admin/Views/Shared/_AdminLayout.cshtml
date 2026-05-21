@@ -231,5 +231,35 @@
         });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
+    <script>
+        const CLOUDINARY_CLOUD = 'dqwhpi0ue';
+        const CLOUDINARY_PRESET = 'technoturkey_uploads';
+
+        async function uploadToCloudinary(inputEl, targetId, previewId) {
+            const file = inputEl.files[0];
+            if (!file) return;
+            const btn = inputEl.closest('.upload-wrap')?.querySelector('.upload-btn');
+            if (btn) { btn.textContent = 'Yükleniyor...'; btn.disabled = true; }
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_PRESET);
+            try {
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: formData });
+                const data = await res.json();
+                if (data.secure_url) {
+                    document.getElementById(targetId).value = data.secure_url;
+                    if (previewId) {
+                        const prev = document.getElementById(previewId);
+                        if (prev) { prev.src = data.secure_url; prev.style.display = 'block'; }
+                    }
+                    if (btn) { btn.textContent = '✓ Yüklendi'; btn.style.background = '#22c55e'; btn.style.color = '#000'; }
+                } else {
+                    if (btn) { btn.textContent = 'Hata!'; btn.style.background = '#ef4444'; btn.disabled = false; }
+                }
+            } catch {
+                if (btn) { btn.textContent = 'Hata!'; btn.style.background = '#ef4444'; btn.disabled = false; }
+            }
+        }
+    </script>
 </body>
 </html>

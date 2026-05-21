@@ -46,8 +46,15 @@
             </div>
 
             <div style="margin-bottom:24px">
-                <label class="admin-field-label">Görsel URL</label>
-                <input asp-for="ImageUrl" class="admin-field-input" placeholder="https://..." />
+                <label class="admin-field-label">Görsel</label>
+                <div class="upload-wrap" style="display:flex;gap:8px;align-items:center">
+                    <input asp-for="ImageUrl" id="artistImageUrl" class="admin-field-input" placeholder="https://..." style="flex:1" />
+                    <label class="upload-btn btn-admin btn-sm" style="cursor:pointer;white-space:nowrap;flex-shrink:0">
+                        Fotoğraf Yükle
+                        <input type="file" accept="image/*" style="display:none" onchange="uploadToCloudinary(this,'artistImageUrl','artistImgPreview')" />
+                    </label>
+                </div>
+                <img id="artistImgPreview" src="" alt="" style="display:none;margin-top:10px;max-height:120px;border-radius:8px;object-fit:cover" />
             </div>
 
             <button type="submit" class="btn-admin btn-primary" style="width:100%">Kaydet</button>

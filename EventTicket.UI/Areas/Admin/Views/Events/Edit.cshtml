@@ -56,15 +56,20 @@
                 </div>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
-                <div>
-                    <label class="admin-field-label">Görsel URL</label>
-                    <input asp-for="ImageUrl" class="admin-field-input" placeholder="https://..." />
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Görsel</label>
+                <div class="upload-wrap" style="display:flex;gap:8px;align-items:center">
+                    <input asp-for="ImageUrl" id="eventImageUrl" class="admin-field-input" placeholder="https://..." style="flex:1" />
+                    <label class="upload-btn btn-admin btn-sm" style="cursor:pointer;white-space:nowrap;flex-shrink:0">
+                        Fotoğraf Yükle
+                        <input type="file" accept="image/*" style="display:none" onchange="uploadToCloudinary(this,'eventImageUrl','eventImgPreview')" />
+                    </label>
                 </div>
-                <div>
-                    <label class="admin-field-label">Bilet Satış URL</label>
-                    <input asp-for="TicketUrl" class="admin-field-input" placeholder="https://biletix.com/..." />
-                </div>
+                <img id="eventImgPreview" src="@Model.ImageUrl" alt="" style="@(string.IsNullOrEmpty(Model.ImageUrl) ? "display:none;" : "")margin-top:10px;max-height:120px;border-radius:8px;object-fit:cover" />
+            </div>
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Bilet Satış URL</label>
+                <input asp-for="TicketUrl" class="admin-field-input" placeholder="https://biletix.com/..." />
             </div>
 
             @* Promosyon Kodu *@

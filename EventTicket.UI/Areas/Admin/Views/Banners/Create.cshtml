@@ -53,11 +53,17 @@
                 </div>
             </div>
 
-            @* Görsel URL *@
+            @* Görsel *@
             <div style="margin-bottom:18px">
-                <label class="admin-field-label">Görsel URL *</label>
-                <input asp-for="ImageUrl" class="admin-field-input" placeholder="https://cdn.example.com/image.jpg"
-                       oninput="updatePreview(this.value)" />
+                <label class="admin-field-label">Görsel *</label>
+                <div class="upload-wrap" style="display:flex;gap:8px;align-items:center">
+                    <input asp-for="ImageUrl" id="bannerImageUrl" class="admin-field-input" placeholder="https://..."
+                           oninput="updatePreview(this.value)" style="flex:1" />
+                    <label class="upload-btn btn-admin btn-sm" style="cursor:pointer;white-space:nowrap;flex-shrink:0">
+                        Fotoğraf Yükle
+                        <input type="file" accept="image/*" style="display:none" onchange="uploadToCloudinary(this,'bannerImageUrl','img-preview-el');document.getElementById('img-preview').style.display='block'" />
+                    </label>
+                </div>
                 <span asp-validation-for="ImageUrl" style="color:#f87171;font-size:12px"></span>
                 <div id="img-preview" style="display:none;margin-top:10px;border-radius:10px;overflow:hidden;max-height:160px">
                     <img id="img-preview-el" src="" alt="Önizleme" style="width:100%;max-height:160px;object-fit:cover;border-radius:10px;display:block" />
