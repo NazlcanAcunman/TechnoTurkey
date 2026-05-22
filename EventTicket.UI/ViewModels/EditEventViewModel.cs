@@ -28,8 +28,7 @@ public class EditEventViewModel
     [Range(1, int.MaxValue, ErrorMessage = "Mekan seçiniz.")]
     public int VenueId { get; set; }
 
-    [Range(1, int.MaxValue, ErrorMessage = "Sanatçı seçiniz.")]
-    public int ArtistId { get; set; }
+    public int? ArtistId { get; set; }
 
     public string? PromoCode { get; set; }
     public int? DiscountPercent { get; set; }

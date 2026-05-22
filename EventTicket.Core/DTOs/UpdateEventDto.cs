@@ -38,6 +38,5 @@ public class UpdateEventDto
     [Range(1, int.MaxValue, ErrorMessage = "Geçerli bir mekan seçiniz.")]
     public int VenueId { get; set; }
 
-    [Range(1, int.MaxValue, ErrorMessage = "Geçerli bir sanatçı seçiniz.")]
-    public int ArtistId { get; set; }
+    public int? ArtistId { get; set; }
 }

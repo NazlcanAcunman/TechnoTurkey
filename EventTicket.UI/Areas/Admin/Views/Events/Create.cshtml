@@ -145,16 +145,32 @@
                     <span asp-validation-for="VenueId" style="color:#f87171;font-size:12px"></span>
                 </div>
                 <div>
-                    <label class="admin-field-label">Sanatçı *</label>
+                    <label class="admin-field-label">Sanatçı <span style="color:rgba(255,255,255,0.3)">(opsiyonel)</span></label>
                     <select asp-for="ArtistId" class="admin-field-input">
-                        <option value="0">-- Sanatçı Seçin --</option>
+                        <option value="">-- Sanatçı Seçin --</option>
                         @foreach (var a in Model.Artists)
                         {
                             <option value="@a.Id">@a.Name</option>
                         }
                     </select>
-                    <span asp-validation-for="ArtistId" style="color:#f87171;font-size:12px"></span>
                 </div>
+            </div>
+
+            @* Şehir *@
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Şehir</label>
+                <select asp-for="City" class="admin-field-input">
+                    <option value="">-- Şehir Seçin --</option>
+                    <option value="İstanbul">İstanbul</option>
+                    <option value="Ankara">Ankara</option>
+                    <option value="İzmir">İzmir</option>
+                    <option value="Bodrum">Bodrum</option>
+                    <option value="Çeşme">Çeşme</option>
+                    <option value="Antalya">Antalya</option>
+                    <option value="Bursa">Bursa</option>
+                    <option value="Alanya">Alanya</option>
+                    <option value="Diğer">Diğer</option>
+                </select>
             </div>
 
             <div style="display:flex;gap:10px;margin-top:8px">

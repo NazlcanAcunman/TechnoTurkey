@@ -17,10 +17,10 @@ public class Event : BaseEntity
     public string? PromoCodeColor { get; set; }
 
     public int VenueId { get; set; }
-    public int ArtistId { get; set; }
+    public int? ArtistId { get; set; }
 
     public Venue Venue { get; set; } = null!;
-    public Artist Artist { get; set; } = null!;
+    public Artist? Artist { get; set; }
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }
 

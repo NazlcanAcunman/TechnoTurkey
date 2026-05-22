@@ -145,21 +145,27 @@
                     </select>
                 </div>
                 <div>
-                    <label class="admin-field-label">Sanatçı *</label>
+                    <label class="admin-field-label">Sanatçı <span style="color:rgba(255,255,255,0.3)">(opsiyonel)</span></label>
                     <select asp-for="ArtistId" class="admin-field-input">
+                        <option value="">-- Sanatçı Seçin --</option>
                         @foreach (var a in Model.Artists)
                         {
-                            if (a.Id == Model.ArtistId)
-                            {
-                                <option value="@a.Id" selected>@a.Name</option>
-                            }
-                            else
-                            {
-                                <option value="@a.Id">@a.Name</option>
-                            }
+                            <option value="@a.Id" selected="@(a.Id == Model.ArtistId)">@a.Name</option>
                         }
                     </select>
                 </div>
+            </div>
+
+            @* Şehir *@
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Şehir</label>
+                <select asp-for="City" class="admin-field-input">
+                    <option value="">-- Şehir Seçin --</option>
+                    @foreach (var city in new[] { "İstanbul","Ankara","İzmir","Bodrum","Çeşme","Antalya","Bursa","Alanya","Diğer" })
+                    {
+                        <option value="@city" selected="@(Model.City == city)">@city</option>
+                    }
+                </select>
             </div>
 
             <div style="display:flex;gap:10px;margin-top:8px">

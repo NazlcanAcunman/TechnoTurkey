@@ -14,7 +14,7 @@ public class EventCardViewModel
     public string ImageUrl { get; set; } = string.Empty;
     public string? TicketUrl { get; set; }
     public int VenueId { get; set; }
-    public int ArtistId { get; set; }
+    public int? ArtistId { get; set; }
     public string VenueName { get; set; } = string.Empty;
     public string VenueCity { get; set; } = string.Empty;
     public string ArtistName { get; set; } = string.Empty;
