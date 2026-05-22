@@ -38,7 +38,7 @@ public class EventService : IEventService
     public async Task<IEnumerable<EventResponseDto>> GetAllForAdminAsync()
     {
         var events = await _eventRepo.FindIgnoreFiltersAsync(
-            e => true,
+            e => !e.IsDeleted,
             e => e.Venue, e => e.Artist);
         return events.Select(MapToDto);
     }
