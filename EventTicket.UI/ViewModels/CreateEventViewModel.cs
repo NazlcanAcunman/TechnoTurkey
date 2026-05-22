@@ -16,6 +16,9 @@ public class CreateEventViewModel
     [Range(1, 100000, ErrorMessage = "Kapasite en az 1 olmalıdır.")]
     public int Capacity { get; set; } = 100;
 
+    [Range(0, 999999.99, ErrorMessage = "Geçerli bir fiyat giriniz.")]
+    public decimal TicketPrice { get; set; }
+
     public string ImageUrl { get; set; } = string.Empty;
     public string? TicketUrl { get; set; }
     public string? City { get; set; }

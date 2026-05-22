@@ -17,6 +17,9 @@ public class UpdateEventDto
     [Range(1, 100000, ErrorMessage = "Kapasite 1 ile 100000 arasında olmalıdır.")]
     public int Capacity { get; set; }
 
+    [Range(0, 999999.99, ErrorMessage = "Geçerli bir fiyat giriniz.")]
+    public decimal TicketPrice { get; set; }
+
     [StringLength(500, ErrorMessage = "Görsel URL en fazla 500 karakter olabilir.")]
     public string ImageUrl { get; set; } = string.Empty;
 

@@ -18,6 +18,9 @@ public class EditEventViewModel
     [Range(1, 100000)]
     public int Capacity { get; set; }
 
+    [Range(0, 999999.99, ErrorMessage = "Geçerli bir fiyat giriniz.")]
+    public decimal TicketPrice { get; set; }
+
     public string ImageUrl { get; set; } = string.Empty;
     public string? TicketUrl { get; set; }
     public string? City { get; set; }

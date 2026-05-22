@@ -28,8 +28,9 @@ public class EventService : IEventService
 
     public async Task<IEnumerable<EventResponseDto>> GetAllApprovedAsync()
     {
+        var now = DateTime.UtcNow;
         var events = await _eventRepo.FindWithIncludesAsync(
-            e => e.IsApproved && !e.IsDeleted,
+            e => e.IsApproved && !e.IsDeleted && e.Date >= now,
             e => e.Venue, e => e.Artist);
         return events.Select(MapToDto);
     }
@@ -78,7 +79,8 @@ public class EventService : IEventService
             TicketUrl       = dto.TicketUrl,
             VenueId         = dto.VenueId,
             ArtistId        = dto.ArtistId,
-            IsApproved      = isSuperAdmin,
+            TicketPrice     = dto.TicketPrice,
+            IsApproved      = true,
             PromoCode       = string.IsNullOrWhiteSpace(dto.PromoCode) ? null : dto.PromoCode.ToUpperInvariant(),
             DiscountPercent = dto.DiscountPercent,
             PromoCodeColor  = dto.PromoCodeColor
@@ -106,6 +108,7 @@ public class EventService : IEventService
         existing.Description     = dto.Description;
         existing.Date            = dto.Date;
         existing.Capacity        = dto.Capacity;
+        existing.TicketPrice     = dto.TicketPrice;
         existing.ImageUrl        = dto.ImageUrl;
         existing.TicketUrl       = dto.TicketUrl;
         existing.VenueId         = dto.VenueId;
@@ -113,7 +116,6 @@ public class EventService : IEventService
         existing.PromoCode       = string.IsNullOrWhiteSpace(dto.PromoCode) ? null : dto.PromoCode.ToUpperInvariant();
         existing.DiscountPercent = dto.DiscountPercent;
         existing.PromoCodeColor  = dto.PromoCodeColor;
-        if (!isSuperAdmin) existing.IsApproved = false; // Admin düzenlerse tekrar onay bekler
 
         await _eventRepo.UpdateAsync(existing);
         _logger.LogInformation("Etkinlik güncellendi: ID {Id}", id);

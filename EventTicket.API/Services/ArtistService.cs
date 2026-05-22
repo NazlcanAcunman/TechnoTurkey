@@ -41,7 +41,7 @@ public class ArtistService : IArtistService
             Bio = dto.Bio,
             Genre = dto.Genre,
             ImageUrl = dto.ImageUrl,
-            IsApproved = false
+            IsApproved = true
         };
         await _artistRepo.AddAsync(newArtist);
         _logger.LogInformation("Yeni sanatçı oluşturuldu: {Name}", newArtist.Name);
