@@ -24,6 +24,11 @@
         <div class="admin-stat-value">@Model.TotalUsers</div>
         <div class="admin-stat-sub">Kayıtlı üyeler</div>
     </div>
+    <div class="admin-stat-card" style="background:#111;border:1px solid #333">
+        <div class="admin-stat-label">Site Ziyareti</div>
+        <div class="admin-stat-value">@Model.TotalPageViews.ToString("N0")</div>
+        <div class="admin-stat-sub">Toplam sayfa görüntülenmesi</div>
+    </div>
 </div>
 
 <div class="admin-table-wrap">

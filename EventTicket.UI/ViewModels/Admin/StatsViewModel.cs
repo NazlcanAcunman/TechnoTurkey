@@ -7,4 +7,5 @@ public class StatsViewModel
     public int TotalArtists { get; set; }
     public int TotalTickets { get; set; }
     public int TotalUsers { get; set; }
+    public long TotalPageViews { get; set; }
 }

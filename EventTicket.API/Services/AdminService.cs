@@ -1,6 +1,7 @@
 ﻿using EventTicket.Core.DTOs;
 using EventTicket.Core.Entities;
 using EventTicket.Core.Interfaces;
+using EventTicket.Data.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,6 +15,7 @@ public class AdminService : IAdminService
     private readonly IRepository<Ticket> _ticketRepo;
     private readonly IRepository<ContactForm> _contactRepo;
     private readonly UserManager<AppUser> _userManager;
+    private readonly AppDbContext _db;
 
     public AdminService(
         IRepository<Event> eventRepo,
@@ -21,7 +23,8 @@ public class AdminService : IAdminService
         IRepository<Artist> artistRepo,
         IRepository<Ticket> ticketRepo,
         IRepository<ContactForm> contactRepo,
-        UserManager<AppUser> userManager)
+        UserManager<AppUser> userManager,
+        AppDbContext db)
     {
         _eventRepo = eventRepo;
         _venueRepo = venueRepo;
@@ -29,6 +32,7 @@ public class AdminService : IAdminService
         _ticketRepo = ticketRepo;
         _contactRepo = contactRepo;
         _userManager = userManager;
+        _db = db;
     }
 
     public async Task<AdminStatsDto> GetStatsAsync()
@@ -42,7 +46,8 @@ public class AdminService : IAdminService
             TotalUsers = await _userManager.Users.CountAsync(),
             PendingEvents = await _eventRepo.CountAsync(e => !e.IsApproved),
             PendingVenues = await _venueRepo.CountAsync(v => !v.IsApproved),
-            PendingArtists = await _artistRepo.CountAsync(a => !a.IsApproved)
+            PendingArtists = await _artistRepo.CountAsync(a => !a.IsApproved),
+            TotalPageViews = await _db.PageViews.LongCountAsync()
         };
     }
 

@@ -10,4 +10,5 @@ public class AdminStatsDto
     public int PendingEvents { get; set; }
     public int PendingVenues { get; set; }
     public int PendingArtists { get; set; }
+    public long TotalPageViews { get; set; }
 }

@@ -76,6 +76,38 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Site ziyaret sayacı — her sayfa yüklenişinde API'ye bildir (statik, admin ve api hariç)
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value ?? "";
+    var isTracked = context.Request.Method == "GET"
+        && !path.StartsWith("/Admin", StringComparison.OrdinalIgnoreCase)
+        && !path.StartsWith("/api", StringComparison.OrdinalIgnoreCase)
+        && !path.StartsWith("/css", StringComparison.OrdinalIgnoreCase)
+        && !path.StartsWith("/js", StringComparison.OrdinalIgnoreCase)
+        && !path.StartsWith("/lib", StringComparison.OrdinalIgnoreCase)
+        && !path.StartsWith("/images", StringComparison.OrdinalIgnoreCase)
+        && !path.Contains(".", StringComparison.Ordinal);
+
+    if (isTracked)
+    {
+        var http = context.RequestServices.GetRequiredService<IHttpClientFactory>();
+        var config = context.RequestServices.GetRequiredService<IConfiguration>();
+        var apiBase = config["ApiSettings:BaseUrl"]!;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                using var client = http.CreateClient();
+                await client.PostAsync($"{apiBase}api/pageviews", null);
+            }
+            catch { /* sayaç hatası sitenin çalışmasını engellemesin */ }
+        });
+    }
+
+    await next();
+});
+
 // Area route — üstte olmalı
 app.MapControllerRoute(
     name: "areas",
