@@ -47,7 +47,7 @@ public class VenueService : IVenueService
             Description = dto.Description,
             City = dto.City,
             Address = dto.Address,
-            IsApproved = false,
+            IsApproved = true,
             AdminUserId = adminUserId
         };
         await _venueRepo.AddAsync(newVenue);
