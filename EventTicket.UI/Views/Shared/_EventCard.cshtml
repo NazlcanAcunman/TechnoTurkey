@@ -51,15 +51,6 @@
             </div>
             <div class="et-card-footer">
                 <span class="et-card-location"><i class="bi bi-geo-alt"></i> @Model.VenueName</span>
-                @if (!string.IsNullOrEmpty(Model.PromoCode))
-                {
-                    var badgeColor = string.IsNullOrEmpty(Model.PromoCodeColor) ? "#ef4444" : Model.PromoCodeColor;
-                    var badgeText = (badgeColor == "#ffffff" || badgeColor == "#eab308") ? "#000" : "#fff";
-                    <span class="et-promo-badge" style="background:@badgeColor;color:@badgeText">
-                        <i class="bi bi-tag-fill"></i>
-                        @Model.PromoCode@(Model.DiscountPercent.HasValue ? " %" + Model.DiscountPercent : "")
-                    </span>
-                }
             </div>
         </div>
     </a>
