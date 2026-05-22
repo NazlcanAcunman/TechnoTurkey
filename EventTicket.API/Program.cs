@@ -6,6 +6,9 @@ using EventTicket.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
+// Npgsql: treat all DateTime values as UTC (fixes DateTimeKind.Unspecified → timestamp with time zone)
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Veri katmanı (DB + Repository + UnitOfWork)
