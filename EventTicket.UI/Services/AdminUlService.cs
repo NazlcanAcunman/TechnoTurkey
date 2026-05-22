@@ -13,6 +13,8 @@ public class AdminUlService : IAdminUlService
         _api = api;
     }
 
+    public string? LastError => _api.LastError;
+
     public async Task<StatsViewModel> GetStatsAsync()
         => await _api.GetAsync<StatsViewModel>("api/admin/stats") ?? new StatsViewModel();
 

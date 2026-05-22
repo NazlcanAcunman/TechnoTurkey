@@ -6,6 +6,7 @@ namespace EventTicket.UI.Services;
 
 public interface IAdminUlService
 {
+    string? LastError { get; }
     Task<StatsViewModel> GetStatsAsync();
     Task<PendingViewModel> GetPendingAsync();
     Task ApproveEventAsync(int id);

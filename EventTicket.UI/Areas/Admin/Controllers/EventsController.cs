@@ -28,6 +28,8 @@ public class EventsController : Controller
     {
         ViewData["Title"] = "Etkinlikler";
         var events = await _adminService.GetAllEventsAsync();
+        if (!events.Any())
+            TempData["ApiError"] = _adminService.LastError ?? "API boş liste döndü";
         return View(events);
     }
 

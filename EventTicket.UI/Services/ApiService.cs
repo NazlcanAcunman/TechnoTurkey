@@ -46,15 +46,19 @@ public class ApiService : IApiService
             var response = await _http.GetAsync(endpoint);
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning("GET {Endpoint} başarısız. StatusCode: {StatusCode}", endpoint, response.StatusCode);
+                var errorBody = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("GET {Endpoint} başarısız. StatusCode: {StatusCode}, Body: {Body}", endpoint, response.StatusCode, errorBody);
+                LastError = $"{(int)response.StatusCode} - {errorBody}";
                 return default;
             }
+            LastError = null;
             var json = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<T>(json, _jsonOptions);
         }
         catch (HttpRequestException ex)
         {
             _logger.LogError(ex, "GET {Endpoint} sırasında bağlantı hatası oluştu.", endpoint);
+            LastError = "Bağlantı hatası: " + ex.Message;
             return default;
         }
     }
