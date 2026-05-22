@@ -98,7 +98,10 @@ public static class ServiceRegistration
             options.AddPolicy("AllowUI", policy =>
                 policy.WithOrigins(
                     "https://localhost:7052",
-                    "http://localhost:5161"
+                    "http://localhost:5161",
+                    "https://technoturkey.onrender.com",
+                    "https://technoturkey.net",
+                    "https://www.technoturkey.net"
                 )
                 .AllowAnyHeader()
                 .AllowAnyMethod()

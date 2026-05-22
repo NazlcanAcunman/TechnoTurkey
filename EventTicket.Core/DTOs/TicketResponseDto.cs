@@ -3,6 +3,7 @@
 public class TicketResponseDto
 {
     public int Id { get; set; }
+    public string UserId { get; set; } = string.Empty;
     public int EventId { get; set; }
     public int OrderId { get; set; }
     public string EventTitle { get; set; } = string.Empty;

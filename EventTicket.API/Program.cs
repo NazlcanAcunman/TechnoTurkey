@@ -40,6 +40,7 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
+app.UseCors("AllowUI");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

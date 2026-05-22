@@ -107,6 +107,7 @@ public class TicketService : ITicketService
     private TicketResponseDto MapToDto(Ticket t) => new()
     {
         Id = t.Id,
+        UserId = t.UserId,
         EventId = t.EventId,
         OrderId = t.OrderId,
         EventTitle = t.Event?.Title ?? "",

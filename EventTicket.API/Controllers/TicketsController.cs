@@ -55,6 +55,13 @@ public class TicketsController : ControllerBase
     public async Task<IActionResult> GetById(int id)
     {
         var ticket = await _ticketService.GetByIdAsync(id);
-        return ticket == null ? NotFound() : Ok(ticket);
+        if (ticket == null) return NotFound();
+
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var isAdmin = User.IsInRole("Admin") || User.IsInRole("SuperAdmin");
+        if (!isAdmin && ticket.UserId != userId)
+            return Forbid();
+
+        return Ok(ticket);
     }
 }
