@@ -36,6 +36,16 @@ public abstract class RepositoryBase<T> : IRepository<T> where T : class
         return await query.Where(predicate).ToListAsync();
     }
 
+    public virtual async Task<IEnumerable<T>> FindIgnoreFiltersAsync(
+        Expression<Func<T, bool>> predicate,
+        params Expression<Func<T, object>>[] includes)
+    {
+        IQueryable<T> query = DbSet.IgnoreQueryFilters();
+        foreach (var include in includes)
+            query = query.Include(include);
+        return await query.Where(predicate).ToListAsync();
+    }
+
     public virtual async Task<T?> GetFirstOrDefaultAsync(
         Expression<Func<T, bool>> predicate,
         params Expression<Func<T, object>>[] includes)
