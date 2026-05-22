@@ -61,13 +61,13 @@
         <p class="et-fullbanner-sub">@bannerSlide.SubTitle</p>
         @if (!string.IsNullOrEmpty(bannerSlide.SearchQuery))
         {
-            <a href="/Events?search=@Uri.EscapeDataString(bannerSlide.SearchQuery)" class="et-fullbanner-btn" onclick="event.stopPropagation()">
+            <a href="/Events?search=@Uri.EscapeDataString(bannerSlide.SearchQuery)" class="et-fullbanner-btn" onclick="event.stopPropagation();event.preventDefault();window.location='/Events?search=@Uri.EscapeDataString(bannerSlide.SearchQuery)'">
                 <i class="bi bi-ticket-perforated"></i> BİLET AL
             </a>
         }
         else if (!string.IsNullOrEmpty(bannerSlide.TicketUrl))
         {
-            <a href="@bannerSlide.TicketUrl" class="et-fullbanner-btn" onclick="event.stopPropagation()">
+            <a href="@bannerSlide.TicketUrl" target="_blank" rel="noopener" class="et-fullbanner-btn" onclick="event.stopPropagation();event.preventDefault();window.open('@bannerSlide.TicketUrl','_blank')">
                 <i class="bi bi-ticket-perforated"></i> BİLET AL
             </a>
         }
