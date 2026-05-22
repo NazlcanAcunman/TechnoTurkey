@@ -520,6 +520,26 @@
 }
 .settings-input:focus { border-color: rgba(255,255,255,0.3); }
 .settings-input::placeholder { color: rgba(255,255,255,0.2); }
+.pw-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+.pw-wrap .settings-input { flex: 1; }
+.pw-toggle {
+    position: absolute;
+    right: 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: rgba(255,255,255,0.3);
+    transition: color 0.2s;
+}
+.pw-toggle:hover { color: rgba(255,255,255,0.7); }
+
 .settings-input:read-only {
     background: rgba(255,255,255,0.02);
     border-color: rgba(255,255,255,0.05);
@@ -823,61 +843,113 @@
 
     <!-- ── AYARLAR ── -->
     <div class="profile-pane" id="pane-settings">
+
         @if (TempData["SettingsError"] != null)
-        {
-            <div class="profile-alert profile-alert-error">@TempData["SettingsError"]</div>
-        }
+        { <div class="profile-alert profile-alert-error">@TempData["SettingsError"]</div> }
         @if (TempData["SettingsSuccess"] != null)
-        {
-            <div class="profile-alert profile-alert-success">@TempData["SettingsSuccess"]</div>
-        }
+        { <div class="profile-alert profile-alert-success">@TempData["SettingsSuccess"]</div> }
 
-        <form asp-action="UpdateSettings" method="post" class="settings-form">
+        @if (TempData["UsernameError"] != null)
+        { <div class="profile-alert profile-alert-error">@TempData["UsernameError"]</div> }
+        @if (TempData["UsernameSuccess"] != null)
+        { <div class="profile-alert profile-alert-success">@TempData["UsernameSuccess"]</div> }
 
-            <!-- Ad Soyad -->
-            <div>
+        @if (TempData["PasswordError"] != null)
+        { <div class="profile-alert profile-alert-error">@TempData["PasswordError"]</div> }
+        @if (TempData["PasswordSuccess"] != null)
+        { <div class="profile-alert profile-alert-success">@TempData["PasswordSuccess"]</div> }
+
+        <div style="display:flex;flex-direction:column;gap:32px;max-width:520px">
+
+            @* Kişisel Bilgiler *@
+            <form asp-action="UpdateSettings" method="post" class="settings-form" style="gap:16px">
+                @Html.AntiForgeryToken()
                 <div class="settings-section-title">Kişisel Bilgiler</div>
                 <div class="settings-name-row">
                     <div class="settings-field">
                         <label class="settings-label">Ad</label>
-                        <input type="text" name="firstName" value="@Model.FirstName"
-                               placeholder="Adınız" class="settings-input" maxlength="50" />
+                        <input type="text" name="firstName" value="@Model.FirstName" placeholder="Adınız" class="settings-input" maxlength="50" />
                     </div>
                     <div class="settings-field">
                         <label class="settings-label">Soyad</label>
-                        <input type="text" name="lastName" value="@Model.LastName"
-                               placeholder="Soyadınız" class="settings-input" maxlength="50" />
+                        <input type="text" name="lastName" value="@Model.LastName" placeholder="Soyadınız" class="settings-input" maxlength="50" />
                     </div>
                 </div>
-            </div>
+                <div class="settings-field">
+                    <label class="settings-label">Görünen Ad</label>
+                    <input type="text" name="nickname" id="nicknameInput" value="@Model.Nickname"
+                           placeholder="örn. elektrobeat42" class="settings-input"
+                           minlength="6" maxlength="12" oninput="validateNick(this)" />
+                    <span id="nickHelp" class="settings-hint">6-12 karakter, en az bir harf içermeli</span>
+                </div>
+                <div class="settings-field">
+                    <label class="settings-label">Telefon</label>
+                    <input type="tel" name="phone" value="@Model.Phone" placeholder="+90 5XX XXX XX XX" class="settings-input" />
+                </div>
+                <div class="settings-field">
+                    <label class="settings-label">E-posta</label>
+                    <input type="email" value="@Model.Email" readonly class="settings-input" />
+                    <span class="settings-hint">E-posta adresi değiştirilemez.</span>
+                </div>
+                <button type="submit" id="settingsSubmitBtn" class="settings-save-btn">KAYDET</button>
+            </form>
 
-            <!-- Kullanıcı Adı -->
-            <div class="settings-field">
-                <label class="settings-label">Kullanıcı Adı</label>
-                <input type="text" name="nickname" id="nicknameInput" value="@Model.Nickname"
-                       placeholder="örn. elektrobeat42" class="settings-input"
-                       minlength="6" maxlength="12" oninput="validateNick(this)" />
-                <span id="nickHelp" class="settings-hint">6-12 karakter, en az bir harf içermeli</span>
-            </div>
+            <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06)">
 
-            <!-- Telefon -->
-            <div class="settings-field">
-                <label class="settings-label">Telefon</label>
-                <input type="tel" name="phone" value="@Model.Phone"
-                       placeholder="+90 5XX XXX XX XX" class="settings-input" />
-            </div>
+            @* Kullanıcı Adı Değiştir *@
+            <form asp-action="UpdateUsername" method="post" class="settings-form" style="gap:16px">
+                @Html.AntiForgeryToken()
+                <div class="settings-section-title">Kullanıcı Adını Değiştir</div>
+                <div class="settings-field">
+                    <label class="settings-label">Yeni Kullanıcı Adı</label>
+                    <input type="text" name="newUsername" placeholder="Yeni kullanıcı adı"
+                           class="settings-input" minlength="3" maxlength="30"
+                           pattern="[a-zA-Z0-9_]+" title="Sadece harf, rakam ve _ kullanabilirsiniz" />
+                    <span class="settings-hint">3-30 karakter, sadece harf, rakam ve _ kullanılabilir</span>
+                </div>
+                <button type="submit" class="settings-save-btn">KULLANICI ADINI GÜNCELLE</button>
+            </form>
 
-            <!-- E-posta (salt okunur) -->
-            <div class="settings-field">
-                <label class="settings-label">E-posta</label>
-                <input type="email" value="@Model.Email" readonly class="settings-input" />
-                <span class="settings-hint">E-posta adresi değiştirilemez.</span>
-            </div>
+            <hr style="border:none;border-top:1px solid rgba(255,255,255,0.06)">
 
-            <button type="submit" id="settingsSubmitBtn" class="settings-save-btn">
-                KAYDET
-            </button>
-        </form>
+            @* Şifre Değiştir *@
+            <form asp-action="ChangePassword" method="post" class="settings-form" style="gap:16px">
+                @Html.AntiForgeryToken()
+                <div class="settings-section-title">Şifre Değiştir</div>
+                <div class="settings-field">
+                    <label class="settings-label">Mevcut Şifre</label>
+                    <div class="pw-wrap">
+                        <input type="password" name="currentPassword" id="cp0" placeholder="Mevcut şifreniz" class="settings-input" style="padding-right:44px" />
+                        <button type="button" class="pw-toggle" onclick="togglePw('cp0')" tabindex="-1">
+                            <svg id="cp0-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg id="cp0-eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="settings-field">
+                    <label class="settings-label">Yeni Şifre</label>
+                    <div class="pw-wrap">
+                        <input type="password" name="newPassword" id="cp1" placeholder="Yeni şifre (en az 6 karakter)" class="settings-input" style="padding-right:44px" />
+                        <button type="button" class="pw-toggle" onclick="togglePw('cp1')" tabindex="-1">
+                            <svg id="cp1-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg id="cp1-eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="settings-field">
+                    <label class="settings-label">Yeni Şifre Tekrar</label>
+                    <div class="pw-wrap">
+                        <input type="password" name="confirmPassword" id="cp2" placeholder="Yeni şifreyi tekrar girin" class="settings-input" style="padding-right:44px" />
+                        <button type="button" class="pw-toggle" onclick="togglePw('cp2')" tabindex="-1">
+                            <svg id="cp2-eye" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <svg id="cp2-eye-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="settings-save-btn">ŞİFREYİ DEĞİŞTİR</button>
+            </form>
+
+        </div>
     </div>
 
 </div>
@@ -917,6 +989,14 @@
             help.style.color = '#4ade80';
             btn.disabled = false; btn.style.opacity = '1';
         }
+    }
+
+    function togglePw(id) {
+        var input = document.getElementById(id);
+        var isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        document.getElementById(id + '-eye').style.display = isHidden ? 'none' : '';
+        document.getElementById(id + '-eye-off').style.display = isHidden ? '' : 'none';
     }
 
     // URL parametresine göre sekme aç (?tab=settings vb.)

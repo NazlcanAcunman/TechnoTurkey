@@ -12,13 +12,15 @@ public class ProfileController : BaseController
 {
     private readonly ITicketUlService _ticketService;
     private readonly IProfileUlService _profileService;
+    private readonly IAuthUlService _authService;
     private readonly IWebHostEnvironment _env;
 
-    public ProfileController(ITicketUlService ticketService, IProfileUlService profileService, IWebHostEnvironment env)
+    public ProfileController(ITicketUlService ticketService, IProfileUlService profileService, IAuthUlService authService, IWebHostEnvironment env)
         : base(profileService)
     {
         _ticketService = ticketService;
         _profileService = profileService;
+        _authService = authService;
         _env = env;
     }
 
@@ -164,6 +166,98 @@ public class ProfileController : BaseController
 
         TempData["SettingsSuccess"] = "Ayarlar kaydedildi.";
         return RedirectToAction("Index", new { tab = "settings" });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangePassword(string currentPassword, string newPassword, string confirmPassword)
+    {
+        if (string.IsNullOrWhiteSpace(currentPassword) || string.IsNullOrWhiteSpace(newPassword) || string.IsNullOrWhiteSpace(confirmPassword))
+        {
+            TempData["PasswordError"] = "Tüm alanları doldurunuz.";
+            return RedirectToAction("Index", new { tab = "settings" });
+        }
+
+        if (newPassword != confirmPassword)
+        {
+            TempData["PasswordError"] = "Yeni şifreler eşleşmiyor.";
+            return RedirectToAction("Index", new { tab = "settings" });
+        }
+
+        if (newPassword.Length < 6)
+        {
+            TempData["PasswordError"] = "Yeni şifre en az 6 karakter olmalıdır.";
+            return RedirectToAction("Index", new { tab = "settings" });
+        }
+
+        var success = await _authService.ChangePasswordAsync(currentPassword, newPassword);
+        if (!success)
+        {
+            var err = _authService.LastError;
+            TempData["PasswordError"] = ParseError(err) ?? "Mevcut şifre hatalı veya bir hata oluştu.";
+        }
+        else
+        {
+            TempData["PasswordSuccess"] = "Şifreniz başarıyla değiştirildi.";
+        }
+
+        return RedirectToAction("Index", new { tab = "settings" });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateUsername(string newUsername)
+    {
+        if (string.IsNullOrWhiteSpace(newUsername) || newUsername.Length < 3)
+        {
+            TempData["UsernameError"] = "Kullanıcı adı en az 3 karakter olmalıdır.";
+            return RedirectToAction("Index", new { tab = "settings" });
+        }
+
+        if (newUsername.Length > 30)
+        {
+            TempData["UsernameError"] = "Kullanıcı adı en fazla 30 karakter olabilir.";
+            return RedirectToAction("Index", new { tab = "settings" });
+        }
+
+        if (!System.Text.RegularExpressions.Regex.IsMatch(newUsername, @"^[a-zA-Z0-9_]+$"))
+        {
+            TempData["UsernameError"] = "Kullanıcı adı sadece harf, rakam ve _ içerebilir.";
+            return RedirectToAction("Index", new { tab = "settings" });
+        }
+
+        var success = await _authService.UpdateUsernameAsync(newUsername);
+        if (!success)
+        {
+            var err = _authService.LastError;
+            TempData["UsernameError"] = ParseError(err) ?? "Kullanıcı adı değiştirilemedi.";
+        }
+        else
+        {
+            TempData["UsernameSuccess"] = "Kullanıcı adınız başarıyla değiştirildi.";
+        }
+
+        return RedirectToAction("Index", new { tab = "settings" });
+    }
+
+    private static string? ParseError(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw)) return null;
+        try
+        {
+            var t = raw.Trim();
+            if (!t.StartsWith("{") && !t.StartsWith("[")) return t.Trim('"');
+            if (t.StartsWith("["))
+            {
+                var arr = System.Text.Json.JsonSerializer.Deserialize<string[]>(t);
+                return arr?.Length > 0 ? arr[0] : null;
+            }
+            using var doc = System.Text.Json.JsonDocument.Parse(t);
+            if (doc.RootElement.TryGetProperty("error", out var e)) return e.GetString();
+            if (doc.RootElement.TryGetProperty("message", out var m)) return m.GetString();
+        }
+        catch { }
+        return null;
     }
 
     [HttpPost]

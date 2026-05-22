@@ -9,5 +9,7 @@ public interface IAuthUlService
         string fullName, string username, string email, string password,
         string tcKimlikNo, DateTime dateOfBirth);
     Task<bool> DeleteAccountAsync();
+    Task<bool> ChangePasswordAsync(string currentPassword, string newPassword);
+    Task<bool> UpdateUsernameAsync(string newUsername);
     string? LastError { get; }
 }

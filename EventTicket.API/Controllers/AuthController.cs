@@ -125,6 +125,41 @@ public class AuthController : ControllerBase
     }
 
     [Authorize]
+    [HttpPost("change-password")]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId!);
+        if (user == null) return Unauthorized();
+
+        var result = await _userManager.ChangePasswordAsync(user, dto.CurrentPassword, dto.NewPassword);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors.Select(e => e.Description));
+
+        return Ok(new { message = "Şifre başarıyla değiştirildi." });
+    }
+
+    [Authorize]
+    [HttpPut("update-username")]
+    public async Task<IActionResult> UpdateUsername([FromBody] UpdateUsernameDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        var user = await _userManager.FindByIdAsync(userId!);
+        if (user == null) return Unauthorized();
+
+        var safeUsername = dto.Username.Trim().ToLower();
+        var existing = await _userManager.FindByNameAsync(safeUsername);
+        if (existing != null && existing.Id != userId)
+            return BadRequest("Bu kullanıcı adı zaten kullanılıyor.");
+
+        var result = await _userManager.SetUserNameAsync(user, safeUsername);
+        if (!result.Succeeded)
+            return BadRequest(result.Errors.Select(e => e.Description));
+
+        return Ok(new { message = "Kullanıcı adı başarıyla güncellendi.", username = safeUsername });
+    }
+
+    [Authorize]
     [HttpDelete("delete-account")]
     public async Task<IActionResult> DeleteAccount()
     {

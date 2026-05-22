@@ -37,6 +37,30 @@ public class AuthUlService : IAuthUlService
         });
     }
 
+    public async Task<bool> ChangePasswordAsync(string currentPassword, string newPassword)
+    {
+        try
+        {
+            await _api.PostAsync<object>("api/auth/change-password", new
+            {
+                currentPassword,
+                newPassword
+            });
+            return _api.LastError == null;
+        }
+        catch { return false; }
+    }
+
+    public async Task<bool> UpdateUsernameAsync(string newUsername)
+    {
+        try
+        {
+            await _api.PutAsync("api/auth/update-username", new { username = newUsername });
+            return _api.LastError == null;
+        }
+        catch { return false; }
+    }
+
     public async Task<bool> DeleteAccountAsync()
     {
         try
