@@ -30,7 +30,10 @@ public class BannerUlService : IBannerUlService
             model.TicketUrl,
             model.Type,
             model.SortOrder,
-            model.IsActive
+            model.IsActive,
+            model.TagText,
+            model.TextColor,
+            model.BgColor
         });
         if (result == null && _api.LastError != null)
             throw new Exception(_api.LastError);
@@ -48,7 +51,10 @@ public class BannerUlService : IBannerUlService
             model.TicketUrl,
             model.Type,
             model.SortOrder,
-            model.IsActive
+            model.IsActive,
+            model.TagText,
+            model.TextColor,
+            model.BgColor
         });
 
     public async Task DeleteAsync(int id)

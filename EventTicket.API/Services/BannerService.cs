@@ -41,7 +41,10 @@ public class BannerService : IBannerService
             TicketUrl = dto.TicketUrl,
             Type = dto.Type,
             SortOrder = dto.SortOrder,
-            IsActive = dto.IsActive
+            IsActive = dto.IsActive,
+            TagText = dto.TagText,
+            TextColor = dto.TextColor,
+            BgColor = dto.BgColor
         };
         await _repo.AddAsync(b);
         return Map(b);
@@ -60,6 +63,9 @@ public class BannerService : IBannerService
         b.Type = dto.Type;
         b.SortOrder = dto.SortOrder;
         b.IsActive = dto.IsActive;
+        b.TagText = dto.TagText;
+        b.TextColor = dto.TextColor;
+        b.BgColor = dto.BgColor;
         await _repo.UpdateAsync(b);
     }
 
@@ -77,6 +83,9 @@ public class BannerService : IBannerService
         TicketUrl = b.TicketUrl,
         Type = b.Type,
         SortOrder = b.SortOrder,
-        IsActive = b.IsActive
+        IsActive = b.IsActive,
+        TagText = b.TagText,
+        TextColor = b.TextColor,
+        BgColor = b.BgColor
     };
 }

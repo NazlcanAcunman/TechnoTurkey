@@ -1,6 +1,6 @@
 namespace EventTicket.Core.Entities;
 
-public enum BannerType { HeroSlide = 0, FeaturedBanner = 1 }
+public enum BannerType { HeroSlide = 0, FeaturedBanner = 1, TopBar = 2 }
 
 public class Banner : BaseEntity
 {
@@ -14,4 +14,8 @@ public class Banner : BaseEntity
     public BannerType Type { get; set; } = BannerType.HeroSlide;
     public int SortOrder { get; set; } = 0;
     public bool IsActive { get; set; } = true;
+    // TopBar alanları
+    public string? TagText { get; set; }       // "YENİ", "HOT" vb.
+    public string? TextColor { get; set; }     // "#ffffff"
+    public string? BgColor { get; set; }       // "#6c5ce7"
 }

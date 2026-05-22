@@ -22,4 +22,7 @@ public class BannerViewModel
     public BannerType Type { get; set; } = BannerType.HeroSlide;
     public int SortOrder { get; set; } = 0;
     public bool IsActive { get; set; } = true;
+    public string? TagText { get; set; }
+    public string? TextColor { get; set; }
+    public string? BgColor { get; set; }
 }

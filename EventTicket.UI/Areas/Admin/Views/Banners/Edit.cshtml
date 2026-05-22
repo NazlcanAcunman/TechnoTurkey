@@ -88,9 +88,10 @@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
                 <div>
                     <label class="admin-field-label">Tür *</label>
-                    <select asp-for="Type" class="admin-field-input">
+                    <select asp-for="Type" class="admin-field-input" id="bannerType" onchange="toggleTopBarFields()">
                         <option value="0">Hero Slider</option>
                         <option value="1">Öne Çıkan Banner</option>
+                        <option value="2">Üst Bar (Top Bar)</option>
                     </select>
                 </div>
                 <div>
@@ -98,6 +99,38 @@
                     <input asp-for="SortOrder" type="number" min="0" class="admin-field-input" placeholder="0" />
                     <span style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:5px;display:block">0 = en önce, büyük = sonra</span>
                 </div>
+            </div>
+
+            @* Top Bar alanları *@
+            <div id="topBarFields" style="display:none;margin-bottom:18px;padding:16px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px">
+                <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px">Üst Bar Ayarları</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+                    <div>
+                        <label class="admin-field-label">Etiket (YENİ, HOT...)</label>
+                        <input asp-for="TagText" class="admin-field-input" placeholder="YENİ" />
+                    </div>
+                    <div>
+                        <label class="admin-field-label">Yazı Rengi</label>
+                        <div style="display:flex;gap:6px;align-items:center">
+                            <input type="color" id="textColorPicker" value="@(Model.TextColor ?? "#ffffff")"
+                                   oninput="document.getElementById('TextColor').value=this.value"
+                                   style="width:40px;height:36px;border:none;border-radius:6px;cursor:pointer;background:none;padding:2px" />
+                            <input asp-for="TextColor" class="admin-field-input" placeholder="#ffffff" style="flex:1"
+                                   oninput="document.getElementById('textColorPicker').value=this.value||'#ffffff'" />
+                        </div>
+                    </div>
+                    <div>
+                        <label class="admin-field-label">Arka Plan Rengi</label>
+                        <div style="display:flex;gap:6px;align-items:center">
+                            <input type="color" id="bgColorPicker" value="@(Model.BgColor ?? "#6c5ce7")"
+                                   oninput="document.getElementById('BgColor').value=this.value"
+                                   style="width:40px;height:36px;border:none;border-radius:6px;cursor:pointer;background:none;padding:2px" />
+                            <input asp-for="BgColor" class="admin-field-input" placeholder="#6c5ce7" style="flex:1"
+                                   oninput="document.getElementById('bgColorPicker').value=this.value||'#6c5ce7'" />
+                        </div>
+                    </div>
+                </div>
+                <div style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:10px">Başlık alanı üst bar metni olarak kullanılır. Alt başlık, buton yazısı olarak görünür.</div>
             </div>
 
             @* Aktif *@
@@ -146,6 +179,12 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        function toggleTopBarFields() {
+            var type = document.getElementById('bannerType').value;
+            document.getElementById('topBarFields').style.display = type == '2' ? 'block' : 'none';
+        }
+        toggleTopBarFields();
+
         function updatePreview(url) {
             var img = document.getElementById('img-preview-el');
             if (url && url.startsWith('http')) {

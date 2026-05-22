@@ -15,20 +15,32 @@
 </head>
 <body>
 
-    <!-- Sabit üst tanıtım banner'ı -->
-    <div class="et-banner" id="topBanner">
-        <div class="et-banner-overlay">
-            <div class="et-banner-text">
-                <span class="et-banner-tag">YENİ</span>
-                ZAMNA x MO Homecoming &nbsp;·&nbsp; 6-7 Haziran 2026 &nbsp;·&nbsp; Life Park İstanbul
-            </div>
-            <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
-                <a href="/Events?search=ZAMNA" class="et-banner-cta">BİLET AL</a>
-                <button onclick="document.getElementById('topBanner').style.display='none';document.documentElement.style.setProperty('--banner-h','0px')"
-                        style="background:none;border:none;color:rgba(255,255,255,0.45);cursor:pointer;font-size:20px;padding:4px;line-height:1;flex-shrink:0">&times;</button>
+    @inject EventTicket.UI.Services.IBannerUlService _bannerSvc
+    @{ var _topBar = (await _bannerSvc.GetActiveAsync()).FirstOrDefault(b => b.Type == EventTicket.Core.Entities.BannerType.TopBar); }
+    @if (_topBar != null)
+    {
+        var bg = string.IsNullOrEmpty(_topBar.BgColor) ? "#6c5ce7" : _topBar.BgColor;
+        var fg = string.IsNullOrEmpty(_topBar.TextColor) ? "#ffffff" : _topBar.TextColor;
+        <div class="et-banner" id="topBanner" style="background:@bg">
+            <div class="et-banner-overlay">
+                <div class="et-banner-text" style="color:@fg">
+                    @if (!string.IsNullOrEmpty(_topBar.TagText))
+                    {
+                        <span class="et-banner-tag" style="color:@bg;background:@fg">@_topBar.TagText</span>
+                    }
+                    @_topBar.Title
+                </div>
+                <div style="display:flex;align-items:center;gap:12px;flex-shrink:0">
+                    @if (!string.IsNullOrEmpty(_topBar.TicketUrl))
+                    {
+                        <a href="@_topBar.TicketUrl" class="et-banner-cta" style="color:@bg;background:@fg">@(string.IsNullOrEmpty(_topBar.SubTitle) ? "DETAY" : _topBar.SubTitle)</a>
+                    }
+                    <button onclick="document.getElementById('topBanner').style.display='none';document.documentElement.style.setProperty('--banner-h','0px')"
+                            style="background:none;border:none;color:@fg;opacity:0.6;cursor:pointer;font-size:20px;padding:4px;line-height:1;flex-shrink:0">&times;</button>
+                </div>
             </div>
         </div>
-    </div>
+    }
 
     @await Html.PartialAsync("_Navbar")
 

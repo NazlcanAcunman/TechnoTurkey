@@ -15,6 +15,9 @@ public class CreateBannerDto
     public BannerType Type { get; set; } = BannerType.HeroSlide;
     public int SortOrder { get; set; } = 0;
     public bool IsActive { get; set; } = true;
+    [StringLength(50)]  public string? TagText { get; set; }
+    [StringLength(20)]  public string? TextColor { get; set; }
+    [StringLength(20)]  public string? BgColor { get; set; }
 }
 
 public class UpdateBannerDto : CreateBannerDto { }
@@ -32,4 +35,7 @@ public class BannerResponseDto
     public BannerType Type { get; set; }
     public int SortOrder { get; set; }
     public bool IsActive { get; set; }
+    public string? TagText { get; set; }
+    public string? TextColor { get; set; }
+    public string? BgColor { get; set; }
 }
