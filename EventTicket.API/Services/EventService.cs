@@ -38,7 +38,7 @@ public class EventService : IEventService
     public async Task<IEnumerable<EventResponseDto>> GetAllForAdminAsync()
     {
         var events = await _eventRepo.FindIgnoreFiltersAsync(
-            e => !e.IsDeleted,
+            e => true,
             e => e.Venue, e => e.Artist);
         return events.Select(MapToDto);
     }
@@ -189,6 +189,7 @@ public class EventService : IEventService
         Capacity = e.Capacity,
         SoldCount = e.SoldCount,
         IsApproved = e.IsApproved,
+        IsDeleted = e.IsDeleted,
         ImageUrl = e.ImageUrl,
         TicketUrl = e.TicketUrl,
         VenueName       = e.Venue?.Name ?? "",

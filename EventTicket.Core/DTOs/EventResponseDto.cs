@@ -19,6 +19,7 @@ public class EventResponseDto
     public string ArtistName { get; set; } = string.Empty;
     public string ArtistGenre { get; set; } = string.Empty;
     public bool IsApproved { get; set; }
+    public bool IsDeleted { get; set; }
     public DateTime CreatedAt { get; set; }
     public string? PromoCode { get; set; }
     public int? DiscountPercent { get; set; }

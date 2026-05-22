@@ -61,7 +61,11 @@
                             }
                         </td>
                         <td>
-                            @if (e.IsApproved)
+                            @if (e.IsDeleted)
+                            {
+                                <span class="badge badge-danger">Silindi</span>
+                            }
+                            else if (e.IsApproved)
                             {
                                 <span class="badge badge-success">Onaylı</span>
                             }

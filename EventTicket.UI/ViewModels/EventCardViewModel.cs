@@ -10,6 +10,7 @@ public class EventCardViewModel
     public int Capacity { get; set; }
     public int SoldCount { get; set; }
     public bool IsApproved { get; set; }
+    public bool IsDeleted { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
     public string? TicketUrl { get; set; }
     public int VenueId { get; set; }
