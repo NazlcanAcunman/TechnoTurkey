@@ -65,10 +65,10 @@
                 <i class="bi bi-ticket-perforated"></i> BİLET AL
             </a>
         }
-        else if (!string.IsNullOrEmpty(bannerSlide.TicketUrl))
+        else
         {
-            <a href="@bannerSlide.TicketUrl" target="_blank" rel="noopener" class="et-fullbanner-btn" onclick="event.stopPropagation();event.preventDefault();window.open('@bannerSlide.TicketUrl','_blank')">
-                <i class="bi bi-ticket-perforated"></i> BİLET AL
+            <a href="/Events" class="et-fullbanner-btn">
+                <i class="bi bi-ticket-perforated"></i> ETKİNLİKLER
             </a>
         }
     </div>
@@ -98,10 +98,10 @@
                                     <i class="bi bi-ticket-perforated"></i> BİLET AL
                                 </a>
                             }
-                            else if (!string.IsNullOrEmpty(hs.TicketUrl))
+                            else
                             {
-                                <a href="@hs.TicketUrl" class="et-hero-btn">
-                                    <i class="bi bi-ticket-perforated"></i> BİLET AL
+                                <a href="/Events" class="et-hero-btn">
+                                    <i class="bi bi-ticket-perforated"></i> ETKİNLİKLER
                                 </a>
                             }
                         </div>
@@ -249,10 +249,10 @@
                             <i class="bi bi-ticket-perforated"></i> BİLET AL
                         </a>
                     }
-                    else if (!string.IsNullOrEmpty(featuredBanner.TicketUrl))
+                    else
                     {
-                        <a href="@featuredBanner.TicketUrl" class="et-hero-btn">
-                            <i class="bi bi-ticket-perforated"></i> BİLET AL
+                        <a href="/Events" class="et-hero-btn">
+                            <i class="bi bi-ticket-perforated"></i> ETKİNLİKLER
                         </a>
                     }
                 </div>
