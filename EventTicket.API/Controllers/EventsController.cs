@@ -39,9 +39,8 @@ public class EventsController : ControllerBase
     [Authorize(Policy = "AdminOrAbove")]
     public async Task<IActionResult> GetAll_Admin()
     {
-        var approved = await _eventService.GetAllApprovedAsync();
-        var pending = await _eventService.GetAllPendingAsync();
-        return Ok(approved.Concat(pending).OrderByDescending(e => e.Date));
+        var all = await _eventService.GetAllForAdminAsync();
+        return Ok(all.OrderByDescending(e => e.Date));
     }
 
     [HttpGet("pending")]

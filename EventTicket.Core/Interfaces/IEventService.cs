@@ -6,6 +6,7 @@ public interface IEventService
 {
     Task<IEnumerable<EventResponseDto>> GetAllApprovedAsync();
     Task<IEnumerable<EventResponseDto>> GetAllPendingAsync();
+    Task<IEnumerable<EventResponseDto>> GetAllForAdminAsync();
     Task<IEnumerable<EventResponseDto>> GetByVenueAsync(int venueId);
     Task<EventResponseDto?> GetByIdAsync(int id);
     Task<EventResponseDto> CreateAsync(CreateEventDto dto, string adminUserId, bool isSuperAdmin);
