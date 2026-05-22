@@ -49,13 +49,17 @@ public class AuthController : ControllerBase
         if (existingByName != null)
             safeUserName = dto.Email.Split('@')[0] + new Random().Next(100, 999);
 
+        var dob = dto.DateOfBirth.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(dto.DateOfBirth, DateTimeKind.Utc)
+            : dto.DateOfBirth.ToUniversalTime();
+
         var user = new AppUser
         {
             UserName       = safeUserName,
             FullName       = dto.FullName,
             Email          = dto.Email,
             TcKimlikNo     = dto.TcKimlikNo,
-            DateOfBirth    = dto.DateOfBirth,
+            DateOfBirth    = dob,
             IsActive       = true,
             EmailConfirmed = true
         };
