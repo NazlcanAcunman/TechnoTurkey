@@ -46,8 +46,9 @@ public static class ServiceRegistration
         .AddDefaultTokenProviders()
         .AddErrorDescriber<TurkishIdentityErrorDescriber>();
 
-        var jwtKey = configuration["Jwt:Key"]
-            ?? throw new InvalidOperationException("Jwt:Key konfigürasyonu appsettings'te tanımlı değil.");
+        var jwtKey = configuration["Jwt:Key"];
+        if (string.IsNullOrWhiteSpace(jwtKey))
+            throw new InvalidOperationException("Jwt:Key (veya Jwt__Key env var) boş ya da tanımlı değil.");
 
         services
             .AddAuthentication(options =>
