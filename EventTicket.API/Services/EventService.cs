@@ -37,10 +37,13 @@ public class EventService : IEventService
 
     public async Task<IEnumerable<EventResponseDto>> GetAllForAdminAsync()
     {
-        var events = await _eventRepo.FindWithIncludesAsync(
-            e => !e.IsDeleted,
+        var approved = await _eventRepo.FindWithIncludesAsync(
+            e => e.IsApproved,
             e => e.Venue, e => e.Artist);
-        return events.Select(MapToDto);
+        var pending = await _eventRepo.FindWithIncludesAsync(
+            e => !e.IsApproved,
+            e => e.Venue, e => e.Artist);
+        return approved.Concat(pending).Select(MapToDto);
     }
 
     public async Task<IEnumerable<EventResponseDto>> GetAllPendingAsync()
