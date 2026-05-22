@@ -31,6 +31,8 @@ public class CreateEventViewModel
     public string? PromoCode { get; set; }
     public int? DiscountPercent { get; set; }
     public string? PromoCodeColor { get; set; }
+    public string? BadgeText { get; set; }
+    public string? BadgeColor { get; set; }
 
     // Dropdown için
     public List<VenueCardViewModel> Venues { get; set; } = new();

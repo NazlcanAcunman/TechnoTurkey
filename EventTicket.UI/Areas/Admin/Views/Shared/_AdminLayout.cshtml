@@ -147,17 +147,27 @@
         </div>
     </aside>
 
+    <!-- MOBİL BACKDROP -->
+    <div class="admin-backdrop" id="adminBackdrop" onclick="closeSidebar()"></div>
+
     <!-- SAĞ İÇERİK -->
     <div class="admin-content">
         <header class="admin-header">
-            <h1 class="admin-page-title">@ViewData["Title"]</h1>
+            <div style="display:flex;align-items:center;gap:14px">
+                <button class="admin-hamburger" id="adminHamburger" onclick="toggleSidebar()" aria-label="Menü">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <h1 class="admin-page-title">@ViewData["Title"]</h1>
+            </div>
             <div class="admin-header-right">
                 <span class="admin-user">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                         <circle cx="12" cy="7" r="4" />
                     </svg>
-                    @adminDisplayName
+                    <span class="admin-user-name">@adminDisplayName</span>
                 </span>
             </div>
         </header>
@@ -209,6 +219,19 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-open');
+        }
+        function closeSidebar() {
+            document.body.classList.remove('sidebar-open');
+        }
+        // Mobilde nav linkine tıklayınca sidebar kapansın
+        document.querySelectorAll('.admin-nav-item').forEach(function(el) {
+            el.addEventListener('click', function() {
+                if (window.innerWidth < 768) closeSidebar();
+            });
+        });
+
         var _pendingDeleteForm = null;
 
         function confirmDelete(formEl, desc) {

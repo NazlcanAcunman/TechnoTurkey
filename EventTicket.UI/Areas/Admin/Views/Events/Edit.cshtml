@@ -79,6 +79,66 @@
                 <input asp-for="TicketUrl" class="admin-field-input" placeholder="https://biletix.com/..." />
             </div>
 
+            @* Afiş Yazısı (Badge) *@
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:18px;margin-bottom:18px">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:14px">
+                    Afiş Etiketi (Opsiyonel)
+                </div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px" id="badge-presets">
+                    @foreach (var preset in new[] { "HOT", "YENİ", "ÖNE ÇIKAN", "SINIRLI", "SON BİLETLER", "ÖZEL" })
+                    {
+                        <button type="button" class="badge-preset-btn" data-val="@preset"
+                                style="background:@(Model.BadgeText == preset ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.06)");
+                                       border:1px solid @(Model.BadgeText == preset ? "rgba(255,255,255,0.5)" : "rgba(255,255,255,0.12)");
+                                       border-radius:6px;color:@(Model.BadgeText == preset ? "#fff" : "rgba(255,255,255,0.65)");
+                                       font-size:11px;font-weight:700;letter-spacing:0.08em;padding:5px 12px;cursor:pointer;text-transform:uppercase;transition:all 0.15s">
+                            @preset
+                        </button>
+                    }
+                    <button type="button" class="badge-preset-btn" data-val=""
+                            style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:6px;
+                                   color:rgba(255,255,255,0.3);font-size:11px;font-weight:700;letter-spacing:0.08em;
+                                   padding:5px 12px;cursor:pointer;transition:all 0.15s">
+                        × KALDIR
+                    </button>
+                </div>
+                <div style="margin-bottom:12px">
+                    <label class="admin-field-label">Özel Yazı (veya yukarıdan seç)</label>
+                    <input asp-for="BadgeText" id="badge-text-input" class="admin-field-input"
+                           placeholder="Örn: HOT"
+                           style="text-transform:uppercase;letter-spacing:0.08em;font-weight:700" />
+                </div>
+                <div>
+                    <label class="admin-field-label">Etiket Rengi</label>
+                    @{
+                        var badgeColors = new[] {
+                            ("#ef4444","Kırmızı"), ("#f97316","Turuncu"), ("#eab308","Sarı"),
+                            ("#22c55e","Yeşil"), ("#3b82f6","Mavi"), ("#a855f7","Mor"),
+                            ("#ec4899","Pembe"), ("#ffffff","Beyaz"), ("#000000","Siyah")
+                        };
+                        var currentBadgeColor = string.IsNullOrEmpty(Model.BadgeColor) ? "#ef4444" : Model.BadgeColor;
+                    }
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px" id="badge-color-swatches">
+                        @foreach (var (hex, name) in badgeColors)
+                        {
+                            <button type="button" class="badge-color-swatch" data-color="@hex" title="@name"
+                                    style="width:28px;height:28px;border-radius:50%;background:@hex;cursor:pointer;transition:all 0.15s;flex-shrink:0;
+                                           border:@(hex == currentBadgeColor ? "2px solid rgba(255,255,255,0.8)" : "2px solid transparent");
+                                           transform:@(hex == currentBadgeColor ? "scale(1.2)" : "scale(1)")"></button>
+                        }
+                    </div>
+                    <input asp-for="BadgeColor" type="hidden" id="badge-color-input" value="@currentBadgeColor" />
+                </div>
+                <div id="badge-preview" style="margin-top:12px;@(string.IsNullOrEmpty(Model.BadgeText) ? "display:none" : "display:block")">
+                    <span style="font-size:11px;color:rgba(255,255,255,0.35)">Önizleme: </span>
+                    <span id="badge-preview-chip" style="display:inline-flex;align-items:center;font-size:11px;font-weight:800;
+                          letter-spacing:0.1em;padding:4px 12px;border-radius:6px;text-transform:uppercase;
+                          background:@currentBadgeColor;color:@((currentBadgeColor == "#ffffff" || currentBadgeColor == "#eab308") ? "#000" : "#fff")">
+                        @(Model.BadgeText ?? "")
+                    </span>
+                </div>
+            </div>
+
             @* Promosyon Kodu *@
             <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:18px;margin-bottom:18px">
                 <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:14px">
@@ -207,6 +267,50 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        // ── Badge / Afiş Etiketi ──
+        (function () {
+            var textInput    = document.getElementById('badge-text-input');
+            var colorInput   = document.getElementById('badge-color-input');
+            var preview      = document.getElementById('badge-preview');
+            var chip         = document.getElementById('badge-preview-chip');
+            var swatches     = document.querySelectorAll('.badge-color-swatch');
+            var presets      = document.querySelectorAll('.badge-preset-btn');
+
+            function selectBadgeColor(hex) {
+                colorInput.value = hex;
+                var fg = (hex === '#ffffff' || hex === '#eab308') ? '#000' : '#fff';
+                chip.style.background = hex;
+                chip.style.color = fg;
+                swatches.forEach(function(s) {
+                    s.style.border = s.dataset.color === hex ? '2px solid rgba(255,255,255,0.8)' : '2px solid transparent';
+                    s.style.transform = s.dataset.color === hex ? 'scale(1.2)' : 'scale(1)';
+                });
+            }
+
+            swatches.forEach(function(s) {
+                s.addEventListener('click', function() { selectBadgeColor(s.dataset.color); });
+            });
+
+            presets.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    textInput.value = btn.dataset.val;
+                    updateBadgePreview();
+                    presets.forEach(function(b) { b.style.borderColor = 'rgba(255,255,255,0.12)'; b.style.color = 'rgba(255,255,255,0.65)'; b.style.background = 'rgba(255,255,255,0.06)'; });
+                    if (btn.dataset.val) { btn.style.borderColor = 'rgba(255,255,255,0.5)'; btn.style.color = '#fff'; btn.style.background = 'rgba(255,255,255,0.15)'; }
+                });
+            });
+
+            function updateBadgePreview() {
+                var text = textInput.value.trim().toUpperCase();
+                textInput.value = text;
+                if (text) { preview.style.display = 'block'; chip.textContent = text; }
+                else { preview.style.display = 'none'; }
+            }
+
+            textInput.addEventListener('input', updateBadgePreview);
+        })();
+
+        // ── Promo Kodu ──
         (function () {
             var codeInput   = document.querySelector('[name="PromoCode"]');
             var pctInput    = document.querySelector('[name="DiscountPercent"]');

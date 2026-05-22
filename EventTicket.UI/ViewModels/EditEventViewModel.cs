@@ -33,6 +33,8 @@ public class EditEventViewModel
     public string? PromoCode { get; set; }
     public int? DiscountPercent { get; set; }
     public string? PromoCodeColor { get; set; }
+    public string? BadgeText { get; set; }
+    public string? BadgeColor { get; set; }
 
     public List<VenueCardViewModel> Venues { get; set; } = new();
     public List<ArtistCardViewModel> Artists { get; set; } = new();

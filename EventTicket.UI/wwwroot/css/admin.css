@@ -505,3 +505,124 @@ select.form-control option {
     border: 1px solid rgba(234,179,8,0.2);
     color: #facc15;
 }
+
+/* =====================
+   HAMBURGERx
+   ===================== */
+.admin-hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.admin-hamburger span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: rgba(255,255,255,0.75);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.2s ease, width 0.2s ease;
+    transform-origin: center;
+}
+
+/* X animasyonu */
+body.sidebar-open .admin-hamburger span:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+body.sidebar-open .admin-hamburger span:nth-child(2) {
+    opacity: 0;
+    width: 0;
+}
+body.sidebar-open .admin-hamburger span:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* =====================
+   MOBİL BACKDROP
+   ===================== */
+.admin-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(2px);
+    z-index: 99;
+}
+
+body.sidebar-open .admin-backdrop {
+    display: block;
+}
+
+/* =====================
+   MOBİL RESPONSIVE
+   ===================== */
+@media (max-width: 767px) {
+    .admin-hamburger {
+        display: flex;
+    }
+
+    .admin-sidebar {
+        transform: translateX(-240px);
+        transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 200;
+        box-shadow: none;
+    }
+
+    body.sidebar-open .admin-sidebar {
+        transform: translateX(0);
+        box-shadow: 8px 0 40px rgba(0,0,0,0.6);
+    }
+
+    .admin-content {
+        margin-left: 0;
+    }
+
+    .admin-header {
+        padding: 14px 16px;
+    }
+
+    .admin-page-title {
+        font-size: 15px;
+    }
+
+    .admin-main {
+        padding: 16px;
+    }
+
+    .admin-user-name {
+        display: none;
+    }
+
+    /* Tablo yatay kaydırma */
+    .admin-table-wrap {
+        overflow-x: auto;
+    }
+
+    /* Stat kartları 2 kolon */
+    .admin-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .admin-stat-value {
+        font-size: 24px;
+    }
+
+    /* Form grid'leri tek kolona düşür */
+    div[style*="grid-template-columns:1fr 1fr"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+}

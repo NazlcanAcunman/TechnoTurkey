@@ -25,9 +25,7 @@
                 <div class="event-detail-meta-item">
                     <span>Sanatçı</span>@Model.Event.ArtistName
                 </div>
-                <div class="event-detail-meta-item">
-                    <span>Kapasite</span>@Model.Event.SoldCount / @Model.Event.Capacity
-                </div>
+
             </div>
         </div>
 
@@ -76,9 +74,7 @@
                 <a href="@Model.Event.TicketUrl" target="_blank" rel="noopener" class="event-ticket-btn" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none">
                     <i class="bi bi-ticket-perforated-fill"></i> BİLET AL
                 </a>
-                <div class="event-ticket-remaining" style="margin-top:10px">
-                    @(Model.Event.Capacity - Model.Event.SoldCount) bilet kaldı
-                </div>
+
             }
             else
             {

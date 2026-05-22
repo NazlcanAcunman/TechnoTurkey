@@ -23,4 +23,6 @@ public class EventCardViewModel
     public string? PromoCode { get; set; }
     public int? DiscountPercent { get; set; }
     public string? PromoCodeColor { get; set; }
+    public string? BadgeText { get; set; }
+    public string? BadgeColor { get; set; }
 }
