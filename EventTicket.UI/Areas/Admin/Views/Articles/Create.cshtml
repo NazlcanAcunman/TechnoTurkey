@@ -1,0 +1,99 @@
+@model EventTicket.UI.ViewModels.ArticleViewModel
+@{
+    ViewData["Title"] = "Yeni Makale";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var tags = new[] { "Haber", "Röportaj", "Festival", "Mekan", "Müzik", "Sanatçı" };
+}
+
+<div class="admin-table-wrap" style="max-width:860px">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Yeni Makale</span>
+        <a asp-action="Index" class="btn-admin btn-sm" style="background:#444">← Geri</a>
+    </div>
+
+    <div style="padding:28px">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:12px 16px;margin-bottom:20px;color:#f87171;font-size:13px">
+                <ul style="margin:0;padding-left:16px">
+                    @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                    {
+                        <li>@err.ErrorMessage</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Başlık *</label>
+                <input asp-for="Title" class="admin-field-input" placeholder="Makale başlığı" />
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+                <div>
+                    <label class="admin-field-label">Kategori</label>
+                    <select asp-for="Tag" class="admin-field-input">
+                        @foreach (var t in tags)
+                        {
+                            <option value="@t">@t</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    <label class="admin-field-label">Yazar</label>
+                    <input asp-for="Author" class="admin-field-input" placeholder="Yazar adı" />
+                </div>
+            </div>
+
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Kapak Görseli</label>
+                <div class="upload-wrap" style="display:flex;gap:8px;align-items:center">
+                    <input asp-for="ImageUrl" id="articleImageUrl" class="admin-field-input" placeholder="https://..." style="flex:1" />
+                    <label class="upload-btn btn-admin btn-sm" style="cursor:pointer;white-space:nowrap;flex-shrink:0">
+                        Fotoğraf Yükle
+                        <input type="file" accept="image/*" style="display:none" onchange="uploadToCloudinary(this,'articleImageUrl','articleImgPreview')" />
+                    </label>
+                </div>
+                <img id="articleImgPreview" src="" alt="" style="display:none;margin-top:10px;max-height:120px;border-radius:8px;object-fit:cover" />
+            </div>
+
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Özet</label>
+                <textarea asp-for="Summary" class="admin-field-input" rows="2" placeholder="Kısa özet (kart ve hero için)"></textarea>
+            </div>
+
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">İçerik</label>
+                <textarea asp-for="Content" class="admin-field-input" rows="12" placeholder="Makale içeriği..."></textarea>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
+                <div>
+                    <label class="admin-field-label">Okuma Süresi (dk)</label>
+                    <input asp-for="ReadTime" type="number" min="1" class="admin-field-input" />
+                </div>
+                <div style="display:flex;align-items:flex-end;padding-bottom:2px">
+                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                        <input asp-for="IsPublished" type="checkbox" style="width:16px;height:16px;cursor:pointer" />
+                        <span class="admin-field-label" style="margin:0">Yayınla</span>
+                    </label>
+                </div>
+            </div>
+
+            <div style="display:flex;gap:10px;margin-top:8px">
+                <button type="submit" class="btn-admin" style="background:#fff;color:#000">✓ Oluştur</button>
+                <a asp-action="Index" class="btn-admin" style="background:#444">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.admin-field-label { display:block;font-size:11px;font-weight:700;letter-spacing:0.07em;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-bottom:7px }
+.admin-field-input { width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 13px;color:#fff;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box }
+.admin-field-input:focus { border-color:rgba(255,255,255,0.25) }
+.admin-field-input option { background:#1a1a1a }
+</style>

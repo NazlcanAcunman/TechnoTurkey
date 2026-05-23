@@ -51,6 +51,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IAcademyUlService, AcademyUlService>();
 builder.Services.AddScoped<INotificationUlService, NotificationUlService>();
 builder.Services.AddScoped<IBannerUlService, BannerUlService>();
+builder.Services.AddScoped<IArticleUlService, ArticleUlService>();
 
 
 // Session — sepet için

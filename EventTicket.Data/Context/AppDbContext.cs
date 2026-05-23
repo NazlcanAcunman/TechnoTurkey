@@ -20,6 +20,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, string>
     public DbSet<AcademyContent> AcademyContents { get; set; }
     public DbSet<Banner> Banners { get; set; }
     public DbSet<PageView> PageViews { get; set; }
+    public DbSet<Article> Articles { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -89,6 +89,7 @@ public static class ServiceRegistration
         services.AddScoped<INotificationService, NotificationService>();
         services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IBannerService, BannerService>();
+        services.AddScoped<IArticleService, ArticleService>();
 
         services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
 
