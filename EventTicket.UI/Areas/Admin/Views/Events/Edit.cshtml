@@ -44,16 +44,10 @@
                 <textarea asp-for="Description" class="admin-field-input" rows="3"></textarea>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
-                <div>
-                    <label class="admin-field-label">Tarih & Saat *</label>
-                    <input asp-for="Date" type="datetime-local" class="admin-field-input"
-                           value="@Model.Date.ToString("yyyy-MM-ddTHH:mm")" />
-                </div>
-                <div>
-                    <label class="admin-field-label">Kapasite</label>
-                    <input asp-for="Capacity" type="number" class="admin-field-input" />
-                </div>
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Tarih & Saat *</label>
+                <input asp-for="Date" type="datetime-local" class="admin-field-input"
+                       value="@Model.Date.ToString("yyyy-MM-ddTHH:mm")" />
             </div>
 
             <div style="margin-bottom:18px">

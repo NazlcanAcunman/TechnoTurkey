@@ -46,18 +46,10 @@
                           placeholder="Etkinlik hakkında kısa bilgi..."></textarea>
             </div>
 
-            @* Tarih + Kapasite *@
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
-                <div>
-                    <label class="admin-field-label">Tarih & Saat *</label>
-                    <input asp-for="Date" type="datetime-local" class="admin-field-input" />
-                    <span asp-validation-for="Date" style="color:#f87171;font-size:12px"></span>
-                </div>
-                <div>
-                    <label class="admin-field-label">Kapasite *</label>
-                    <input asp-for="Capacity" type="number" class="admin-field-input" placeholder="500" />
-                    <span asp-validation-for="Capacity" style="color:#f87171;font-size:12px"></span>
-                </div>
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Tarih & Saat *</label>
+                <input asp-for="Date" type="datetime-local" class="admin-field-input" />
+                <span asp-validation-for="Date" style="color:#f87171;font-size:12px"></span>
             </div>
 
 

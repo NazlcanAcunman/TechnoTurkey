@@ -84,12 +84,8 @@
                 <textarea asp-for="Content" class="admin-field-input" rows="12"></textarea>
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
-                <div>
-                    <label class="admin-field-label">Okuma Süresi (dk)</label>
-                    <input asp-for="ReadTime" type="number" min="1" class="admin-field-input" />
-                </div>
-                <div style="display:flex;align-items:flex-end;padding-bottom:2px">
+            <div style="margin-bottom:18px">
+                <div style="display:flex;align-items:center;padding-bottom:2px">
                     <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
                         <input asp-for="IsPublished" type="checkbox" style="width:16px;height:16px;cursor:pointer" />
                         <span class="admin-field-label" style="margin:0">Yayınla</span>
