@@ -39,6 +39,7 @@ public class ArticlesController : Controller
             model.Content,
             model.ImageUrl,
             model.Tag,
+            model.TagColor,
             model.Author,
             model.ReadTime,
             model.IsPublished
@@ -69,6 +70,7 @@ public class ArticlesController : Controller
             model.Content,
             model.ImageUrl,
             model.Tag,
+            model.TagColor,
             model.Author,
             model.ReadTime,
             model.IsPublished

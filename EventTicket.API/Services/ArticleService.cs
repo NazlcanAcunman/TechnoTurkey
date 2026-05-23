@@ -46,6 +46,7 @@ public class ArticleService : IArticleService
             Content = dto.Content,
             ImageUrl = dto.ImageUrl,
             Tag = dto.Tag,
+            TagColor = dto.TagColor,
             Author = dto.Author,
             ReadTime = dto.ReadTime,
             IsPublished = dto.IsPublished
@@ -65,6 +66,7 @@ public class ArticleService : IArticleService
         article.Content = dto.Content;
         article.ImageUrl = dto.ImageUrl;
         article.Tag = dto.Tag;
+        article.TagColor = dto.TagColor;
         article.Author = dto.Author;
         article.ReadTime = dto.ReadTime;
         article.IsPublished = dto.IsPublished;
@@ -97,6 +99,7 @@ public class ArticleService : IArticleService
         Content = a.Content,
         ImageUrl = a.ImageUrl,
         Tag = a.Tag,
+        TagColor = a.TagColor,
         Author = a.Author,
         ReadTime = a.ReadTime,
         IsPublished = a.IsPublished,
