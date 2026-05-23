@@ -57,17 +57,13 @@
                 {
                     var bgColor = string.IsNullOrEmpty(Model.Event.PromoCodeColor) ? "#ef4444" : Model.Event.PromoCodeColor;
                     var fgColor = (bgColor == "#ffffff" || bgColor == "#eab308") ? "#000" : "#fff";
-                    <div style="background:@bgColor;color:@fgColor;border-radius:10px;padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;gap:10px">
-                        <div style="display:flex;align-items:center;gap:8px">
-                            <i class="bi bi-tag-fill" style="font-size:15px"></i>
-                            <div>
-                                <div style="font-size:11px;font-weight:700;opacity:0.75;text-transform:uppercase;letter-spacing:.06em">Promosyon Kodu</div>
-                                <div style="font-size:16px;font-weight:800;letter-spacing:.08em">@Model.Event.PromoCode</div>
-                            </div>
-                        </div>
+                    <div style="background:@bgColor;color:@fgColor;border-radius:8px;padding:8px 12px;margin-bottom:10px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700">
+                        <i class="bi bi-tag-fill" style="font-size:12px;opacity:0.85"></i>
+                        <span style="opacity:0.8;text-transform:uppercase;letter-spacing:.05em">Promosyon:</span>
+                        <span style="letter-spacing:.08em">@Model.Event.PromoCode</span>
                         @if (Model.Event.DiscountPercent.HasValue)
                         {
-                            <div style="font-size:22px;font-weight:900">%@Model.Event.DiscountPercent İNDİRİM</div>
+                            <span style="margin-left:auto;font-weight:800">%@Model.Event.DiscountPercent İNDİRİM</span>
                         }
                     </div>
                 }
