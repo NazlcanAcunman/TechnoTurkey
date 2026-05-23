@@ -846,7 +846,7 @@ main {
     width: max-content;
     padding-bottom: 2px;
 }
-.et-scroll-inner .et-card-wrap { width: 200px; }
+.et-scroll-inner .et-card-wrap { width: 240px; }
 
 .et-carousel { position:relative; max-width:1280px; margin:0 auto; padding:0 48px; }
 .et-carousel .et-scroll-wrap { max-width:none; margin:0; padding:0; }
