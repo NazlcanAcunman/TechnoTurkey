@@ -175,7 +175,7 @@
         @{ int rank = 1; }
         @foreach (var e in top10)
         {
-            <a href="/Events/@e.Id" class="et-top10-row" style="text-decoration:none">
+            <a href="/Events/Details/@e.Id" class="et-top10-row" style="text-decoration:none">
                 <span class="et-top10-rank @(rank <= 3 ? "gold" : "")">@rank</span>
                 <div class="et-top10-thumb">
                     <img src="@e.ImageUrl" alt="@e.Title" />
