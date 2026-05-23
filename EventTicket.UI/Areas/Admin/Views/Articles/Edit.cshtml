@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Makale Düzenle";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
-    var tags = new[] { "Haber", "Röportaj", "Festival", "Mekan", "Müzik", "Sanatçı" };
+    var tags = new[] { "Haber", "Röportaj", "Festival", "Mekan", "Müzik", "Sanatçı", "Techno", "Trend", "Elektronik", "DJ", "Konser", "Özel" };
 }
 
 <div class="admin-table-wrap" style="max-width:860px">
@@ -26,20 +26,23 @@
                 <input asp-for="Title" class="admin-field-input" />
             </div>
 
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
-                <div>
-                    <label class="admin-field-label">Kategori</label>
-                    <select asp-for="Tag" class="admin-field-input">
-                        @foreach (var t in tags)
-                        {
-                            <option value="@t" selected="@(Model.Tag == t)">@t</option>
-                        }
-                    </select>
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Kategori / Etiket</label>
+                <input type="hidden" asp-for="Tag" id="articleTag" />
+                <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:10px">
+                    @foreach (var t in tags)
+                    {
+                        <button type="button" class="tag-preset-btn @(Model.Tag == t ? "active" : "")" onclick="setArticleTag('@t')">@t</button>
+                    }
                 </div>
-                <div>
-                    <label class="admin-field-label">Yazar</label>
-                    <input asp-for="Author" class="admin-field-input" />
-                </div>
+                <input type="text" id="articleTagCustom" class="admin-field-input" placeholder="Özel etiket yaz..."
+                       value="@(!tags.Contains(Model.Tag) ? Model.Tag : "")"
+                       oninput="setArticleTagFromInput(this.value)" style="max-width:260px" />
+            </div>
+
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Yazar</label>
+                <input asp-for="Author" class="admin-field-input" />
             </div>
 
             <div style="margin-bottom:18px">
@@ -90,4 +93,28 @@
 .admin-field-input { width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;padding:10px 13px;color:#fff;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box }
 .admin-field-input:focus { border-color:rgba(255,255,255,0.25) }
 .admin-field-input option { background:#1a1a1a }
+.tag-preset-btn { background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:100px;padding:5px 14px;color:rgba(255,255,255,0.65);font-size:11px;font-weight:700;letter-spacing:.06em;cursor:pointer;transition:all 0.15s;font-family:inherit }
+.tag-preset-btn:hover,.tag-preset-btn.active { background:#fff;color:#000;border-color:#fff }
 </style>
+<script>
+(function(){
+    var hidden = document.getElementById('articleTag');
+    var custom = document.getElementById('articleTagCustom');
+    var btns = document.querySelectorAll('.tag-preset-btn');
+
+    function updateBtns(val){
+        btns.forEach(function(b){ b.classList.toggle('active', b.textContent === val); });
+    }
+
+    window.setArticleTag = function(val){
+        hidden.value = val;
+        custom.value = '';
+        updateBtns(val);
+    };
+
+    window.setArticleTagFromInput = function(val){
+        hidden.value = val;
+        updateBtns(val);
+    };
+})();
+</script>
