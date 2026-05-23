@@ -36,6 +36,7 @@ public class UpdateEventDto
     public string? PromoCodeColor { get; set; }
     public string? BadgeText { get; set; }
     public string? BadgeColor { get; set; }
+    public bool IsFeatured { get; set; } = false;
 
     [Range(1, int.MaxValue, ErrorMessage = "Geçerli bir mekan seçiniz.")]
     public int VenueId { get; set; }

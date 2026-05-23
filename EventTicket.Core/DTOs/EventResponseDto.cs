@@ -26,4 +26,5 @@ public class EventResponseDto
     public string? PromoCodeColor { get; set; }
     public string? BadgeText { get; set; }
     public string? BadgeColor { get; set; }
+    public bool IsFeatured { get; set; }
 }

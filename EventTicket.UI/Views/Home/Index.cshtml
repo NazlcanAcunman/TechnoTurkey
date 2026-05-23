@@ -351,31 +351,28 @@
 </div>
 }
 
+@{ var featured = Model.Where(e => e.IsFeatured && e.Date >= now).ToList(); }
+@if (featured.Any())
+{
 <div class="et-section">
     <div class="et-section-header">
         <span class="et-section-title">Öne Çıkan Etkinlikler</span>
         <a asp-controller="Events" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
     </div>
-    @if (!Model.Any())
-    {
-        <div class="et-empty-state"><p>Henüz onaylanmış etkinlik bulunmuyor.</p></div>
-    }
-    else
-    {
-        <div class="et-carousel">
-            <button class="et-carr-btn et-carr-l" onclick="sc('fw',-1)"><i class="bi bi-chevron-left"></i></button>
-            <div class="et-scroll-wrap" id="fw">
-                <div class="et-scroll-inner">
-                    @foreach (var ev in Model.Take(12))
-                    {
-                        @await Html.PartialAsync("_EventCard", ev)
-                    }
-                </div>
+    <div class="et-carousel">
+        <button class="et-carr-btn et-carr-l" onclick="sc('fw',-1)"><i class="bi bi-chevron-left"></i></button>
+        <div class="et-scroll-wrap" id="fw">
+            <div class="et-scroll-inner">
+                @foreach (var ev in featured)
+                {
+                    @await Html.PartialAsync("_EventCard", ev)
+                }
             </div>
-            <button class="et-carr-btn et-carr-r" onclick="sc('fw',1)"><i class="bi bi-chevron-right"></i></button>
         </div>
-    }
+        <button class="et-carr-btn et-carr-r" onclick="sc('fw',1)"><i class="bi bi-chevron-right"></i></button>
+    </div>
 </div>
+}
 
 
 

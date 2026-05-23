@@ -33,6 +33,7 @@ public class CreateEventViewModel
     public string? PromoCodeColor { get; set; }
     public string? BadgeText { get; set; }
     public string? BadgeColor { get; set; }
+    public bool IsFeatured { get; set; } = false;
 
     // Dropdown için
     public List<VenueCardViewModel> Venues { get; set; } = new();

@@ -93,7 +93,8 @@ public class EventService : IEventService
             DiscountPercent = dto.DiscountPercent,
             PromoCodeColor  = dto.PromoCodeColor,
             BadgeText       = string.IsNullOrWhiteSpace(dto.BadgeText) ? null : dto.BadgeText,
-            BadgeColor      = dto.BadgeColor
+            BadgeColor      = dto.BadgeColor,
+            IsFeatured      = dto.IsFeatured
         };
 
         await _eventRepo.AddAsync(newEvent);
@@ -128,6 +129,7 @@ public class EventService : IEventService
         existing.PromoCodeColor  = dto.PromoCodeColor;
         existing.BadgeText       = string.IsNullOrWhiteSpace(dto.BadgeText) ? null : dto.BadgeText;
         existing.BadgeColor      = dto.BadgeColor;
+        existing.IsFeatured      = dto.IsFeatured;
 
         await _eventRepo.UpdateAsync(existing);
         _logger.LogInformation("Etkinlik güncellendi: ID {Id}", id);
@@ -205,6 +207,7 @@ public class EventService : IEventService
         DiscountPercent = e.DiscountPercent,
         PromoCodeColor  = e.PromoCodeColor,
         BadgeText       = e.BadgeText,
-        BadgeColor      = e.BadgeColor
+        BadgeColor      = e.BadgeColor,
+        IsFeatured      = e.IsFeatured
     };
 }

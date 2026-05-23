@@ -17,6 +17,7 @@ public class Event : BaseEntity
     public string? PromoCodeColor { get; set; }
     public string? BadgeText { get; set; }
     public string? BadgeColor { get; set; }
+    public bool IsFeatured { get; set; } = false;
 
     public int VenueId { get; set; }
     public int? ArtistId { get; set; }

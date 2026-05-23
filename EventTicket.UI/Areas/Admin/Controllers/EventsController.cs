@@ -72,7 +72,8 @@ public class EventsController : Controller
             DiscountPercent = model.DiscountPercent,
             PromoCodeColor  = model.PromoCodeColor,
             BadgeText       = string.IsNullOrWhiteSpace(model.BadgeText) ? null : model.BadgeText,
-            BadgeColor      = model.BadgeColor
+            BadgeColor      = model.BadgeColor,
+            IsFeatured      = model.IsFeatured
         };
 
         await _adminService.CreateEventAsync(dto);
@@ -104,6 +105,7 @@ public class EventsController : Controller
             PromoCodeColor  = ev.PromoCodeColor,
             BadgeText       = ev.BadgeText,
             BadgeColor      = ev.BadgeColor,
+            IsFeatured      = ev.IsFeatured,
             Venues          = await _venueService.GetApprovedVenuesAsync(),
             Artists         = await _artistService.GetApprovedArtistsAsync()
         };
@@ -137,7 +139,8 @@ public class EventsController : Controller
             DiscountPercent = model.DiscountPercent,
             PromoCodeColor  = model.PromoCodeColor,
             BadgeText       = string.IsNullOrWhiteSpace(model.BadgeText) ? null : model.BadgeText,
-            BadgeColor      = model.BadgeColor
+            BadgeColor      = model.BadgeColor,
+            IsFeatured      = model.IsFeatured
         };
 
         await _adminService.UpdateEventAsync(id, dto);
