@@ -45,6 +45,9 @@ public class AdminUlService : IAdminUlService
     public async Task HardDeleteEventAsync(int id)
         => await _api.DeleteAsync($"api/events/{id}?permanent=true");
 
+    public async Task RestoreEventAsync(int id)
+        => await _api.PatchAsync<object>($"api/events/{id}/restore");
+
     public async Task DeleteVenueAsync(int id)
         => await _api.DeleteAsync($"api/venues/{id}");
 

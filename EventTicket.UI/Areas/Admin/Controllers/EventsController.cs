@@ -142,6 +142,16 @@ public class EventsController : Controller
         return RedirectToAction("Index");
     }
 
+    // POST: Restore (silmeyi geri al)
+    [HttpPost]
+    [Authorize(Roles = "SuperAdmin")]
+    public async Task<IActionResult> Restore(int id)
+    {
+        await _adminService.RestoreEventAsync(id);
+        TempData["Success"] = "Etkinlik yeniden aktifleştirildi.";
+        return RedirectToAction("Index");
+    }
+
     // POST: Delete (soft)
     [HttpPost]
     [Authorize(Roles = "SuperAdmin")]

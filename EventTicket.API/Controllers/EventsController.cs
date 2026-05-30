@@ -79,6 +79,14 @@ public class EventsController : ControllerBase
         return NoContent();
     }
 
+    [HttpPatch("{id}/restore")]
+    [Authorize(Policy = "SuperAdminOnly")]
+    public async Task<IActionResult> Restore(int id)
+    {
+        await _eventService.RestoreAsync(id);
+        return Ok(new { message = "Etkinlik geri alındı." });
+    }
+
     [HttpPatch("{id}/approve")]
     [Authorize(Policy = "SuperAdminOnly")]
     public async Task<IActionResult> Approve(int id)

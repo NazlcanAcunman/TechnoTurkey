@@ -76,30 +76,43 @@
                         </td>
                         <td>
                             <div style="display:flex;gap:6px;flex-wrap:wrap">
-                                <a asp-action="Edit" asp-route-id="@e.Id"
-                                   class="btn-admin btn-sm" style="background:#2d6a4f">
-                                    Düzenle
-                                </a>
-                                @if (User.IsInRole("SuperAdmin"))
+                                @if (!e.IsDeleted)
                                 {
-                                    <form asp-action="Delete" method="post" style="margin:0" class="delete-form">
-                                        <input type="hidden" name="id" value="@e.Id" />
-                                        <button type="button" class="btn-admin btn-danger btn-sm"
-                                                onclick="confirmDelete(this.closest('form'), '@e.Title silinecek. Emin misiniz?')">
-                                            Sil
-                                        </button>
-                                    </form>
+                                    <a asp-action="Edit" asp-route-id="@e.Id"
+                                       class="btn-admin btn-sm" style="background:#2d6a4f">
+                                        Düzenle
+                                    </a>
                                 }
                                 @if (User.IsInRole("SuperAdmin"))
                                 {
-                                    <form asp-action="HardDelete" method="post" style="margin:0" class="delete-form">
-                                        <input type="hidden" name="id" value="@e.Id" />
-                                        <button type="button" class="btn-admin btn-sm"
-                                                style="background:rgba(239,68,68,0.2);border:1px solid #ef4444;color:#fca5a5"
-                                                onclick="confirmDelete(this.closest('form'), '@e.Title listeden kalıcı olarak silinecek. Bu işlem geri alınamaz!')">
-                                            Listeden Kaldır
-                                        </button>
-                                    </form>
+                                    @if (e.IsDeleted)
+                                    {
+                                        <form asp-action="Restore" method="post" style="margin:0">
+                                            <input type="hidden" name="id" value="@e.Id" />
+                                            <button type="submit" class="btn-admin btn-sm"
+                                                    style="background:rgba(34,197,94,0.2);border:1px solid #22c55e;color:#4ade80">
+                                                Geri Al
+                                            </button>
+                                        </form>
+                                        <form asp-action="HardDelete" method="post" style="margin:0" class="delete-form">
+                                            <input type="hidden" name="id" value="@e.Id" />
+                                            <button type="button" class="btn-admin btn-sm"
+                                                    style="background:rgba(239,68,68,0.2);border:1px solid #ef4444;color:#fca5a5"
+                                                    onclick="confirmDelete(this.closest('form'), '@e.Title listeden kalıcı olarak silinecek. Bu işlem geri alınamaz!')">
+                                                Listeden Kaldır
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <form asp-action="Delete" method="post" style="margin:0" class="delete-form">
+                                            <input type="hidden" name="id" value="@e.Id" />
+                                            <button type="button" class="btn-admin btn-danger btn-sm"
+                                                    onclick="confirmDelete(this.closest('form'), '@e.Title silinecek. Emin misiniz?')">
+                                                Sil
+                                            </button>
+                                        </form>
+                                    }
                                 }
                             </div>
                         </td>

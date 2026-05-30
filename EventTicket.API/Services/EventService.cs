@@ -156,6 +156,18 @@ public class EventService : IEventService
         _logger.LogInformation("Etkinlik kalıcı silindi: ID {Id}", id);
     }
 
+    public async Task RestoreAsync(int id)
+    {
+        var events = await _eventRepo.FindIgnoreFiltersAsync(e => e.Id == id);
+        var ev = events.FirstOrDefault()
+            ?? throw new KeyNotFoundException("Etkinlik bulunamadı.");
+        ev.IsDeleted  = false;
+        ev.DeletedAt  = null;
+        ev.IsApproved = true;
+        await _eventRepo.UpdateAsync(ev);
+        _logger.LogInformation("Etkinlik geri alındı: ID {Id}", id);
+    }
+
     public async Task ApproveAsync(int id)
     {
         var existing = await _eventRepo.FindWithIncludesAsync(
