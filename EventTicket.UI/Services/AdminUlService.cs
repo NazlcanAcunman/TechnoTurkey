@@ -62,7 +62,7 @@ public class AdminUlService : IAdminUlService
         => await _api.PutAsync($"api/events/{id}", dto);
 
     public async Task<EventCardViewModel?> GetEventByIdAsync(int id)
-        => await _api.GetAsync<EventCardViewModel>($"api/events/{id}");
+        => await _api.GetAsync<EventCardViewModel>($"api/events/{id}/admin");
 
     public async Task CreateArtistAsync(CreateArtistDto dto)
         => await _api.PostAsync<object>("api/artists", dto);

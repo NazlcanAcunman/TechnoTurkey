@@ -133,11 +133,20 @@ public class ApiService : IApiService
         {
             var response = await _http.DeleteAsync(endpoint);
             if (!response.IsSuccessStatusCode)
-                _logger.LogWarning("DELETE {Endpoint} başarısız. StatusCode: {StatusCode}", endpoint, response.StatusCode);
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("DELETE {Endpoint} başarısız. StatusCode: {StatusCode}, Body: {Body}", endpoint, response.StatusCode, errorBody);
+                LastError = $"{(int)response.StatusCode} - {errorBody}";
+            }
+            else
+            {
+                LastError = null;
+            }
         }
         catch (HttpRequestException ex)
         {
             _logger.LogError(ex, "DELETE {Endpoint} sırasında bağlantı hatası oluştu.", endpoint);
+            LastError = "Bağlantı hatası: " + ex.Message;
         }
     }
 }

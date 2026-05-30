@@ -158,7 +158,10 @@ public class EventsController : Controller
     public async Task<IActionResult> HardDelete(int id)
     {
         await _adminService.HardDeleteEventAsync(id);
-        TempData["Success"] = "Etkinlik listeden kalıcı olarak kaldırıldı.";
+        if (_adminService.LastError != null)
+            TempData["ApiError"] = _adminService.LastError;
+        else
+            TempData["Success"] = "Etkinlik listeden kalıcı olarak kaldırıldı.";
         return RedirectToAction("Index");
     }
 }

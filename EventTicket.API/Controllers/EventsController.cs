@@ -35,6 +35,14 @@ public class EventsController : ControllerBase
     public async Task<IActionResult> GetByVenue(int venueId)
         => Ok(await _eventService.GetByVenueAsync(venueId));
 
+    [HttpGet("{id}/admin")]
+    [Authorize(Policy = "AdminOrAbove")]
+    public async Task<IActionResult> GetByIdAdmin(int id)
+    {
+        var evt = await _eventService.GetByIdForAdminAsync(id);
+        return evt == null ? NotFound() : Ok(evt);
+    }
+
     [HttpGet("all")]
     [Authorize(Policy = "AdminOrAbove")]
     public async Task<IActionResult> GetAll_Admin()

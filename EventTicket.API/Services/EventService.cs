@@ -68,6 +68,15 @@ public class EventService : IEventService
         return e == null ? null : MapToDto(e);
     }
 
+    public async Task<EventResponseDto?> GetByIdForAdminAsync(int id)
+    {
+        var events = await _eventRepo.FindIgnoreFiltersAsync(
+            e => e.Id == id,
+            e => e.Venue, e => e.Artist);
+        var e = events.FirstOrDefault();
+        return e == null ? null : MapToDto(e);
+    }
+
     public async Task<EventResponseDto> CreateAsync(CreateEventDto dto, string adminUserId, bool isSuperAdmin)
     {
         var venue = await _venueRepo.GetByIdAsync(dto.VenueId)
@@ -118,6 +127,8 @@ public class EventService : IEventService
         existing.Title           = dto.Title;
         existing.Description     = dto.Description;
         existing.Date            = dto.Date;
+        existing.IsDeleted       = false;
+        existing.DeletedAt       = null;
         existing.ImageUrl        = dto.ImageUrl;
         existing.TicketUrl       = dto.TicketUrl;
         existing.VenueId         = dto.VenueId;
