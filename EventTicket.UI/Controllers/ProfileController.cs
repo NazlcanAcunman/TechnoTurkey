@@ -129,6 +129,9 @@ public class ProfileController : BaseController
             await _profileService.AddFavoriteAsync(venueId, null);
         if (returnEventId.HasValue)
             return RedirectToAction("Details", "Events", new { id = returnEventId.Value });
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
+            Request.Headers["Accept"].ToString().Contains("application/json"))
+            return Ok(new { success = true });
         return RedirectToAction("Index");
     }
 

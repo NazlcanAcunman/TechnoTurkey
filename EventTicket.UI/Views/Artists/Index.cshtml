@@ -320,25 +320,19 @@
             const isFollowing = btn.dataset.following === 'true';
             const artistId = btn.dataset.artistId;
             const favId = btn.dataset.favId;
+            const headers = { 'X-Requested-With': 'XMLHttpRequest' };
 
             if (isFollowing) {
-                // Optimistic UI
                 btn.innerHTML = '<i class="bi bi-heart"></i> Takip Et';
                 btn.classList.remove('active');
                 btn.dataset.following = 'false';
-
                 const fd = new FormData();
                 if (favId && favId !== '0') {
                     fd.append('id', favId);
-                    try {
-                        await fetch('/Profile/RemoveFavorite', { method: 'POST', body: fd });
-                        btn.dataset.favId = '0';
-                    } catch (e) { }
+                    try { await fetch('/Profile/RemoveFavorite', { method: 'POST', body: fd, headers }); btn.dataset.favId = '0'; } catch (e) { }
                 } else {
                     fd.append('artistId', artistId);
-                    try {
-                        await fetch('/Profile/RemoveFavoriteByEntity', { method: 'POST', body: fd });
-                    } catch (e) { }
+                    try { await fetch('/Profile/RemoveFavoriteByEntity', { method: 'POST', body: fd, headers }); } catch (e) { }
                 }
                 btn._loading = false;
                 return;
@@ -348,15 +342,13 @@
             const fd = new FormData();
             fd.append('artistId', artistId);
             try {
-                const resp = await fetch('/Profile/AddFavorite', { method: 'POST', body: fd });
-                if (resp.redirected && resp.url.includes('/Auth/Login')) {
+                const resp = await fetch('/Profile/AddFavorite', { method: 'POST', body: fd, headers });
+                if (resp.status === 401 || (resp.redirected && resp.url.includes('/Auth/Login'))) {
                     window.location.href = '/Auth/Login';
-                } else if (resp.ok || resp.redirected) {
+                } else if (resp.ok) {
                     btn.innerHTML = '<i class="bi bi-heart-fill"></i> Takip Ediliyor';
                     btn.classList.add('active');
                     btn.dataset.following = 'true';
-                } else if (resp.status === 401) {
-                    window.location.href = '/Auth/Login';
                 }
             } catch (e) { }
             btn._loading = false;
