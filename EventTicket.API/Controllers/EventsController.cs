@@ -35,14 +35,6 @@ public class EventsController : ControllerBase
     public async Task<IActionResult> GetByVenue(int venueId)
         => Ok(await _eventService.GetByVenueAsync(venueId));
 
-    [HttpGet("admin/{id}")]
-    [Authorize(Policy = "AdminOrAbove")]
-    public async Task<IActionResult> GetByIdAdmin(int id)
-    {
-        var evt = await _eventService.GetByIdForAdminAsync(id);
-        return evt == null ? NotFound() : Ok(evt);
-    }
-
     [HttpGet("all")]
     [Authorize(Policy = "AdminOrAbove")]
     public async Task<IActionResult> GetAll_Admin()
@@ -78,17 +70,12 @@ public class EventsController : ControllerBase
 
     [HttpDelete("{id}")]
     [Authorize(Policy = "SuperAdminOnly")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(int id, [FromQuery] bool permanent = false)
     {
-        await _eventService.DeleteAsync(id);
-        return NoContent();
-    }
-
-    [HttpDelete("purge/{id}")]
-    [Authorize(Policy = "SuperAdminOnly")]
-    public async Task<IActionResult> HardDelete(int id)
-    {
-        await _eventService.HardDeleteAsync(id);
+        if (permanent)
+            await _eventService.HardDeleteAsync(id);
+        else
+            await _eventService.DeleteAsync(id);
         return NoContent();
     }
 
