@@ -205,18 +205,21 @@
             <div class="et-scroll-inner" style="gap:14px">
                 @foreach (var a in featuredArtists)
                 {
-                    <a href="/Events?search=@Uri.EscapeDataString(a.Name)" class="et-ac" style="text-decoration:none">
-                        <div class="et-ac-img">
-                            <img src="@a.ImageUrl" alt="@a.Name" />
-                            <span class="et-ac-genre">@a.Genre</span>
-                        </div>
+                    <div class="et-ac">
+                        <a href="/Artists/@a.Id" style="text-decoration:none">
+                            <div class="et-ac-img">
+                                <img src="@a.ImageUrl" alt="@a.Name" />
+                                <span class="et-ac-genre">@a.Genre</span>
+                            </div>
+                        </a>
                         <div class="et-ac-body">
-                            <div class="et-ac-name">@a.Name</div>
-                            <div class="et-ac-sub">@a.Genre</div>
-                            <div class="et-ac-ev">@a.Name</div>
-                            <span class="et-ac-btn"><i class="bi bi-music-note-list"></i> ETKİNLİKLERİ GÖR</span>
+                            <a href="/Artists/@a.Id" style="text-decoration:none">
+                                <div class="et-ac-name">@a.Name</div>
+                                <div class="et-ac-sub">@a.Genre</div>
+                            </a>
+                            <a href="/Events?search=@Uri.EscapeDataString(a.Name)" class="et-ac-btn" style="text-decoration:none"><i class="bi bi-music-note-list"></i> ETKİNLİKLERİ GÖR</a>
                         </div>
-                    </a>
+                    </div>
                 }
             </div>
         </div>
