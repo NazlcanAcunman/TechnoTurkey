@@ -14,11 +14,9 @@ public class UpdateEventDto
     [Required(ErrorMessage = "Tarih zorunludur.")]
     public DateTime Date { get; set; }
 
-    [Range(1, 100000, ErrorMessage = "Kapasite 1 ile 100000 arasında olmalıdır.")]
-    public int Capacity { get; set; }
+    public int Capacity { get; set; } = 999999;
 
-    [Range(0, 999999.99, ErrorMessage = "Geçerli bir fiyat giriniz.")]
-    public decimal TicketPrice { get; set; }
+    public decimal TicketPrice { get; set; } = 0;
 
     [StringLength(500, ErrorMessage = "Görsel URL en fazla 500 karakter olabilir.")]
     public string ImageUrl { get; set; } = string.Empty;

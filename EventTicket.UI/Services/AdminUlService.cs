@@ -42,6 +42,9 @@ public class AdminUlService : IAdminUlService
     public async Task DeleteEventAsync(int id)
         => await _api.DeleteAsync($"api/events/{id}");
 
+    public async Task HardDeleteEventAsync(int id)
+        => await _api.DeleteAsync($"api/events/{id}/purge");
+
     public async Task DeleteVenueAsync(int id)
         => await _api.DeleteAsync($"api/venues/{id}");
 

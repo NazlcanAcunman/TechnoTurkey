@@ -12,6 +12,7 @@ public interface IEventService
     Task<EventResponseDto> CreateAsync(CreateEventDto dto, string adminUserId, bool isSuperAdmin);
     Task UpdateAsync(int id, UpdateEventDto dto, string adminUserId, bool isSuperAdmin);
     Task DeleteAsync(int id);
+    Task HardDeleteAsync(int id);
     Task ApproveAsync(int id);
     Task RejectAsync(int id, string reason);
 }

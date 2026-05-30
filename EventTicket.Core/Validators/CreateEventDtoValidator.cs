@@ -18,10 +18,6 @@ public class CreateEventDtoValidator : AbstractValidator<CreateEventDto>
             .GreaterThan(DateTime.UtcNow).WithMessage("Etkinlik tarihi gelecekte olmalıdır.")
             .LessThan(DateTime.UtcNow.AddYears(5)).WithMessage("Etkinlik tarihi 5 yıldan fazla ileri olamaz."); 
 
-        RuleFor(x => x.Capacity)
-            .GreaterThan(0).WithMessage("Kapasite en az 1 olmalıdır.")
-            .LessThanOrEqualTo(100000).WithMessage("Kapasite 100.000'den fazla olamaz."); 
-
         RuleFor(x => x.ImageUrl)                                                           
             .MaximumLength(500).WithMessage("Görsel URL en fazla 500 karakter olabilir.")
             .Must(url => string.IsNullOrEmpty(url) || Uri.TryCreate(url, UriKind.Absolute, out _))

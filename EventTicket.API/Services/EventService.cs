@@ -82,12 +82,12 @@ public class EventService : IEventService
             Title           = dto.Title,
             Description     = dto.Description,
             Date            = dto.Date,
-            Capacity        = dto.Capacity,
+            Capacity        = 999999,
             ImageUrl        = dto.ImageUrl,
             TicketUrl       = dto.TicketUrl,
             VenueId         = dto.VenueId,
             ArtistId        = dto.ArtistId,
-            TicketPrice     = dto.TicketPrice,
+            TicketPrice     = 0,
             IsApproved      = true,
             PromoCode       = string.IsNullOrWhiteSpace(dto.PromoCode) ? null : dto.PromoCode.ToUpperInvariant(),
             DiscountPercent = dto.DiscountPercent,
@@ -118,8 +118,6 @@ public class EventService : IEventService
         existing.Title           = dto.Title;
         existing.Description     = dto.Description;
         existing.Date            = dto.Date;
-        existing.Capacity        = dto.Capacity;
-        existing.TicketPrice     = dto.TicketPrice;
         existing.ImageUrl        = dto.ImageUrl;
         existing.TicketUrl       = dto.TicketUrl;
         existing.VenueId         = dto.VenueId;
@@ -139,6 +137,12 @@ public class EventService : IEventService
     {
         await _eventRepo.DeleteAsync(id);
         _logger.LogInformation("Etkinlik silindi: ID {Id}", id);
+    }
+
+    public async Task HardDeleteAsync(int id)
+    {
+        await _eventRepo.HardDeleteAsync(id);
+        _logger.LogInformation("Etkinlik kalıcı silindi: ID {Id}", id);
     }
 
     public async Task ApproveAsync(int id)

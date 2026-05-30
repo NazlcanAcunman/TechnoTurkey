@@ -20,6 +20,7 @@ public interface IAdminUlService
 
     // Silme
     Task DeleteEventAsync(int id);
+    Task HardDeleteEventAsync(int id);
     Task DeleteVenueAsync(int id);
     Task DeleteArtistAsync(int id);
 

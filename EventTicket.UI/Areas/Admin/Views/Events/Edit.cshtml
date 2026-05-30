@@ -58,6 +58,7 @@
                         Fotoğraf Yükle
                         <input type="file" accept="image/*" style="display:none" onchange="uploadToCloudinary(this,'eventImageUrl','eventImgPreview')" />
                     </label>
+                    <button type="button" onclick="clearEventImage()" title="Görseli Kaldır" class="img-clear-btn">&#10005;</button>
                 </div>
                 <img id="eventImgPreview" src="@Model.ImageUrl" alt="" style="@(string.IsNullOrEmpty(Model.ImageUrl) ? "display:none;" : "")margin-top:10px;max-height:120px;border-radius:8px;object-fit:cover" />
             </div>
@@ -257,11 +258,35 @@
 }
 .admin-field-input:focus { border-color: rgba(255,255,255,0.25); }
 .admin-field-input option { background: #1a1a1a; }
+.img-clear-btn {
+    flex-shrink: 0;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid #ef4444;
+    background: rgba(239,68,68,0.2);
+    color: #f87171;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.img-clear-btn:hover { background: #ef4444; color: #fff; }
 </style>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        // ── Görsel Temizle ──
+        window.clearEventImage = function () {
+            document.getElementById('eventImageUrl').value = '';
+            var img = document.getElementById('eventImgPreview');
+            img.src = '';
+            img.style.display = 'none';
+        };
+
         // ── Badge / Afiş Etiketi ──
         (function () {
             var textInput    = document.getElementById('badge-text-input');

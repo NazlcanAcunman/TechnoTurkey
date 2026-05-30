@@ -62,8 +62,6 @@ public class EventsController : Controller
             Title           = model.Title,
             Description     = model.Description,
             Date            = model.Date,
-            Capacity        = model.Capacity,
-            TicketPrice     = model.TicketPrice,
             ImageUrl        = model.ImageUrl,
             TicketUrl       = model.TicketUrl,
             VenueId         = model.VenueId,
@@ -94,8 +92,6 @@ public class EventsController : Controller
             Title           = ev.Title,
             Description     = ev.Description,
             Date            = ev.Date,
-            Capacity        = ev.Capacity,
-            TicketPrice     = ev.TicketPrice,
             ImageUrl        = ev.ImageUrl,
             TicketUrl       = ev.TicketUrl,
             VenueId         = ev.VenueId,
@@ -129,8 +125,6 @@ public class EventsController : Controller
             Title           = model.Title,
             Description     = model.Description,
             Date            = model.Date,
-            Capacity        = model.Capacity,
-            TicketPrice     = model.TicketPrice,
             ImageUrl        = model.ImageUrl,
             TicketUrl       = model.TicketUrl,
             VenueId         = model.VenueId,
@@ -148,13 +142,23 @@ public class EventsController : Controller
         return RedirectToAction("Index");
     }
 
-    // POST: Delete
+    // POST: Delete (soft)
     [HttpPost]
     [Authorize(Roles = "SuperAdmin")]
     public async Task<IActionResult> Delete(int id)
     {
         await _adminService.DeleteEventAsync(id);
         TempData["Success"] = "Etkinlik silindi.";
+        return RedirectToAction("Index");
+    }
+
+    // POST: HardDelete (kalıcı)
+    [HttpPost]
+    [Authorize(Roles = "SuperAdmin")]
+    public async Task<IActionResult> HardDelete(int id)
+    {
+        await _adminService.HardDeleteEventAsync(id);
+        TempData["Success"] = "Etkinlik listeden kalıcı olarak kaldırıldı.";
         return RedirectToAction("Index");
     }
 }

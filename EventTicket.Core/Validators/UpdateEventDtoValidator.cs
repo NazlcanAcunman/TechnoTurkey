@@ -16,10 +16,6 @@ public class UpdateEventDtoValidator : AbstractValidator<UpdateEventDto>
         RuleFor(x => x.Description)
             .MaximumLength(2000).WithMessage("Açıklama en fazla 2000 karakter olabilir.");
 
-        RuleFor(x => x.Capacity)
-            .GreaterThan(0).WithMessage("Kapasite en az 1 olmalıdır.")
-            .LessThanOrEqualTo(100000).WithMessage("Kapasite 100000'den fazla olamaz.");
-
         RuleFor(x => x.ImageUrl)
             .MaximumLength(500).WithMessage("Görsel URL en fazla 500 karakter olabilir.")
             .Must(url => string.IsNullOrEmpty(url) || Uri.TryCreate(url, UriKind.Absolute, out _))

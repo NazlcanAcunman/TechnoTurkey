@@ -105,6 +105,15 @@ public abstract class RepositoryBase<T> : IRepository<T> where T : class
         await Context.SaveChangesAsync();
     }
 
+    public virtual async Task HardDeleteAsync(int id)
+    {
+        var entity = await DbSet.IgnoreQueryFilters()
+            .FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
+        if (entity is null) return;
+        DbSet.Remove(entity);
+        await Context.SaveChangesAsync();
+    }
+
     public virtual async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null)
         => predicate is null
             ? await DbSet.CountAsync()

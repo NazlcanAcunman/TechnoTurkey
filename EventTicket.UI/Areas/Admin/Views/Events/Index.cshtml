@@ -90,6 +90,17 @@
                                         </button>
                                     </form>
                                 }
+                                @if (User.IsInRole("SuperAdmin"))
+                                {
+                                    <form asp-action="HardDelete" method="post" style="margin:0" class="delete-form">
+                                        <input type="hidden" name="id" value="@e.Id" />
+                                        <button type="button" class="btn-admin btn-sm"
+                                                style="background:rgba(239,68,68,0.2);border:1px solid #ef4444;color:#fca5a5"
+                                                onclick="confirmDelete(this.closest('form'), '@e.Title listeden kalıcı olarak silinecek. Bu işlem geri alınamaz!')">
+                                            Listeden Kaldır
+                                        </button>
+                                    </form>
+                                }
                             </div>
                         </td>
                     </tr>

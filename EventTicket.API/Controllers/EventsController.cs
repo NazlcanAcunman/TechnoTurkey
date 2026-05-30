@@ -76,6 +76,14 @@ public class EventsController : ControllerBase
         return NoContent();
     }
 
+    [HttpDelete("{id}/purge")]
+    [Authorize(Policy = "SuperAdminOnly")]
+    public async Task<IActionResult> HardDelete(int id)
+    {
+        await _eventService.HardDeleteAsync(id);
+        return NoContent();
+    }
+
     [HttpPatch("{id}/approve")]
     [Authorize(Policy = "SuperAdminOnly")]
     public async Task<IActionResult> Approve(int id)
