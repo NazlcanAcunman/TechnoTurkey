@@ -238,17 +238,20 @@
             @foreach (var artist in displayArtists)
             {
                 var genre = artist.Genre ?? "";
-                var gi2 = genreImgs.ContainsKey(genre) ? genreImgs[genre]
-                    : genreImgs.FirstOrDefault(kv => kv.Key.Equals(genre, StringComparison.OrdinalIgnoreCase)).Value;
+                var genres = genre.Split(',').Select(g => g.Trim()).Where(g => g.Length > 0).ToList();
+                var firstGenre = genres.FirstOrDefault() ?? "";
+                var gi2 = genreImgs.ContainsKey(firstGenre) ? genreImgs[firstGenre]
+                    : genreImgs.FirstOrDefault(kv => kv.Key.Equals(firstGenre, StringComparison.OrdinalIgnoreCase)).Value;
                 var fallbackImg = gi2 ?? $"https://picsum.photos/seed/artist-{artist.Id}/400/400";
                 var imgSrc = !string.IsNullOrEmpty(artist.ImageUrl) ? artist.ImageUrl : fallbackImg;
+                var bioText = artist.Bio?.StartsWith("http") == true ? null : artist.Bio;
                 <div class="artist-card" data-genre="@(artist.Genre?.ToLower() ?? "")">
                     <a href="/Events?search=@Uri.EscapeDataString(artist.Name)" style="display:block;text-decoration:none">
                     <div class="artist-card-img">
                         <img src="@imgSrc" alt="@artist.Name" />
-                        @if (!string.IsNullOrEmpty(artist.Genre))
+                        @if (firstGenre.Length > 0)
                         {
-                            <span class="artist-card-genre">@artist.Genre</span>
+                            <span class="artist-card-genre">@firstGenre</span>
                         }
                     </div>
                     </a>
@@ -256,9 +259,18 @@
                         <a href="/Events?search=@Uri.EscapeDataString(artist.Name)" style="text-decoration:none">
                         <div class="artist-card-name">@artist.Name</div>
                         </a>
-                        @if (!string.IsNullOrEmpty(artist.Bio))
+                        @if (genres.Count > 1)
                         {
-                            <div class="artist-card-bio">@artist.Bio</div>
+                            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px">
+                                @foreach (var g in genres)
+                                {
+                                    <span style="font-size:9px;font-weight:800;letter-spacing:0.08em;color:#000;background:#fff;padding:2px 7px;border-radius:100px">@g</span>
+                                }
+                            </div>
+                        }
+                        @if (!string.IsNullOrEmpty(bioText))
+                        {
+                            <div class="artist-card-bio">@bioText</div>
                         }
                         @{
                             var alreadyFollowing = followedMap.ContainsKey(artist.Id);
