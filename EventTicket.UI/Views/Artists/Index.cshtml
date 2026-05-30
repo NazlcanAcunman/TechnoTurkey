@@ -237,11 +237,6 @@
         <div class="artist-grid">
             @foreach (var artist in displayArtists)
             {
-                var followers = ((artist.Id * 137 + 42) % 900 + 100) * 1000;
-                var followerStr = followers >= 1000000
-                    ? $"{followers / 1000000.0:F1}M"
-                    : $"{followers / 1000}K";
-                var eventCount = (artist.Id % 8) + 3;
                 var genre = artist.Genre ?? "";
                 var gi2 = genreImgs.ContainsKey(genre) ? genreImgs[genre]
                     : genreImgs.FirstOrDefault(kv => kv.Key.Equals(genre, StringComparison.OrdinalIgnoreCase)).Value;
@@ -265,16 +260,6 @@
                         {
                             <div class="artist-card-bio">@artist.Bio</div>
                         }
-                        <div class="artist-card-stats">
-                            <div class="artist-stat">
-                                <span class="artist-stat-num">@followerStr</span>
-                                <span class="artist-stat-label">Takipçi</span>
-                            </div>
-                            <div class="artist-stat" style="text-align:right">
-                                <span class="artist-stat-num">@eventCount</span>
-                                <span class="artist-stat-label">Etkinlik</span>
-                            </div>
-                        </div>
                         @{
                             var alreadyFollowing = followedMap.ContainsKey(artist.Id);
                             var favId = alreadyFollowing ? followedMap[artist.Id] : 0;
