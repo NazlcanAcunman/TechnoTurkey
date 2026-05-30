@@ -200,15 +200,19 @@
     </div>
 
     <!-- Genre filter bar -->
+    @{
+        var allGenres = new[] {
+            "Techno","House","Hard Techno","Melodic Techno","Melodic House",
+            "Tech House","Afro","Minimal","Pop","Rock","Hip-Hop","Jazz",
+            "Elektronik","Alternatif","Akustik","Downtempo","EDM","Disco"
+        };
+    }
     <div style="max-width:1280px;margin:0 auto;padding:0 20px 20px;display:flex;gap:8px;flex-wrap:wrap">
-        @{
-            var uniqueGenres = displayArtists.Select(a => a.Genre ?? "").Where(g => !string.IsNullOrEmpty(g)).Distinct().ToList();
-        }
-        <button onclick="filterArtist('all',this)" class="org-filter-chip active"
-                style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:rgba(255,255,255,0.45);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:7px 16px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-transform:uppercase">
+        <button onclick="filterArtist('all',this)" class="art-genre-chip active"
+                style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:#fff;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:100px;padding:7px 16px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-transform:uppercase">
             Tümü
         </button>
-        @foreach (var g in uniqueGenres)
+        @foreach (var g in allGenres)
         {
             <button onclick="filterArtist('@g.ToLower()',this)"
                     style="font-size:11px;font-weight:700;letter-spacing:0.06em;color:rgba(255,255,255,0.45);background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:100px;padding:7px 16px;cursor:pointer;font-family:inherit;transition:all 0.2s;text-transform:uppercase"
