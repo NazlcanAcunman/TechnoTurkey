@@ -43,7 +43,7 @@ public class AdminUlService : IAdminUlService
         => await _api.DeleteAsync($"api/events/{id}");
 
     public async Task HardDeleteEventAsync(int id)
-        => await _api.DeleteAsync($"api/events/{id}/purge");
+        => await _api.DeleteAsync($"api/events/purge/{id}");
 
     public async Task DeleteVenueAsync(int id)
         => await _api.DeleteAsync($"api/venues/{id}");
@@ -62,7 +62,7 @@ public class AdminUlService : IAdminUlService
         => await _api.PutAsync($"api/events/{id}", dto);
 
     public async Task<EventCardViewModel?> GetEventByIdAsync(int id)
-        => await _api.GetAsync<EventCardViewModel>($"api/events/{id}/admin");
+        => await _api.GetAsync<EventCardViewModel>($"api/events/admin/{id}");
 
     public async Task CreateArtistAsync(CreateArtistDto dto)
         => await _api.PostAsync<object>("api/artists", dto);

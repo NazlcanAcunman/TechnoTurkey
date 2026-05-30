@@ -35,7 +35,7 @@ public class EventsController : ControllerBase
     public async Task<IActionResult> GetByVenue(int venueId)
         => Ok(await _eventService.GetByVenueAsync(venueId));
 
-    [HttpGet("{id}/admin")]
+    [HttpGet("admin/{id}")]
     [Authorize(Policy = "AdminOrAbove")]
     public async Task<IActionResult> GetByIdAdmin(int id)
     {
@@ -84,7 +84,7 @@ public class EventsController : ControllerBase
         return NoContent();
     }
 
-    [HttpDelete("{id}/purge")]
+    [HttpDelete("purge/{id}")]
     [Authorize(Policy = "SuperAdminOnly")]
     public async Task<IActionResult> HardDelete(int id)
     {
