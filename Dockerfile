@@ -13,7 +13,9 @@ RUN dotnet restore "EventTicket.API/EventTicket.API.csproj"
 
 COPY . .
 WORKDIR "/src/EventTicket.API"
-RUN dotnet build "EventTicket.API.csproj" -c Release -o /app/build
+ARG RAILWAY_GIT_COMMIT_SHA=unknown
+ARG RENDER_GIT_COMMIT=unknown
+RUN echo "Build: ${RAILWAY_GIT_COMMIT_SHA}${RENDER_GIT_COMMIT}" && dotnet build "EventTicket.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
 RUN dotnet publish "EventTicket.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
