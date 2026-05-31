@@ -202,14 +202,14 @@
                 @foreach (var a in featuredArtists)
                 {
                     <div class="et-ac">
-                        <a href="/Artists/@a.Id" style="text-decoration:none">
+                        <a href="/Events?search=@Uri.EscapeDataString(a.Name)" style="text-decoration:none">
                             <div class="et-ac-img">
                                 <img src="@a.ImageUrl" alt="@a.Name" />
                                 <span class="et-ac-genre">@a.Genre</span>
                             </div>
                         </a>
                         <div class="et-ac-body">
-                            <a href="/Artists/@a.Id" style="text-decoration:none">
+                            <a href="/Events?search=@Uri.EscapeDataString(a.Name)" style="text-decoration:none">
                                 <div class="et-ac-name">@a.Name</div>
                                 <div class="et-ac-sub">@a.Genre</div>
                             </a>
@@ -364,54 +364,6 @@
 
 
 
-<!-- ════ KATEGORİLER ════ -->
-<div class="et-section">
-    <div class="et-section-header">
-        <span class="et-section-title">Kategoriler</span>
-    </div>
-    <div class="et-genre-grid">
-        <a href="/Events?search=festival" class="et-genre-tile" style="--gc:#f59e0b;text-decoration:none">
-            <i class="bi bi-music-note-beamed"></i>
-            <span>Festivaller</span>
-            <span class="et-genre-chevron">›</span>
-        </a>
-        <a href="/Events?search=konser" class="et-genre-tile" style="--gc:#a78bfa;text-decoration:none">
-            <i class="bi bi-camera-video"></i>
-            <span>Konserler</span>
-            <span class="et-genre-chevron">›</span>
-        </a>
-        <a asp-controller="Artists" asp-action="Index" class="et-genre-tile" style="--gc:#34d399;text-decoration:none">
-            <i class="bi bi-people-fill"></i>
-            <span>Sanatçılar</span>
-            <span class="et-genre-chevron">›</span>
-        </a>
-        <a href="/Events?search=elektronik" class="et-genre-tile" style="--gc:#38bdf8;text-decoration:none">
-            <i class="bi bi-soundwave"></i>
-            <span>Elektronik</span>
-            <span class="et-genre-chevron">›</span>
-        </a>
-        <a href="/Events?search=pop" class="et-genre-tile" style="--gc:#fb7185;text-decoration:none">
-            <i class="bi bi-star-fill"></i>
-            <span>Pop</span>
-            <span class="et-genre-chevron">›</span>
-        </a>
-        <a href="/Events?search=rock" class="et-genre-tile" style="--gc:#f97316;text-decoration:none">
-            <i class="bi bi-lightning-charge-fill"></i>
-            <span>Rock</span>
-            <span class="et-genre-chevron">›</span>
-        </a>
-        <a href="/Events?search=hiphop" class="et-genre-tile" style="--gc:#e879f9;text-decoration:none">
-            <i class="bi bi-vinyl-fill"></i>
-            <span>Hip-Hop</span>
-            <span class="et-genre-chevron">›</span>
-        </a>
-        <a href="/Events?search=magazin" class="et-genre-tile" style="--gc:#fbbf24;text-decoration:none">
-            <i class="bi bi-newspaper"></i>
-            <span>Magazin</span>
-            <span class="et-genre-chevron">›</span>
-        </a>
-    </div>
-</div>
 
 @if (User.Identity == null || !User.Identity.IsAuthenticated)
 {
