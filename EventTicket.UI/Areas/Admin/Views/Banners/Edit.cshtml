@@ -71,15 +71,22 @@
                 </div>
             </div>
 
+            @* Etkinlik Seç *@
+            <div style="margin-bottom:18px">
+                <label class="admin-field-label">Etkinlik (tıklanınca etkinlik sayfasına gitsin)</label>
+                <select asp-for="EventId" asp-items="Model.EventOptions" class="admin-field-input">
+                </select>
+                <span style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:5px;display:block">Seçilirse banner/slider doğrudan etkinlik sayfasına yönlendirir</span>
+            </div>
+
             @* Arama Sorgusu + Bilet URL *@
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px">
                 <div>
-                    <label class="admin-field-label">Arama Sorgusu</label>
+                    <label class="admin-field-label">Arama Sorgusu <span style="color:rgba(255,255,255,0.25)">(Etkinlik seçilmezse)</span></label>
                     <input asp-for="SearchQuery" class="admin-field-input" placeholder="Örn: ZAMNA" />
-                    <span style="font-size:11px;color:rgba(255,255,255,0.25);margin-top:5px;display:block">Etkinlik arama sayfasına yönlendirir</span>
                 </div>
                 <div>
-                    <label class="admin-field-label">Bilet URL</label>
+                    <label class="admin-field-label">Harici Bilet URL</label>
                     <input asp-for="TicketUrl" class="admin-field-input" placeholder="https://biletix.com/..." />
                 </div>
             </div>

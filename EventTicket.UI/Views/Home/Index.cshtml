@@ -49,8 +49,15 @@
 
 @if (bannerSlide != null)
 {
+    string fullbannerUrl = bannerSlide.EventId.HasValue
+        ? "/Events/Details/" + bannerSlide.EventId
+        : (!string.IsNullOrEmpty(bannerSlide.TicketUrl)
+            ? bannerSlide.TicketUrl
+            : (!string.IsNullOrEmpty(bannerSlide.SearchQuery)
+                ? "/Events?search=" + Uri.EscapeDataString(bannerSlide.SearchQuery)
+                : "/Events"));
 <!-- ════ FULL VIEWPORT HERO BANNER ════ -->
-<div class="et-fullbanner" onclick="document.querySelector('.et-hero-wrap')?.scrollIntoView({behavior:'smooth'})">
+<div class="et-fullbanner" onclick="location.href='@fullbannerUrl'" style="cursor:pointer">
     <img src="@bannerSlide.ImageUrl" alt="@bannerSlide.Title" class="et-fullbanner-bg">
     <div class="et-fullbanner-overlay"></div>
     <div class="et-fullbanner-content">
@@ -59,18 +66,9 @@
         </div>
         <h1 class="et-fullbanner-title">@bannerSlide.Title</h1>
         <p class="et-fullbanner-sub">@bannerSlide.SubTitle</p>
-        @if (!string.IsNullOrEmpty(bannerSlide.SearchQuery))
-        {
-            <a href="/Events?search=@Uri.EscapeDataString(bannerSlide.SearchQuery)" class="et-fullbanner-btn" onclick="event.stopPropagation();event.preventDefault();window.location='/Events?search=@Uri.EscapeDataString(bannerSlide.SearchQuery)'">
-                <i class="bi bi-ticket-perforated"></i> BİLET AL
-            </a>
-        }
-        else
-        {
-            <a href="/Events" class="et-fullbanner-btn">
-                <i class="bi bi-ticket-perforated"></i> ETKİNLİKLER
-            </a>
-        }
+        <a href="@fullbannerUrl" class="et-fullbanner-btn" onclick="event.stopPropagation()">
+            <i class="bi bi-ticket-perforated"></i> BİLET AL
+        </a>
     </div>
     <div class="et-fullbanner-scroll"><i class="bi bi-chevron-compact-down"></i></div>
 </div>
@@ -104,7 +102,14 @@
     <div class="et-hero-slides" id="heroSlides">
         @foreach (var hs in heroSlides)
         {
-            <div class="et-hero-slide">
+            string hsUrl = hs.EventId.HasValue
+                ? "/Events/Details/" + hs.EventId
+                : (!string.IsNullOrEmpty(hs.TicketUrl)
+                    ? hs.TicketUrl
+                    : (!string.IsNullOrEmpty(hs.SearchQuery)
+                        ? "/Events?search=" + Uri.EscapeDataString(hs.SearchQuery)
+                        : "/Events"));
+            <div class="et-hero-slide" onclick="location.href='@hsUrl'" style="cursor:pointer">
                 <img src="@hs.ImageUrl" alt="@hs.Title" />
                 <div class="et-hero-overlay">
                     <div class="et-hero-content">
@@ -115,18 +120,9 @@
                         <div class="et-hero-title">@hs.Title</div>
                         <div class="et-hero-artist">@hs.SubTitle</div>
                         <div style="display:flex;gap:12px;align-items:center;margin-top:24px">
-                            @if (!string.IsNullOrEmpty(hs.SearchQuery))
-                            {
-                                <a href="/Events?search=@Uri.EscapeDataString(hs.SearchQuery)" class="et-hero-btn">
-                                    <i class="bi bi-ticket-perforated"></i> BİLET AL
-                                </a>
-                            }
-                            else
-                            {
-                                <a href="/Events" class="et-hero-btn">
-                                    <i class="bi bi-ticket-perforated"></i> ETKİNLİKLER
-                                </a>
-                            }
+                            <a href="@hsUrl" class="et-hero-btn" onclick="event.stopPropagation()">
+                                <i class="bi bi-ticket-perforated"></i> BİLET AL
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -230,8 +226,15 @@
 
 @if (featuredBanner != null)
 {
+    string fbUrl = featuredBanner.EventId.HasValue
+        ? "/Events/Details/" + featuredBanner.EventId
+        : (!string.IsNullOrEmpty(featuredBanner.TicketUrl)
+            ? featuredBanner.TicketUrl
+            : (!string.IsNullOrEmpty(featuredBanner.SearchQuery)
+                ? "/Events?search=" + Uri.EscapeDataString(featuredBanner.SearchQuery)
+                : "/Events"));
 <div class="et-banner-section">
-    <div class="et-banner-inner">
+    <div class="et-banner-inner" onclick="location.href='@fbUrl'" style="cursor:pointer">
         <img src="@featuredBanner.ImageUrl" alt="@featuredBanner.Title" />
         <div class="et-feat-overlay">
             <div class="et-banner-content">
@@ -254,18 +257,9 @@
                     }
                 </div>
                 <div style="display:flex;gap:12px;align-items:center;margin-top:28px;flex-wrap:wrap">
-                    @if (!string.IsNullOrEmpty(featuredBanner.SearchQuery))
-                    {
-                        <a href="/Events?search=@Uri.EscapeDataString(featuredBanner.SearchQuery)" class="et-hero-btn">
-                            <i class="bi bi-ticket-perforated"></i> BİLET AL
-                        </a>
-                    }
-                    else
-                    {
-                        <a href="/Events" class="et-hero-btn">
-                            <i class="bi bi-ticket-perforated"></i> ETKİNLİKLER
-                        </a>
-                    }
+                    <a href="@fbUrl" class="et-hero-btn" onclick="event.stopPropagation()">
+                        <i class="bi bi-ticket-perforated"></i> BİLET AL
+                    </a>
                 </div>
             </div>
         </div>

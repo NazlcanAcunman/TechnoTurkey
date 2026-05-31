@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css" />
 </head>
 @{
     var adminDisplayName = User.Identity?.Name ?? "";
@@ -261,34 +262,111 @@
         });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- ── Cropper Modal ── -->
+    <div id="cropperModal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.88);align-items:center;justify-content:center;">
+        <div style="background:#111;border:1px solid rgba(255,255,255,0.1);border-radius:18px;padding:24px;width:min(820px,96vw);max-height:93vh;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <span style="color:#fff;font-size:15px;font-weight:700">Fotoğrafı Ayarla</span>
+                <button onclick="closeCropper()" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:6px 14px;color:rgba(255,255,255,0.7);cursor:pointer;font-family:inherit;font-size:13px">✕ Kapat</button>
+            </div>
+            <div style="flex:1;overflow:hidden;border-radius:10px;background:#000;max-height:58vh">
+                <img id="cropperImage" style="max-width:100%;display:block" />
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                <button onclick="cropperInstance.zoom(0.1)"  style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 16px;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">+ Büyüt</button>
+                <button onclick="cropperInstance.zoom(-0.1)" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 16px;color:#fff;cursor:pointer;font-family:inherit;font-size:13px;font-weight:700">− Küçült</button>
+                <button onclick="cropperInstance.rotate(-90)" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 14px;color:#fff;cursor:pointer;font-family:inherit;font-size:13px">↺ Sol</button>
+                <button onclick="cropperInstance.rotate(90)"  style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 14px;color:#fff;cursor:pointer;font-family:inherit;font-size:13px">↻ Sağ</button>
+                <button onclick="cropperInstance.reset()"    style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:7px 14px;color:rgba(255,255,255,0.5);cursor:pointer;font-family:inherit;font-size:12px">Sıfırla</button>
+                <button id="cropperConfirmBtn" onclick="confirmCrop()" style="margin-left:auto;background:#fff;color:#000;border:none;border-radius:8px;padding:9px 22px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit">✓ Kırp ve Yükle</button>
+            </div>
+            <div style="font-size:11px;color:rgba(255,255,255,0.25)">Kırp kutusunu sürükleyerek konumlandır · Sürükle ile kaydır · Scroll ile zoom yap</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
     <script>
         const CLOUDINARY_CLOUD = 'dqwhpi0ue';
         const CLOUDINARY_PRESET = 'technoturkey_uploads';
 
-        async function uploadToCloudinary(inputEl, targetId, previewId) {
+        let cropperInstance = null;
+        let cropperCtx = null;
+
+        function uploadToCloudinary(inputEl, targetId, previewId) {
             const file = inputEl.files[0];
             if (!file) return;
             const btn = inputEl.closest('.upload-wrap')?.querySelector('.upload-btn');
-            if (btn) { btn.textContent = 'Yükleniyor...'; btn.disabled = true; }
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_PRESET);
-            try {
-                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: formData });
-                const data = await res.json();
-                if (data.secure_url) {
-                    document.getElementById(targetId).value = data.secure_url;
-                    if (previewId) {
-                        const prev = document.getElementById(previewId);
-                        if (prev) { prev.src = data.secure_url; prev.style.display = 'block'; }
+            if (btn) { btn.textContent = 'Hazırlanıyor...'; btn.disabled = true; }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.getElementById('cropperImage');
+                img.src = e.target.result;
+                if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+                document.getElementById('cropperModal').style.display = 'flex';
+                setTimeout(() => {
+                    cropperInstance = new Cropper(img, {
+                        viewMode: 1,
+                        dragMode: 'move',
+                        autoCropArea: 1,
+                        restore: false,
+                        guides: true,
+                        center: true,
+                        highlight: false,
+                        cropBoxMovable: true,
+                        cropBoxResizable: true,
+                        toggleDragModeOnDblclick: false,
+                        wheelZoomRatio: 0.1,
+                    });
+                }, 50);
+                cropperCtx = { targetId, previewId, btn };
+                const confirmBtn = document.getElementById('cropperConfirmBtn');
+                if (confirmBtn) { confirmBtn.textContent = '✓ Kırp ve Yükle'; confirmBtn.disabled = false; }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function closeCropper() {
+            document.getElementById('cropperModal').style.display = 'none';
+            if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+            if (cropperCtx?.btn) { cropperCtx.btn.textContent = 'Fotoğraf Yükle'; cropperCtx.btn.disabled = false; cropperCtx.btn.style.background = ''; }
+            cropperCtx = null;
+        }
+
+        async function confirmCrop() {
+            if (!cropperInstance || !cropperCtx) return;
+            const { targetId, previewId, btn } = cropperCtx;
+            const confirmBtn = document.getElementById('cropperConfirmBtn');
+            if (confirmBtn) { confirmBtn.textContent = 'Yükleniyor...'; confirmBtn.disabled = true; }
+
+            const canvas = cropperInstance.getCroppedCanvas({ maxWidth: 2400, maxHeight: 2400, imageSmoothingQuality: 'high' });
+            canvas.toBlob(async (blob) => {
+                const formData = new FormData();
+                formData.append('file', blob, 'image.jpg');
+                formData.append('upload_preset', CLOUDINARY_PRESET);
+                try {
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method: 'POST', body: formData });
+                    const data = await res.json();
+                    if (data.secure_url) {
+                        document.getElementById(targetId).value = data.secure_url;
+                        if (previewId) {
+                            const prev = document.getElementById(previewId);
+                            if (prev) { prev.src = data.secure_url; prev.style.display = 'block'; }
+                        }
+                        if (btn) { btn.textContent = '✓ Yüklendi'; btn.style.background = '#22c55e'; btn.style.color = '#000'; btn.disabled = false; }
+                        document.getElementById('cropperModal').style.display = 'none';
+                        if (cropperInstance) { cropperInstance.destroy(); cropperInstance = null; }
+                        cropperCtx = null;
+                    } else {
+                        if (btn) { btn.textContent = 'Hata!'; btn.style.background = '#ef4444'; btn.disabled = false; }
+                        if (confirmBtn) { confirmBtn.textContent = '✓ Kırp ve Yükle'; confirmBtn.disabled = false; }
                     }
-                    if (btn) { btn.textContent = '✓ Yüklendi'; btn.style.background = '#22c55e'; btn.style.color = '#000'; }
-                } else {
+                } catch {
                     if (btn) { btn.textContent = 'Hata!'; btn.style.background = '#ef4444'; btn.disabled = false; }
+                    if (confirmBtn) { confirmBtn.textContent = '✓ Kırp ve Yükle'; confirmBtn.disabled = false; }
                 }
-            } catch {
-                if (btn) { btn.textContent = 'Hata!'; btn.style.background = '#ef4444'; btn.disabled = false; }
-            }
+            }, 'image/jpeg', 0.92);
         }
     </script>
 </body>

@@ -2,6 +2,7 @@ using EventTicket.UI.Services;
 using EventTicket.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EventTicket.UI.Areas.Admin.Controllers;
 
@@ -10,10 +11,12 @@ namespace EventTicket.UI.Areas.Admin.Controllers;
 public class BannersController : Controller
 {
     private readonly IBannerUlService _bannerService;
+    private readonly IAdminUlService _adminService;
 
-    public BannersController(IBannerUlService bannerService)
+    public BannersController(IBannerUlService bannerService, IAdminUlService adminService)
     {
         _bannerService = bannerService;
+        _adminService = adminService;
     }
 
     public async Task<IActionResult> Index()
@@ -24,10 +27,11 @@ public class BannersController : Controller
     }
 
     // GET: Create
-    public IActionResult Create()
+    public async Task<IActionResult> Create()
     {
         ViewData["Title"] = "Yeni Banner Ekle";
-        return View(new BannerViewModel());
+        var model = new BannerViewModel { EventOptions = await GetEventOptionsAsync() };
+        return View(model);
     }
 
     // POST: Create
@@ -36,7 +40,10 @@ public class BannersController : Controller
     public async Task<IActionResult> Create(BannerViewModel model)
     {
         if (!ModelState.IsValid)
+        {
+            model.EventOptions = await GetEventOptionsAsync();
             return View(model);
+        }
 
         await _bannerService.CreateAsync(model);
         TempData["Success"] = "Banner başarıyla oluşturuldu.";
@@ -49,6 +56,7 @@ public class BannersController : Controller
         ViewData["Title"] = "Banner Düzenle";
         var banner = await _bannerService.GetByIdAsync(id);
         if (banner == null) return NotFound();
+        banner.EventOptions = await GetEventOptionsAsync();
         return View(banner);
     }
 
@@ -58,7 +66,10 @@ public class BannersController : Controller
     public async Task<IActionResult> Edit(int id, BannerViewModel model)
     {
         if (!ModelState.IsValid)
+        {
+            model.EventOptions = await GetEventOptionsAsync();
             return View(model);
+        }
 
         await _bannerService.UpdateAsync(id, model);
         TempData["Success"] = "Banner başarıyla güncellendi.";
@@ -72,5 +83,16 @@ public class BannersController : Controller
         await _bannerService.DeleteAsync(id);
         TempData["Success"] = "Banner silindi.";
         return RedirectToAction("Index");
+    }
+
+    private async Task<List<SelectListItem>> GetEventOptionsAsync()
+    {
+        var events = await _adminService.GetAllEventsAsync();
+        var options = events
+            .OrderBy(e => e.Title)
+            .Select(e => new SelectListItem(e.Title, e.Id.ToString()))
+            .ToList();
+        options.Insert(0, new SelectListItem("— Seçiniz —", ""));
+        return options;
     }
 }

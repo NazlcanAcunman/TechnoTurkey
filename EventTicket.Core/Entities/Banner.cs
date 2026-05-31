@@ -9,6 +9,7 @@ public class Banner : BaseEntity
     public string? DateText { get; set; }   // "6-7 Haziran 2026"
     public string? Venue { get; set; }
     public string ImageUrl { get; set; } = string.Empty;
+    public int? EventId { get; set; }
     public string? SearchQuery { get; set; }
     public string? TicketUrl { get; set; }
     public BannerType Type { get; set; } = BannerType.HeroSlide;

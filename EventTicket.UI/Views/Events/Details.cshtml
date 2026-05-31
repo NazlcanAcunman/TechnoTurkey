@@ -17,15 +17,17 @@
             <h1 class="event-detail-title">@Model.Event.Title</h1>
             <div class="event-detail-meta">
                 <div class="event-detail-meta-item">
-                    <span>Tarih</span>@Model.Event.Date.ToString("dd MMMM yyyy, HH:mm")
+                    <span>Tarih</span>
+                    <span class="meta-value">@Model.Event.Date.ToString("dd MMMM yyyy, HH:mm")</span>
                 </div>
                 <div class="event-detail-meta-item">
-                    <span>Mekan</span>@Model.Event.VenueName
+                    <span>Mekan</span>
+                    <span class="meta-value">@Model.Event.VenueName</span>
                 </div>
                 <div class="event-detail-meta-item">
-                    <span>Sanatçı</span>@Model.Event.ArtistName
+                    <span>Sanatçı</span>
+                    <span class="meta-value">@Model.Event.ArtistName</span>
                 </div>
-
             </div>
         </div>
 

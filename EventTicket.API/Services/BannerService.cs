@@ -37,6 +37,7 @@ public class BannerService : IBannerService
             DateText = dto.DateText,
             Venue = dto.Venue,
             ImageUrl = dto.ImageUrl,
+            EventId = dto.EventId,
             SearchQuery = dto.SearchQuery,
             TicketUrl = dto.TicketUrl,
             Type = dto.Type,
@@ -58,6 +59,7 @@ public class BannerService : IBannerService
         b.DateText = dto.DateText;
         b.Venue = dto.Venue;
         b.ImageUrl = dto.ImageUrl;
+        b.EventId = dto.EventId;
         b.SearchQuery = dto.SearchQuery;
         b.TicketUrl = dto.TicketUrl;
         b.Type = dto.Type;
@@ -79,6 +81,7 @@ public class BannerService : IBannerService
         DateText = b.DateText,
         Venue = b.Venue,
         ImageUrl = b.ImageUrl,
+        EventId = b.EventId,
         SearchQuery = b.SearchQuery,
         TicketUrl = b.TicketUrl,
         Type = b.Type,
