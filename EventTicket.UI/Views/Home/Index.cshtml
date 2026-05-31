@@ -109,7 +109,7 @@
                     : (!string.IsNullOrEmpty(hs.SearchQuery)
                         ? "/Events?search=" + Uri.EscapeDataString(hs.SearchQuery)
                         : "/Events"));
-            <div class="et-hero-slide" onclick="location.href='@hsUrl'" style="cursor:pointer">
+            <div class="et-hero-slide" data-slide-url="@hsUrl" style="cursor:pointer">
                 <img src="@hs.ImageUrl" alt="@hs.Title" />
                 <div class="et-hero-overlay">
                     <div class="et-hero-content">
@@ -653,6 +653,14 @@ button.et-genre-tile { outline: none; }
 
     // İlk slide aktif
     slides[0]?.classList.add('et-slide-active');
+
+    // Her slide için data-slide-url'den URL oku ve yönlendir
+    slides.forEach(slide => {
+        slide.addEventListener('click', function() {
+            const url = this.dataset.slideUrl;
+            if (url) location.href = url;
+        });
+    });
 
     if (slides.length > 1) setInterval(() => goToSlide(cur + 1), 3000);
 
