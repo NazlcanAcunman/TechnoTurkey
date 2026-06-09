@@ -74,7 +74,17 @@ public class EventsController : Controller
             IsFeatured      = model.IsFeatured
         };
 
-        await _adminService.CreateEventAsync(dto);
+        try
+        {
+            await _adminService.CreateEventAsync(dto);
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            model.Venues = await _venueService.GetApprovedVenuesAsync();
+            model.Artists = await _artistService.GetApprovedArtistsAsync();
+            return View(model);
+        }
         TempData["Success"] = "Etkinlik başarıyla oluşturuldu.";
         return RedirectToAction("Index");
     }
@@ -137,7 +147,17 @@ public class EventsController : Controller
             IsFeatured      = model.IsFeatured
         };
 
-        await _adminService.UpdateEventAsync(id, dto);
+        try
+        {
+            await _adminService.UpdateEventAsync(id, dto);
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError("", ex.Message);
+            model.Venues = await _venueService.GetApprovedVenuesAsync();
+            model.Artists = await _artistService.GetApprovedArtistsAsync();
+            return View(model);
+        }
         TempData["Success"] = "Etkinlik başarıyla güncellendi.";
         return RedirectToAction("Index");
     }
