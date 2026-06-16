@@ -1,0 +1,375 @@
+@model EventTicket.UI.ViewModels.ArtistCardViewModel
+@using EventTicket.UI.ViewModels
+@{
+    ViewData["Title"] = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var genres = (Model.Genre ?? "").Split(',').Select(g => g.Trim()).Where(g => g.Length > 0).ToList();
+    var followedMap = ViewBag.FollowedArtistMap as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var alreadyFollowing = followedMap.ContainsKey(Model.Id);
+    var favId = alreadyFollowing ? followedMap[Model.Id] : 0;
+    var artistEvents = ViewBag.ArtistEvents as List<EventCardViewModel> ?? new List<EventCardViewModel>();
+
+    var genreImgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        { "Rock",           "https://cdn.bugece.co/6905f471-a658-4ca6-a185-bb307cb3ec7c" },
+        { "Pop",            "https://cdn.bugece.co/58302bc5-8884-4fd3-ac7f-f6cc61be5e1e" },
+        { "Hip-Hop",        "https://cdn.bugece.co/ff6a5f1b-7dcf-49ff-ad9d-9b5b72ada165" },
+        { "Techno",         "https://cdn.bugece.co/cfe72717-fc72-416c-a348-3531651b9f11" },
+        { "House",          "https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08" },
+        { "Jazz",           "https://cdn.bugece.co/390cf8a4-064c-4f3b-a93a-891978565f81" },
+        { "Melodic House",  "https://cdn.bugece.co/85df50ee-660e-42a6-a253-9c1cb5406e08" },
+        { "Melodic Techno", "https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d" },
+        { "Hard Techno",    "https://cdn.bugece.co/2c2ce7bb-1692-4d98-9eac-40412ca4e602" },
+    };
+    var firstGenre = genres.FirstOrDefault() ?? "";
+    genreImgs.TryGetValue(firstGenre, out var fallbackImg);
+    var imgSrc = !string.IsNullOrEmpty(Model.ImageUrl) ? Model.ImageUrl
+               : fallbackImg ?? $"https://picsum.photos/seed/artist-{Model.Id}/1200/600";
+    var bioText = Model.Bio?.StartsWith("http") == true ? null : Model.Bio;
+}
+
+<style>
+    .art-detail-hero {
+        position: relative;
+        width: 100%;
+        height: clamp(260px, 38vh, 420px);
+        overflow: hidden;
+        background: #0a0a0a;
+    }
+
+    .art-detail-hero img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center top;
+        display: block;
+        filter: brightness(0.55);
+    }
+
+    .art-detail-hero-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 60%, transparent 100%);
+    }
+
+    .art-detail-hero-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 32px 40px;
+        max-width: 1280px;
+        margin: 0 auto;
+    }
+
+    @@media (max-width: 600px) {
+        .art-detail-hero-content { padding: 20px 20px; }
+    }
+
+    .art-detail-name {
+        font-size: clamp(28px, 5vw, 52px);
+        font-weight: 900;
+        color: #fff;
+        letter-spacing: -0.04em;
+        line-height: 1.05;
+        margin-bottom: 12px;
+    }
+
+    .art-detail-genre-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-bottom: 18px;
+    }
+
+    .art-detail-genre-badge {
+        font-size: 10px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        padding: 4px 11px;
+        border-radius: 100px;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+    }
+
+    .art-detail-follow-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 22px;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+        font-family: inherit;
+        transition: all 0.2s;
+        border: 1px solid rgba(255,255,255,0.2);
+        background: rgba(255,255,255,0.08);
+        color: rgba(255,255,255,0.85);
+        backdrop-filter: blur(8px);
+    }
+
+    .art-detail-follow-btn:hover,
+    .art-detail-follow-btn.active {
+        background: rgba(255,255,255,0.18);
+        border-color: rgba(255,255,255,0.4);
+        color: #fff;
+    }
+
+    .art-detail-body {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 36px 40px 80px;
+    }
+
+    @@media (max-width: 600px) {
+        .art-detail-body { padding: 24px 20px 60px; }
+    }
+
+    .art-detail-bio {
+        font-size: 14px;
+        color: rgba(255,255,255,0.5);
+        line-height: 1.8;
+        max-width: 680px;
+        margin-bottom: 48px;
+    }
+
+    .art-detail-section-title {
+        font-size: 18px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.03em;
+        margin-bottom: 20px;
+    }
+
+    .art-events-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+    }
+
+    @@media (max-width: 600px) {
+        .art-events-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    }
+
+    .art-event-card {
+        display: flex;
+        flex-direction: column;
+        background: rgba(255,255,255,0.035);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        overflow: hidden;
+        text-decoration: none;
+        transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .art-event-card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(255,255,255,0.16);
+        box-shadow: 0 20px 56px rgba(0,0,0,0.8);
+    }
+
+    .art-event-img {
+        width: 100%;
+        aspect-ratio: 3/4;
+        background: #0d0d0d;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .art-event-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.35s;
+        display: block;
+    }
+
+    .art-event-card:hover .art-event-img img {
+        transform: scale(1.06);
+    }
+
+    .art-event-body {
+        padding: 12px 14px 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+    }
+
+    .art-event-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .art-event-meta {
+        font-size: 11px;
+        color: rgba(255,255,255,0.3);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .art-event-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 6px;
+        padding-top: 9px;
+        border-top: 1px solid rgba(255,255,255,0.07);
+    }
+
+    .art-event-loc {
+        font-size: 10px;
+        color: rgba(255,255,255,0.28);
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 110px;
+    }
+
+    .art-event-price {
+        font-size: 13px;
+        font-weight: 800;
+        color: #fff;
+        white-space: nowrap;
+    }
+
+    .art-empty {
+        padding: 40px 0;
+        text-align: center;
+        color: rgba(255,255,255,0.25);
+        font-size: 14px;
+    }
+</style>
+
+<!-- COVER HERO -->
+<div class="art-detail-hero">
+    <img src="@imgSrc" alt="@Model.Name" />
+    <div class="art-detail-hero-overlay"></div>
+    <div class="art-detail-hero-content">
+        <div class="art-detail-name">@Model.Name</div>
+        @if (genres.Any())
+        {
+            <div class="art-detail-genre-list">
+                @foreach (var g in genres)
+                {
+                    <span class="art-detail-genre-badge">@g</span>
+                }
+            </div>
+        }
+        <button class="art-detail-follow-btn @(alreadyFollowing ? "active" : "")"
+                data-artist-id="@Model.Id"
+                data-fav-id="@favId"
+                data-following="@(alreadyFollowing ? "true" : "false")"
+                onclick="toggleFollow(this)">
+            @if (alreadyFollowing)
+            {
+                <i class="bi bi-heart-fill"></i> <text>Takip Ediliyor</text>
+            }
+            else
+            {
+                <i class="bi bi-heart"></i> <text>Takip Et</text>
+            }
+        </button>
+    </div>
+</div>
+
+<!-- BODY -->
+<div class="art-detail-body">
+    @if (!string.IsNullOrEmpty(bioText))
+    {
+        <p class="art-detail-bio">@bioText</p>
+    }
+
+    <div class="art-detail-section-title">Yaklaşan Etkinlikler</div>
+
+    @if (!artistEvents.Any())
+    {
+        <div class="art-empty">Henüz etkinlik bulunmuyor.</div>
+    }
+    else
+    {
+        <div class="art-events-grid">
+            @foreach (var ev in artistEvents)
+            {
+                <a href="/Events/Details/@ev.Id" class="art-event-card">
+                    <div class="art-event-img">
+                        <img src="@ev.ImageUrl" alt="@ev.Title" loading="lazy" />
+                    </div>
+                    <div class="art-event-body">
+                        <div class="art-event-title">@ev.Title</div>
+                        <div class="art-event-meta">
+                            <i class="bi bi-calendar3" style="font-size:10px"></i>
+                            @ev.Date.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR"))
+                        </div>
+                        <div class="art-event-footer">
+                            <span class="art-event-loc">
+                                <i class="bi bi-geo-alt"></i> @ev.VenueCity
+                            </span>
+                            <span class="art-event-price">
+                                @(ev.TicketPrice == 0 ? "ÜCRETSİZ" : $"₺{ev.TicketPrice:N0}")
+                            </span>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        async function toggleFollow(btn) {
+            if (btn._loading) return;
+            btn._loading = true;
+            const isFollowing = btn.dataset.following === 'true';
+            const artistId = btn.dataset.artistId;
+            const favId = btn.dataset.favId;
+            const headers = { 'X-Requested-With': 'XMLHttpRequest' };
+
+            if (isFollowing) {
+                btn.innerHTML = '<i class="bi bi-heart"></i> Takip Et';
+                btn.classList.remove('active');
+                btn.dataset.following = 'false';
+                const fd = new FormData();
+                if (favId && favId !== '0') {
+                    fd.append('id', favId);
+                    try { await fetch('/Profile/RemoveFavorite', { method: 'POST', body: fd, headers }); btn.dataset.favId = '0'; } catch (e) { }
+                } else {
+                    fd.append('artistId', artistId);
+                    try { await fetch('/Profile/RemoveFavoriteByEntity', { method: 'POST', body: fd, headers }); } catch (e) { }
+                }
+                btn._loading = false;
+                return;
+            }
+
+            if (!artistId || artistId === '0') { btn._loading = false; return; }
+            const fd = new FormData();
+            fd.append('artistId', artistId);
+            try {
+                const resp = await fetch('/Profile/AddFavorite', { method: 'POST', body: fd, headers });
+                if (resp.status === 401 || (resp.redirected && resp.url.includes('/Auth/Login'))) {
+                    window.location.href = '/Auth/Login';
+                } else if (resp.ok) {
+                    btn.innerHTML = '<i class="bi bi-heart-fill"></i> Takip Ediliyor';
+                    btn.classList.add('active');
+                    btn.dataset.following = 'true';
+                }
+            } catch (e) { }
+            btn._loading = false;
+        }
+    </script>
+}

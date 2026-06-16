@@ -1,0 +1,288 @@
+@model List<EventTicket.UI.ViewModels.GuestlistRequestViewModel>
+@{
+    ViewData["Title"] = "Guestlist Başvurularım";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .gl-my-wrap {
+        max-width: 860px;
+        margin: 60px auto;
+        padding: 0 16px 80px;
+    }
+
+    .gl-my-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 28px;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .gl-my-header h1 {
+        font-size: 26px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.04em;
+    }
+
+    .gl-my-header a {
+        padding: 9px 18px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.75);
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+    .gl-my-header a:hover {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+    }
+
+    .gl-empty {
+        text-align: center;
+        padding: 64px 24px;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 20px;
+    }
+
+    .gl-empty-icon {
+        font-size: 40px;
+        color: rgba(255, 255, 255, 0.15);
+        margin-bottom: 16px;
+    }
+
+    .gl-empty h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.5);
+        margin-bottom: 8px;
+    }
+
+    .gl-empty p {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    .gl-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 14px;
+        transition: border-color 0.2s;
+    }
+
+    .gl-card:hover {
+        border-color: rgba(255, 255, 255, 0.14);
+    }
+
+    .gl-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .gl-card-event {
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+    }
+
+    .gl-card-meta {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.38);
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .gl-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .gl-badge-pending {
+        background: rgba(234, 179, 8, 0.12);
+        border: 1px solid rgba(234, 179, 8, 0.25);
+        color: #eab308;
+    }
+
+    .gl-badge-approved {
+        background: rgba(34, 197, 94, 0.12);
+        border: 1px solid rgba(34, 197, 94, 0.25);
+        color: #22c55e;
+    }
+
+    .gl-badge-rejected {
+        background: rgba(239, 68, 68, 0.12);
+        border: 1px solid rgba(239, 68, 68, 0.25);
+        color: #ef4444;
+    }
+
+    .gl-type-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 9px;
+        background: rgba(255, 255, 255, 0.07);
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .gl-admin-note {
+        margin-top: 12px;
+        padding: 10px 14px;
+        background: rgba(239, 68, 68, 0.06);
+        border: 1px solid rgba(239, 68, 68, 0.15);
+        border-radius: 8px;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.55);
+    }
+
+    .gl-admin-note strong {
+        color: rgba(239, 68, 68, 0.8);
+        font-weight: 600;
+    }
+
+    .gl-divider {
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        margin: 12px 0;
+    }
+
+    .gl-card-details {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .gl-detail-item {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.38);
+    }
+
+    .gl-detail-item span {
+        color: rgba(255, 255, 255, 0.65);
+        font-weight: 500;
+    }
+
+    .gl-success-alert {
+        background: rgba(34, 197, 94, 0.08);
+        border: 1px solid rgba(34, 197, 94, 0.2);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 24px;
+        font-size: 13px;
+        color: #22c55e;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+</style>
+
+<div class="gl-my-wrap">
+    <div class="gl-my-header">
+        <h1>Guestlist Başvurularım</h1>
+        <a href="/Events">
+            <i class="bi bi-calendar2-event" style="margin-right:6px"></i>
+            Etkinliklere Göz At
+        </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="gl-success-alert">
+            <i class="bi bi-check-circle-fill"></i>
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="gl-empty">
+            <div class="gl-empty-icon"><i class="bi bi-person-lines-fill"></i></div>
+            <h3>Henüz başvuru yok</h3>
+            <p>Etkinlik sayfalarından guestlist başvurusu yapabilirsiniz.</p>
+        </div>
+    }
+    else
+    {
+        foreach (var item in Model)
+        {
+            <div class="gl-card">
+                <div class="gl-card-top">
+                    <div>
+                        <div class="gl-card-event">@item.EventTitle</div>
+                        <div class="gl-card-meta">
+                            <span><i class="bi bi-calendar3" style="margin-right:4px"></i>@item.CreatedAt.ToString("dd MMM yyyy HH:mm", new System.Globalization.CultureInfo("tr-TR"))</span>
+                            <span class="gl-type-chip">@item.GuestlistTypeLabel</span>
+                        </div>
+                    </div>
+                    <div>
+                        @if (item.Status == 0)
+                        {
+                            <span class="gl-badge gl-badge-pending">
+                                <i class="bi bi-hourglass-split"></i> Beklemede
+                            </span>
+                        }
+                        else if (item.Status == 1)
+                        {
+                            <span class="gl-badge gl-badge-approved">
+                                <i class="bi bi-check-lg"></i> Onaylandı
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="gl-badge gl-badge-rejected">
+                                <i class="bi bi-x-lg"></i> Reddedildi
+                            </span>
+                        }
+                    </div>
+                </div>
+
+                <hr class="gl-divider" />
+
+                <div class="gl-card-details">
+                    <div class="gl-detail-item">Ad Soyad: <span>@item.FullName</span></div>
+                    <div class="gl-detail-item">E-posta: <span>@item.Email</span></div>
+                    <div class="gl-detail-item">Telefon: <span>@item.Phone</span></div>
+                    @if (!string.IsNullOrEmpty(item.Note))
+                    {
+                        <div class="gl-detail-item">Not: <span>@item.Note</span></div>
+                    }
+                    @if (item.Status == 1 && item.ApprovedAt.HasValue)
+                    {
+                        <div class="gl-detail-item">Onaylanma: <span>@item.ApprovedAt.Value.ToString("dd MMM yyyy", new System.Globalization.CultureInfo("tr-TR"))</span></div>
+                    }
+                </div>
+
+                @if (!string.IsNullOrEmpty(item.AdminNote))
+                {
+                    <div class="gl-admin-note">
+                        <strong><i class="bi bi-info-circle" style="margin-right:5px"></i>Admin Notu:</strong>
+                        @item.AdminNote
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>

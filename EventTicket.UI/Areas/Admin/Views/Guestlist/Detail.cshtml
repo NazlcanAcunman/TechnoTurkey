@@ -1,0 +1,367 @@
+@model List<EventTicket.UI.ViewModels.GuestlistRequestViewModel>
+@using EventTicket.UI.ViewModels
+@{
+    ViewData["Title"] = "Etkinlik Guestlist";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var ev = ViewBag.Event as EventCardViewModel;
+    var stats = ViewBag.Stats as GuestlistStatsViewModel;
+}
+
+<style>
+    .gl-detail-header {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .gl-detail-event-name {
+        font-size: 18px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 4px;
+    }
+
+    .gl-detail-event-date {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.4);
+    }
+
+    .gl-detail-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .gl-action-btn {
+        padding: 9px 16px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: 1px solid;
+        transition: opacity 0.2s;
+    }
+
+    .gl-action-btn:hover { opacity: 0.8; }
+
+    .gl-btn-export {
+        background: rgba(34,197,94,0.12);
+        border-color: rgba(34,197,94,0.25);
+        color: #22c55e;
+    }
+
+    .gl-btn-back {
+        background: rgba(255,255,255,0.06);
+        border-color: rgba(255,255,255,0.1);
+        color: rgba(255,255,255,0.65);
+    }
+
+    .gl-stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 24px;
+    }
+
+    @@media (max-width: 700px) { .gl-stats-row { grid-template-columns: repeat(2, 1fr); } }
+
+    .gl-stat-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 16px 18px;
+    }
+
+    .gl-stat-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.38);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+    }
+
+    .gl-stat-value { font-size: 28px; font-weight: 800; color: #fff; line-height: 1; }
+    .gl-stat-value.pending { color: #eab308; }
+    .gl-stat-value.approved { color: #22c55e; }
+    .gl-stat-value.rejected { color: #ef4444; }
+
+    .gl-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 9px;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    .gl-badge-pending { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.25); color: #eab308; }
+    .gl-badge-approved { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; }
+    .gl-badge-rejected { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; }
+
+    .gl-row-card {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.07);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .gl-row-info { flex: 1; min-width: 200px; }
+    .gl-row-name { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+    .gl-row-meta { font-size: 12px; color: rgba(255,255,255,0.4); display: flex; gap: 14px; flex-wrap: wrap; }
+    .gl-row-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    .gl-approve-btn {
+        padding: 7px 14px;
+        background: rgba(34,197,94,0.12);
+        border: 1px solid rgba(34,197,94,0.25);
+        border-radius: 7px;
+        color: #22c55e;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .gl-approve-btn:hover { background: rgba(34,197,94,0.2); }
+
+    .gl-reject-btn {
+        padding: 7px 14px;
+        background: rgba(239,68,68,0.1);
+        border: 1px solid rgba(239,68,68,0.2);
+        border-radius: 7px;
+        color: #f87171;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .gl-reject-btn:hover { background: rgba(239,68,68,0.18); }
+
+    .gl-note-box {
+        margin-top: 8px;
+        padding: 8px 12px;
+        background: rgba(239,68,68,0.06);
+        border: 1px solid rgba(239,68,68,0.12);
+        border-radius: 7px;
+        font-size: 12px;
+        color: rgba(255,255,255,0.5);
+    }
+
+    .gl-note-box strong { color: rgba(239,68,68,0.75); }
+
+    .gl-reject-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        background: rgba(0,0,0,0.75);
+        backdrop-filter: blur(4px);
+        align-items: center;
+        justify-content: center;
+    }
+
+    .gl-reject-modal.open { display: flex; }
+
+    .gl-modal-box {
+        background: #1a1a1a;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 16px;
+        padding: 28px;
+        max-width: 420px;
+        width: 90%;
+    }
+
+    .gl-modal-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 16px;
+    }
+
+    .gl-modal-textarea {
+        width: 100%;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 8px;
+        padding: 10px 12px;
+        color: #fff;
+        font-size: 13px;
+        outline: none;
+        resize: vertical;
+        min-height: 80px;
+        box-sizing: border-box;
+        font-family: inherit;
+        margin-bottom: 16px;
+    }
+
+    .gl-modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+</style>
+
+@if (ev != null)
+{
+    <div class="gl-detail-header">
+        <div>
+            <div class="gl-detail-event-name">@ev.Title</div>
+            <div class="gl-detail-event-date">
+                @ev.Date.ToString("dd MMMM yyyy, HH:mm", new System.Globalization.CultureInfo("tr-TR"))
+                &nbsp;·&nbsp; @ev.VenueName
+            </div>
+        </div>
+        <div class="gl-detail-actions">
+            <a asp-action="Export" asp-route-eventId="@ev.Id" class="gl-action-btn gl-btn-export">
+                ↓ CSV İndir (Onaylılar)
+            </a>
+            <a asp-action="Index" class="gl-action-btn gl-btn-back">← Geri</a>
+        </div>
+    </div>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:12px 16px;margin-bottom:20px;color:#4ade80;font-size:13px">✓ @TempData["Success"]</div>
+}
+@if (TempData["ApiError"] != null)
+{
+    <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:12px 16px;margin-bottom:20px;color:#f87171;font-size:12px">⚠ @TempData["ApiError"]</div>
+}
+
+@if (stats != null)
+{
+    <div class="gl-stats-row">
+        <div class="gl-stat-card">
+            <div class="gl-stat-label">Toplam Başvuru</div>
+            <div class="gl-stat-value">@stats.TotalCount</div>
+        </div>
+        <div class="gl-stat-card">
+            <div class="gl-stat-label">Bekleyen</div>
+            <div class="gl-stat-value pending">@stats.PendingCount</div>
+        </div>
+        <div class="gl-stat-card">
+            <div class="gl-stat-label">Onaylanan</div>
+            <div class="gl-stat-value approved">@stats.ApprovedCount</div>
+        </div>
+        <div class="gl-stat-card">
+            <div class="gl-stat-label">Reddedilen</div>
+            <div class="gl-stat-value rejected">@stats.RejectedCount</div>
+        </div>
+    </div>
+}
+
+@if (!Model.Any())
+{
+    <div style="text-align:center;padding:48px;color:rgba(255,255,255,0.3);font-size:14px">
+        Bu etkinlik için henüz başvuru yok.
+    </div>
+}
+else
+{
+    @foreach (var item in Model)
+    {
+        <div class="gl-row-card">
+            <div class="gl-row-info">
+                <div class="gl-row-name">@item.FullName</div>
+                <div class="gl-row-meta">
+                    <span>@item.Email</span>
+                    <span>@item.Phone</span>
+                    <span style="padding:2px 7px;background:rgba(255,255,255,0.07);border-radius:4px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.5)">
+                        @item.GuestlistTypeLabel
+                    </span>
+                    <span style="color:rgba(255,255,255,0.3)">
+                        @item.CreatedAt.ToString("dd MMM yyyy HH:mm", new System.Globalization.CultureInfo("tr-TR"))
+                    </span>
+                </div>
+                @if (!string.IsNullOrEmpty(item.Note))
+                {
+                    <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:5px">Not: @item.Note</div>
+                }
+                @if (!string.IsNullOrEmpty(item.AdminNote))
+                {
+                    <div class="gl-note-box">
+                        <strong>Admin Notu:</strong> @item.AdminNote
+                    </div>
+                }
+            </div>
+
+            <div class="gl-row-actions">
+                @if (item.Status == 0)
+                {
+                    <form asp-action="Approve" method="post" style="display:inline">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@item.Id" />
+                        <input type="hidden" name="eventId" value="@ev?.Id" />
+                        <button type="submit" class="gl-approve-btn">✓ Onayla</button>
+                    </form>
+                    <button type="button" class="gl-reject-btn"
+                            onclick="openRejectModal(@item.Id, @ev?.Id)">
+                        ✗ Reddet
+                    </button>
+                }
+                else if (item.Status == 1)
+                {
+                    <span class="gl-badge gl-badge-approved">✓ Onaylandı</span>
+                }
+                else
+                {
+                    <span class="gl-badge gl-badge-rejected">✗ Reddedildi</span>
+                }
+            </div>
+        </div>
+    }
+}
+
+<!-- Reddet Modal -->
+<div id="rejectModal" class="gl-reject-modal">
+    <div class="gl-modal-box">
+        <div class="gl-modal-title">Başvuruyu Reddet</div>
+        <form id="rejectForm" asp-action="Reject" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="rejectId" name="id" value="" />
+            <input type="hidden" id="rejectEventId" name="eventId" value="" />
+            <label style="font-size:12px;color:rgba(255,255,255,0.45);display:block;margin-bottom:8px;font-weight:600;text-transform:uppercase;letter-spacing:.04em">
+                Admin Notu (isteğe bağlı)
+            </label>
+            <textarea class="gl-modal-textarea" name="adminNote" placeholder="Ret sebebini giriniz..."></textarea>
+            <div class="gl-modal-actions">
+                <button type="button" onclick="closeRejectModal()"
+                    style="padding:8px 16px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.1);border-radius:7px;color:rgba(255,255,255,0.6);font-size:13px;font-weight:600;cursor:pointer">
+                    İptal
+                </button>
+                <button type="submit" class="gl-reject-btn" style="padding:8px 18px">
+                    Reddet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openRejectModal(id, eventId) {
+        document.getElementById('rejectId').value = id;
+        document.getElementById('rejectEventId').value = eventId;
+        document.getElementById('rejectModal').classList.add('open');
+    }
+
+    function closeRejectModal() {
+        document.getElementById('rejectModal').classList.remove('open');
+    }
+
+    document.getElementById('rejectModal').addEventListener('click', function (e) {
+        if (e.target === this) closeRejectModal();
+    });
+</script>

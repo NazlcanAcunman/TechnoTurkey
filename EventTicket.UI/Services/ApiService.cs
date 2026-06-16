@@ -107,6 +107,32 @@ public class ApiService : IApiService
         }
     }
 
+    public async Task<T?> PutAsync<T>(string endpoint, object data)
+    {
+        try
+        {
+            var json = JsonSerializer.Serialize(data);
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _http.PutAsync(endpoint, content);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("PUT {Endpoint} başarısız. StatusCode: {StatusCode}, Body: {Body}", endpoint, response.StatusCode, errorBody);
+                LastError = errorBody;
+                return default;
+            }
+            LastError = null;
+            var responseJson = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<T>(responseJson, _jsonOptions);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "PUT {Endpoint} sırasında bağlantı hatası oluştu.", endpoint);
+            LastError = "Bağlantı hatası: " + ex.Message;
+            return default;
+        }
+    }
+
     public async Task<T?> PatchAsync<T>(string endpoint)
     {
         try

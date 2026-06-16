@@ -21,6 +21,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, string>
     public DbSet<Banner> Banners { get; set; }
     public DbSet<PageView> PageViews { get; set; }
     public DbSet<Article> Articles { get; set; }
+    public DbSet<GuestlistRequest> GuestlistRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

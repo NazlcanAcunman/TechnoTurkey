@@ -1,0 +1,264 @@
+@model EventTicket.UI.ViewModels.GuestlistApplyViewModel
+@{
+    ViewData["Title"] = "Guestlist Başvurusu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .gl-apply-wrap {
+        max-width: 680px;
+        margin: 60px auto;
+        padding: 0 16px 80px;
+    }
+
+    .gl-event-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 20px 24px;
+        margin-bottom: 32px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .gl-event-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .gl-event-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+    }
+
+    .gl-event-date {
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.45);
+    }
+
+    .gl-form-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 20px;
+        padding: 32px;
+    }
+
+    .gl-form-title {
+        font-size: 22px;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 6px;
+        letter-spacing: -0.03em;
+    }
+
+    .gl-form-sub {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 28px;
+    }
+
+    .gl-field {
+        margin-bottom: 18px;
+    }
+
+    .gl-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.55);
+        margin-bottom: 7px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .gl-input,
+    .gl-select,
+    .gl-textarea {
+        width: 100%;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 11px 14px;
+        color: #fff;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.2s;
+        font-family: inherit;
+        box-sizing: border-box;
+    }
+
+    .gl-input:focus,
+    .gl-select:focus,
+    .gl-textarea:focus {
+        border-color: rgba(255, 255, 255, 0.3);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    .gl-select option {
+        background: #1a1a1a;
+        color: #fff;
+    }
+
+    .gl-textarea {
+        resize: vertical;
+        min-height: 90px;
+    }
+
+    .gl-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    @@media (max-width: 560px) {
+        .gl-row { grid-template-columns: 1fr; }
+        .gl-form-card { padding: 24px 18px; }
+    }
+
+    .gl-submit-btn {
+        width: 100%;
+        padding: 13px;
+        background: #fff;
+        color: #000;
+        border: none;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 8px;
+        transition: opacity 0.2s, transform 0.15s;
+        letter-spacing: 0.03em;
+    }
+
+    .gl-submit-btn:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+    }
+
+    .gl-error {
+        color: #ef4444;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+    .gl-validation-summary {
+        background: rgba(239, 68, 68, 0.08);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        font-size: 13px;
+        color: #ef4444;
+    }
+
+    .gl-page-header {
+        margin-bottom: 28px;
+    }
+
+    .gl-page-header h1 {
+        font-size: 28px;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: -0.04em;
+        margin-bottom: 6px;
+    }
+
+    .gl-page-header p {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.4);
+    }
+</style>
+
+<div class="gl-apply-wrap">
+    <div class="gl-page-header">
+        <h1>Guestlist Başvurusu</h1>
+        <p>Formu doldurarak guestliste başvurabilirsiniz. Onay e-posta ile bildirilecektir.</p>
+    </div>
+
+    <div class="gl-event-card">
+        <div class="gl-event-icon">
+            <i class="bi bi-calendar-event"></i>
+        </div>
+        <div>
+            <div class="gl-event-title">@Model.EventTitle</div>
+            <div class="gl-event-date">
+                <i class="bi bi-clock" style="margin-right:4px"></i>
+                @Model.EventDate.ToString("dd MMMM yyyy, HH:mm", new System.Globalization.CultureInfo("tr-TR"))
+            </div>
+        </div>
+    </div>
+
+    <div class="gl-form-card">
+        <div class="gl-form-title">Başvuru Bilgileri</div>
+        <div class="gl-form-sub">Tüm alanlar zorunludur. Kapı listesi bu bilgilerle hazırlanacaktır.</div>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="gl-validation-summary">
+                @Html.ValidationSummary(false, null, new { @class = "" })
+            </div>
+        }
+
+        <form asp-controller="Guestlist" asp-action="Apply" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="EventId" />
+            <input type="hidden" asp-for="EventTitle" />
+            <input type="hidden" asp-for="EventDate" />
+
+            <div class="gl-row">
+                <div class="gl-field">
+                    <label class="gl-label" asp-for="FullName">Ad Soyad</label>
+                    <input class="gl-input" asp-for="FullName" placeholder="Adınız Soyadınız" autocomplete="name" />
+                    <span class="gl-error" asp-validation-for="FullName"></span>
+                </div>
+                <div class="gl-field">
+                    <label class="gl-label" asp-for="Phone">Telefon</label>
+                    <input class="gl-input" asp-for="Phone" placeholder="+90 5XX XXX XX XX" autocomplete="tel" />
+                    <span class="gl-error" asp-validation-for="Phone"></span>
+                </div>
+            </div>
+
+            <div class="gl-field">
+                <label class="gl-label" asp-for="Email">E-posta</label>
+                <input class="gl-input" asp-for="Email" type="email" placeholder="ornek@mail.com" autocomplete="email" />
+                <span class="gl-error" asp-validation-for="Email"></span>
+            </div>
+
+            <div class="gl-field">
+                <label class="gl-label" asp-for="GuestlistType">Guestlist Türü</label>
+                <select class="gl-select" asp-for="GuestlistType">
+                    <option value="0">Ücretsiz</option>
+                    <option value="1">İndirimli</option>
+                    <option value="2">VIP</option>
+                    <option value="3">Basın</option>
+                </select>
+            </div>
+
+            <div class="gl-field">
+                <label class="gl-label" asp-for="Note">Not (isteğe bağlı)</label>
+                <textarea class="gl-textarea" asp-for="Note" placeholder="Eklemek istediğiniz bilgi veya talep..."></textarea>
+                <span class="gl-error" asp-validation-for="Note"></span>
+            </div>
+
+            <button type="submit" class="gl-submit-btn">
+                <i class="bi bi-send-fill" style="margin-right:8px"></i>
+                Başvuruyu Gönder
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

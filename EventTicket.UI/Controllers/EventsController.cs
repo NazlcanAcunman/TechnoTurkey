@@ -1,4 +1,4 @@
-﻿using EventTicket.UI.Services;
+using EventTicket.UI.Services;
 using EventTicket.UI.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -35,11 +35,22 @@ public class EventsController : BaseController
     {
         ViewData["Title"] = "Etkinlikler";
 
-        var events = await _eventService.GetFilteredEventsAsync(
-            search, city, dateFrom, dateTo, minPrice, maxPrice, artistName, sortBy);
+        // Şehir filtresini Türkçe karakter normalize ederek karşılaştır
+        var normalizedCity = Normalize(city);
 
-        // Filtre dropdown seçenekleri için tüm etkinliklerden unique değerler
         var allEvents = await _eventService.GetApprovedEventsAsync();
+
+        // Normalize edilmiş şehir karşılaştırması
+        var matchedCity = string.IsNullOrEmpty(normalizedCity)
+            ? city
+            : allEvents
+                .Select(e => e.VenueCity)
+                .Where(v => !string.IsNullOrEmpty(v))
+                .FirstOrDefault(v => Normalize(v).Equals(normalizedCity, StringComparison.OrdinalIgnoreCase))
+              ?? city;
+
+        var events = await _eventService.GetFilteredEventsAsync(
+            search, matchedCity, dateFrom, dateTo, minPrice, maxPrice, artistName, sortBy);
 
         var model = new EventFilterViewModel
         {
@@ -108,5 +119,18 @@ public class EventsController : BaseController
             await _commentService.AddAsync(newComment);
 
         return RedirectToAction("Details", new { id = newComment.EventId });
+    }
+
+    private static string Normalize(string? input)
+    {
+        if (string.IsNullOrEmpty(input)) return string.Empty;
+        return input
+            .Replace('ı', 'i').Replace('İ', 'i')
+            .Replace('ğ', 'g').Replace('Ğ', 'g')
+            .Replace('ü', 'u').Replace('Ü', 'u')
+            .Replace('ş', 's').Replace('Ş', 's')
+            .Replace('ö', 'o').Replace('Ö', 'o')
+            .Replace('ç', 'c').Replace('Ç', 'c')
+            .ToLowerInvariant();
     }
 }

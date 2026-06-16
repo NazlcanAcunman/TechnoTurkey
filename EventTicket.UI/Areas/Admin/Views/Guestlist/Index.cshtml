@@ -1,0 +1,267 @@
+@model List<EventTicket.UI.ViewModels.GuestlistRequestViewModel>
+@using EventTicket.UI.ViewModels
+@{
+    ViewData["Title"] = "Guestlist Yönetimi";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var events = ViewBag.Events as List<EventCardViewModel> ?? new();
+    var selectedEventId = ViewBag.SelectedEventId as int?;
+    var selectedStatus = ViewBag.SelectedStatus as int?;
+    var stats = ViewBag.Stats as GuestlistStatsViewModel;
+}
+
+<style>
+    .gl-filter-bar {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+    }
+
+    .gl-filter-select {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 9px 14px;
+        color: #fff;
+        font-size: 13px;
+        outline: none;
+        cursor: pointer;
+        min-width: 200px;
+    }
+
+    .gl-filter-select option { background: #1a1a1a; }
+
+    .gl-filter-btn {
+        padding: 9px 18px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.2s;
+    }
+
+    .gl-filter-btn:hover { background: rgba(255,255,255,0.14); color:#fff; }
+    .gl-filter-btn.active { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); }
+
+    .gl-stats-row {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 28px;
+    }
+
+    @@media (max-width: 700px) { .gl-stats-row { grid-template-columns: repeat(2, 1fr); } }
+
+    .gl-stat-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        padding: 16px 18px;
+    }
+
+    .gl-stat-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.4);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 8px;
+    }
+
+    .gl-stat-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+    }
+
+    .gl-stat-value.pending { color: #eab308; }
+    .gl-stat-value.approved { color: #22c55e; }
+    .gl-stat-value.rejected { color: #ef4444; }
+
+    .gl-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: 5px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+    }
+
+    .gl-badge-pending { background: rgba(234,179,8,0.12); border: 1px solid rgba(234,179,8,0.25); color: #eab308; }
+    .gl-badge-approved { background: rgba(34,197,94,0.12); border: 1px solid rgba(34,197,94,0.25); color: #22c55e; }
+    .gl-badge-rejected { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.25); color: #ef4444; }
+
+    .gl-empty-state {
+        text-align: center;
+        padding: 48px 24px;
+        color: rgba(255, 255, 255, 0.3);
+        font-size: 14px;
+    }
+</style>
+
+<div class="admin-table-wrap">
+    <div class="admin-table-header">
+        <span class="admin-table-title">Guestlist Yönetimi</span>
+        @if (selectedEventId.HasValue)
+        {
+            <a asp-action="Export" asp-route-eventId="@selectedEventId"
+               style="padding:9px 16px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.2);border-radius:8px;color:#22c55e;font-size:13px;font-weight:600;text-decoration:none">
+                ↓ CSV İndir
+            </a>
+        }
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:8px;padding:12px 16px;margin:16px 16px 0;color:#4ade80;font-size:13px">✓ @TempData["Success"]</div>
+    }
+    @if (TempData["ApiError"] != null)
+    {
+        <div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:12px 16px;margin:16px 16px 0;color:#f87171;font-size:12px">⚠ @TempData["ApiError"]</div>
+    }
+
+    <div style="padding:20px 20px 0">
+        <form method="get" asp-action="Index" class="gl-filter-bar">
+            <select name="eventId" class="gl-filter-select" onchange="this.form.submit()">
+                <option value="">-- Etkinlik Seçin --</option>
+                @foreach (var ev in events)
+                {
+                    <option value="@ev.Id" selected="@(ev.Id == selectedEventId ? "selected" : null)">
+                        @ev.Title (@ev.Date.ToString("dd MMM yyyy"))
+                    </option>
+                }
+            </select>
+
+            @if (selectedEventId.HasValue)
+            {
+                <a asp-action="Index" asp-route-eventId="@selectedEventId"
+                   class="gl-filter-btn @(selectedStatus == null ? "active" : "")">Tümü</a>
+                <a asp-action="Index" asp-route-eventId="@selectedEventId" asp-route-status="0"
+                   class="gl-filter-btn @(selectedStatus == 0 ? "active" : "")">Bekleyen</a>
+                <a asp-action="Index" asp-route-eventId="@selectedEventId" asp-route-status="1"
+                   class="gl-filter-btn @(selectedStatus == 1 ? "active" : "")">Onaylı</a>
+                <a asp-action="Index" asp-route-eventId="@selectedEventId" asp-route-status="2"
+                   class="gl-filter-btn @(selectedStatus == 2 ? "active" : "")">Reddedilen</a>
+                <a asp-action="Detail" asp-route-eventId="@selectedEventId"
+                   class="gl-filter-btn" style="margin-left:auto">Detay Görünüm →</a>
+            }
+        </form>
+
+        @if (selectedEventId.HasValue && stats != null)
+        {
+            <div class="gl-stats-row">
+                <div class="gl-stat-card">
+                    <div class="gl-stat-label">Toplam</div>
+                    <div class="gl-stat-value">@stats.TotalCount</div>
+                </div>
+                <div class="gl-stat-card">
+                    <div class="gl-stat-label">Bekleyen</div>
+                    <div class="gl-stat-value pending">@stats.PendingCount</div>
+                </div>
+                <div class="gl-stat-card">
+                    <div class="gl-stat-label">Onaylanan</div>
+                    <div class="gl-stat-value approved">@stats.ApprovedCount</div>
+                </div>
+                <div class="gl-stat-card">
+                    <div class="gl-stat-label">Reddedilen</div>
+                    <div class="gl-stat-value rejected">@stats.RejectedCount</div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!selectedEventId.HasValue)
+    {
+        <div class="gl-empty-state">
+            <div style="font-size:36px;margin-bottom:12px;opacity:.3">📋</div>
+            <div>Başvuruları görüntülemek için yukarıdan bir etkinlik seçin.</div>
+        </div>
+    }
+    else if (!Model.Any())
+    {
+        <div class="gl-empty-state">Bu etkinlik için başvuru bulunmuyor.</div>
+    }
+    else
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th>Ad Soyad</th>
+                    <th>E-posta</th>
+                    <th>Telefon</th>
+                    <th>Tür</th>
+                    <th>Durum</th>
+                    <th>Başvuru Tarihi</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td style="font-weight:600">@item.FullName</td>
+                        <td style="font-size:12px;color:rgba(255,255,255,0.6)">@item.Email</td>
+                        <td style="font-size:12px;color:rgba(255,255,255,0.6)">@item.Phone</td>
+                        <td>
+                            <span style="padding:3px 8px;background:rgba(255,255,255,0.07);border-radius:5px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.55)">
+                                @item.GuestlistTypeLabel
+                            </span>
+                        </td>
+                        <td>
+                            @if (item.Status == 0)
+                            {
+                                <span class="gl-badge gl-badge-pending">Beklemede</span>
+                            }
+                            else if (item.Status == 1)
+                            {
+                                <span class="gl-badge gl-badge-approved">Onaylandı</span>
+                            }
+                            else
+                            {
+                                <span class="gl-badge gl-badge-rejected">Reddedildi</span>
+                            }
+                        </td>
+                        <td style="font-size:12px;color:rgba(255,255,255,0.45)">
+                            @item.CreatedAt.ToString("dd MMM yyyy HH:mm", new System.Globalization.CultureInfo("tr-TR"))
+                        </td>
+                        <td>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap">
+                                @if (item.Status == 0)
+                                {
+                                    <form asp-action="Approve" method="post" style="display:inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="eventId" value="@selectedEventId" />
+                                        <button type="submit" style="padding:5px 10px;background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.2);border-radius:6px;color:#22c55e;font-size:11px;font-weight:600;cursor:pointer">
+                                            ✓ Onayla
+                                        </button>
+                                    </form>
+                                    <form asp-action="Reject" method="post" style="display:inline">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <input type="hidden" name="eventId" value="@selectedEventId" />
+                                        <button type="submit" style="padding:5px 10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:6px;color:#f87171;font-size:11px;font-weight:600;cursor:pointer">
+                                            ✗ Reddet
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <span style="font-size:11px;color:rgba(255,255,255,0.25)">—</span>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>

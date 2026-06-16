@@ -43,6 +43,33 @@
                 </form>
             </div>
 
+            @if (User.Identity?.IsAuthenticated == true)
+            {
+                <a href="/guestlist/apply/@Model.Event.Id"
+                   style="display:flex;align-items:center;justify-content:center;gap:8px;
+                          width:100%;padding:11px;margin-bottom:10px;
+                          background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+                          border-radius:10px;color:rgba(255,255,255,0.75);
+                          font-size:13px;font-weight:600;text-decoration:none;transition:background 0.2s"
+                   onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                   onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                    <i class="bi bi-person-check-fill"></i> Guestliste Ekle
+                </a>
+            }
+            else
+            {
+                <a href="/Auth/Login?returnUrl=/guestlist/apply/@Model.Event.Id"
+                   style="display:flex;align-items:center;justify-content:center;gap:8px;
+                          width:100%;padding:11px;margin-bottom:10px;
+                          background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);
+                          border-radius:10px;color:rgba(255,255,255,0.75);
+                          font-size:13px;font-weight:600;text-decoration:none;transition:background 0.2s"
+                   onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                   onmouseout="this.style.background='rgba(255,255,255,0.06)'">
+                    <i class="bi bi-person-check-fill"></i> Guestliste Ekle
+                </a>
+            }
+
             @if (Model.Event.SoldCount >= Model.Event.Capacity)
             {
                 <div class="event-ticket-sold-out">TÜKENDİ</div>
@@ -88,6 +115,13 @@
         <div class="event-description">
             <div class="event-description-title">Etkinlik Hakkında</div>
             <p>@Model.Event.Description</p>
+        </div>
+    }
+    else
+    {
+        <div class="event-description">
+            <div class="event-description-title">Etkinlik Hakkında</div>
+            <p style="color:rgba(255,255,255,0.3);font-style:italic">Açıklama bulunmuyor.</p>
         </div>
     }
 </div>

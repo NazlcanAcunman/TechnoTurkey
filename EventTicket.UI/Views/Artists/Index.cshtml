@@ -246,7 +246,7 @@
                 var imgSrc = !string.IsNullOrEmpty(artist.ImageUrl) ? artist.ImageUrl : fallbackImg;
                 var bioText = artist.Bio?.StartsWith("http") == true ? null : artist.Bio;
                 <div class="artist-card" data-genre="@(artist.Genre?.ToLower() ?? "")">
-                    <a href="/Events?search=@Uri.EscapeDataString(artist.Name)" style="display:block;text-decoration:none">
+                    <a href="/Artists/Details/@artist.Id" style="display:block;text-decoration:none">
                     <div class="artist-card-img">
                         <img src="@imgSrc" alt="@artist.Name" />
                         @if (firstGenre.Length > 0)
@@ -256,7 +256,7 @@
                     </div>
                     </a>
                     <div class="artist-card-body">
-                        <a href="/Events?search=@Uri.EscapeDataString(artist.Name)" style="text-decoration:none">
+                        <a href="/Artists/Details/@artist.Id" style="text-decoration:none">
                         <div class="artist-card-name">@artist.Name</div>
                         </a>
                         @if (genres.Count > 1)
