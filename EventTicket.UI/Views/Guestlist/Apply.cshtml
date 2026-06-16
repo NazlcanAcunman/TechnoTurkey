@@ -83,7 +83,6 @@
     }
 
     .gl-input,
-    .gl-select,
     .gl-textarea {
         width: 100%;
         background: rgba(255, 255, 255, 0.06);
@@ -99,15 +98,9 @@
     }
 
     .gl-input:focus,
-    .gl-select:focus,
     .gl-textarea:focus {
         border-color: rgba(255, 255, 255, 0.3);
         background: rgba(255, 255, 255, 0.08);
-    }
-
-    .gl-select option {
-        background: #1a1a1a;
-        color: #fff;
     }
 
     .gl-textarea {
@@ -115,14 +108,7 @@
         min-height: 90px;
     }
 
-    .gl-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
-    }
-
     @@media (max-width: 560px) {
-        .gl-row { grid-template-columns: 1fr; }
         .gl-form-card { padding: 24px 18px; }
     }
 
@@ -178,12 +164,83 @@
         font-size: 14px;
         color: rgba(255, 255, 255, 0.4);
     }
+
+    .gl-dress-code-box {
+        background: rgba(234, 179, 8, 0.08);
+        border: 1px solid rgba(234, 179, 8, 0.2);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 22px;
+        font-size: 13px;
+        color: #fbbf24;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .gl-radio-group {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .gl-radio-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .gl-radio-option input[type="radio"] {
+        accent-color: #fff;
+        cursor: pointer;
+    }
+
+    .gl-radio-option:has(input:checked) {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.35);
+        color: #fff;
+    }
+
+    .gl-terms-wrap {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 14px 16px;
+        margin-bottom: 18px;
+    }
+
+    .gl-terms-label {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        cursor: pointer;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.55);
+        line-height: 1.5;
+    }
+
+    .gl-terms-label input[type="checkbox"] {
+        margin-top: 2px;
+        flex-shrink: 0;
+        width: 15px;
+        height: 15px;
+        accent-color: #fff;
+        cursor: pointer;
+    }
 </style>
 
 <div class="gl-apply-wrap">
     <div class="gl-page-header">
         <h1>Guestlist Başvurusu</h1>
-        <p>Formu doldurarak guestliste başvurabilirsiniz. Onay e-posta ile bildirilecektir.</p>
+        <p>Formu doldurarak guestliste misafir ekleyebilirsiniz. Onay durumu profilinizden takip edilebilir.</p>
     </div>
 
     <div class="gl-event-card">
@@ -201,7 +258,15 @@
 
     <div class="gl-form-card">
         <div class="gl-form-title">Başvuru Bilgileri</div>
-        <div class="gl-form-sub">Tüm alanlar zorunludur. Kapı listesi bu bilgilerle hazırlanacaktır.</div>
+        <div class="gl-form-sub">Kapı listesi bu bilgilerle hazırlanacaktır.</div>
+
+        @if (!string.IsNullOrEmpty(Model.EventDressCode))
+        {
+            <div class="gl-dress-code-box">
+                <i class="bi bi-suit-heart-fill"></i>
+                <span><strong>Dress Code:</strong> @Model.EventDressCode</span>
+            </div>
+        }
 
         @if (!ViewData.ModelState.IsValid)
         {
@@ -215,40 +280,54 @@
             <input type="hidden" asp-for="EventId" />
             <input type="hidden" asp-for="EventTitle" />
             <input type="hidden" asp-for="EventDate" />
+            <input type="hidden" asp-for="EventDressCode" />
 
-            <div class="gl-row">
-                <div class="gl-field">
-                    <label class="gl-label" asp-for="FullName">Ad Soyad</label>
-                    <input class="gl-input" asp-for="FullName" placeholder="Adınız Soyadınız" autocomplete="name" />
-                    <span class="gl-error" asp-validation-for="FullName"></span>
+            <div class="gl-field">
+                <label class="gl-label" asp-for="GuestName">Misafir Adı Soyadı *</label>
+                <input class="gl-input" asp-for="GuestName" placeholder="Ad Soyad" autocomplete="name" />
+                <span class="gl-error" asp-validation-for="GuestName"></span>
+            </div>
+
+            <div class="gl-field">
+                <label class="gl-label" asp-for="GuestPhone">Telefon <span style="font-weight:400;text-transform:none;letter-spacing:0">(opsiyonel)</span></label>
+                <input class="gl-input" asp-for="GuestPhone" placeholder="+90 5XX XXX XX XX" autocomplete="tel" />
+                <span class="gl-error" asp-validation-for="GuestPhone"></span>
+            </div>
+
+            <div class="gl-field">
+                <label class="gl-label">Cinsiyet <span style="font-weight:400;text-transform:none;letter-spacing:0">(opsiyonel)</span></label>
+                <div class="gl-radio-group">
+                    <label class="gl-radio-option">
+                        <input type="radio" asp-for="Gender" value="Erkek" />
+                        Erkek
+                    </label>
+                    <label class="gl-radio-option">
+                        <input type="radio" asp-for="Gender" value="Kadın" />
+                        Kadın
+                    </label>
+                    <label class="gl-radio-option">
+                        <input type="radio" asp-for="Gender" value="Belirtmek İstemiyorum" />
+                        Belirtmek İstemiyorum
+                    </label>
                 </div>
-                <div class="gl-field">
-                    <label class="gl-label" asp-for="Phone">Telefon</label>
-                    <input class="gl-input" asp-for="Phone" placeholder="+90 5XX XXX XX XX" autocomplete="tel" />
-                    <span class="gl-error" asp-validation-for="Phone"></span>
-                </div>
+                <span class="gl-error" asp-validation-for="Gender"></span>
             </div>
 
             <div class="gl-field">
-                <label class="gl-label" asp-for="Email">E-posta</label>
-                <input class="gl-input" asp-for="Email" type="email" placeholder="ornek@mail.com" autocomplete="email" />
-                <span class="gl-error" asp-validation-for="Email"></span>
-            </div>
-
-            <div class="gl-field">
-                <label class="gl-label" asp-for="GuestlistType">Guestlist Türü</label>
-                <select class="gl-select" asp-for="GuestlistType">
-                    <option value="0">Ücretsiz</option>
-                    <option value="1">İndirimli</option>
-                    <option value="2">VIP</option>
-                    <option value="3">Basın</option>
-                </select>
-            </div>
-
-            <div class="gl-field">
-                <label class="gl-label" asp-for="Note">Not (isteğe bağlı)</label>
+                <label class="gl-label" asp-for="Note">Not <span style="font-weight:400;text-transform:none;letter-spacing:0">(opsiyonel)</span></label>
                 <textarea class="gl-textarea" asp-for="Note" placeholder="Eklemek istediğiniz bilgi veya talep..."></textarea>
                 <span class="gl-error" asp-validation-for="Note"></span>
+            </div>
+
+            <div class="gl-terms-wrap">
+                <label class="gl-terms-label">
+                    <input type="checkbox" asp-for="TermsAccepted" />
+                    <span>
+                        Guestlist'e alınmama durumunda herhangi bir hak talebinde bulunmayacağımı,
+                        kararın organizatöre ait olduğunu ve bu konudaki sorumluluğun tarafıma ait olduğunu kabul ediyorum.
+                    </span>
+                </label>
+                <span class="gl-error" asp-validation-for="TermsAccepted"></span>
             </div>
 
             <button type="submit" class="gl-submit-btn">

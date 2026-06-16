@@ -236,6 +236,30 @@
                 <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px;margin-left:26px">İşaretlendiğinde anasayfada "Öne Çıkan Etkinlikler" bölümünde görünür.</div>
             </div>
 
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:18px;margin-bottom:18px">
+                <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:rgba(255,255,255,0.35);text-transform:uppercase;margin-bottom:14px">
+                    Guestlist Ayarları
+                </div>
+                <div style="margin-bottom:14px">
+                    <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                        <input asp-for="IsGuestlistOpen" type="checkbox" style="width:16px;height:16px;cursor:pointer;accent-color:#fff" />
+                        <span style="font-size:12px;font-weight:700;color:rgba(255,255,255,0.7)">Guestlist Başvurusunu Aç</span>
+                    </label>
+                    <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:4px;margin-left:26px">İşaretlendiğinde Guestlist sayfasında görünür ve kullanıcılar başvurabilir.</div>
+                </div>
+                <div style="margin-bottom:14px">
+                    <label class="admin-field-label">Guestlist Kapanış Saati <span style="color:rgba(255,255,255,0.3)">(opsiyonel)</span></label>
+                    <input asp-for="GuestlistClosesAt" type="datetime-local" class="admin-field-input"
+                           value="@(Model.GuestlistClosesAt.HasValue ? Model.GuestlistClosesAt.Value.ToString("yyyy-MM-ddTHH:mm") : "")" />
+                    <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:5px">Belirtilmezse manuel kapatılana kadar açık kalır.</div>
+                </div>
+                <div>
+                    <label class="admin-field-label">Dress Code <span style="color:rgba(255,255,255,0.3)">(opsiyonel)</span></label>
+                    <input asp-for="DressCode" class="admin-field-input" placeholder="Örn: All Black, Smart Casual..." />
+                    <div style="font-size:11px;color:rgba(255,255,255,0.3);margin-top:5px">Başvuru formunda sarı bilgi kutusu olarak görünür.</div>
+                </div>
+            </div>
+
             <div style="display:flex;gap:10px;margin-top:8px">
                 <button type="submit" class="btn-admin" style="background:#fff;color:#000">
                     ✓ Değişiklikleri Kaydet

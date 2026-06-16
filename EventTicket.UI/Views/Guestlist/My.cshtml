@@ -234,7 +234,6 @@
                         <div class="gl-card-event">@item.EventTitle</div>
                         <div class="gl-card-meta">
                             <span><i class="bi bi-calendar3" style="margin-right:4px"></i>@item.CreatedAt.ToString("dd MMM yyyy HH:mm", new System.Globalization.CultureInfo("tr-TR"))</span>
-                            <span class="gl-type-chip">@item.GuestlistTypeLabel</span>
                         </div>
                     </div>
                     <div>
@@ -262,9 +261,16 @@
                 <hr class="gl-divider" />
 
                 <div class="gl-card-details">
-                    <div class="gl-detail-item">Ad Soyad: <span>@item.FullName</span></div>
-                    <div class="gl-detail-item">E-posta: <span>@item.Email</span></div>
-                    <div class="gl-detail-item">Telefon: <span>@item.Phone</span></div>
+                    <div class="gl-detail-item">Misafir Adı: <span>@item.GuestName</span></div>
+                    <div class="gl-detail-item">E-posta: <span>@item.AddedByUserEmail</span></div>
+                    @if (!string.IsNullOrEmpty(item.GuestPhone))
+                    {
+                        <div class="gl-detail-item">Telefon: <span>@item.GuestPhone</span></div>
+                    }
+                    @if (!string.IsNullOrEmpty(item.Gender))
+                    {
+                        <div class="gl-detail-item">Cinsiyet: <span>@item.Gender</span></div>
+                    }
                     @if (!string.IsNullOrEmpty(item.Note))
                     {
                         <div class="gl-detail-item">Not: <span>@item.Note</span></div>

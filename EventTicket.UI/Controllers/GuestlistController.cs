@@ -32,12 +32,18 @@ public class GuestlistController : Controller
         var ev = await _eventService.GetEventByIdAsync(eventId);
         if (ev == null) return NotFound();
 
+        if (!ev.IsGuestlistOpen || (ev.GuestlistDeadline.HasValue && ev.GuestlistDeadline.Value <= DateTime.UtcNow))
+        {
+            TempData["Error"] = "Bu etkinlik için guestlist başvurusu şu an kapalıdır.";
+            return RedirectToAction(nameof(Index));
+        }
+
         var model = new GuestlistApplyViewModel
         {
-            EventId = ev.Id,
-            EventTitle = ev.Title,
-            EventDate = ev.Date,
-            Email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? string.Empty
+            EventId       = ev.Id,
+            EventTitle    = ev.Title,
+            EventDate     = ev.Date,
+            EventDressCode = ev.DressCode
         };
 
         ViewData["Title"] = "Guestlist Başvurusu";
@@ -51,20 +57,22 @@ public class GuestlistController : Controller
         if (!ModelState.IsValid)
         {
             var ev = await _eventService.GetEventByIdAsync(model.EventId);
-            model.EventTitle = ev?.Title ?? string.Empty;
-            model.EventDate = ev?.Date ?? DateTime.UtcNow;
-            ViewData["Title"] = "Guestlist Başvurusu";
+            model.EventTitle     = ev?.Title ?? string.Empty;
+            model.EventDate      = ev?.Date ?? DateTime.UtcNow;
+            model.EventDressCode = ev?.DressCode;
+            ViewData["Title"]    = "Guestlist Başvurusu";
             return View(model);
         }
 
         var result = await _guestlistService.CreateAsync(model);
         if (result == null)
         {
-            ModelState.AddModelError(string.Empty, "Başvuru oluşturulamadı. Bu etkinliğe zaten başvurmuş olabilirsiniz.");
+            ModelState.AddModelError(string.Empty, "Başvuru oluşturulamadı. Bu isim zaten listede olabilir.");
             var ev = await _eventService.GetEventByIdAsync(model.EventId);
-            model.EventTitle = ev?.Title ?? string.Empty;
-            model.EventDate = ev?.Date ?? DateTime.UtcNow;
-            ViewData["Title"] = "Guestlist Başvurusu";
+            model.EventTitle     = ev?.Title ?? string.Empty;
+            model.EventDate      = ev?.Date ?? DateTime.UtcNow;
+            model.EventDressCode = ev?.DressCode;
+            ViewData["Title"]    = "Guestlist Başvurusu";
             return View(model);
         }
 

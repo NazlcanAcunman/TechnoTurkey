@@ -194,10 +194,10 @@
         <table>
             <thead>
                 <tr>
-                    <th>Ad Soyad</th>
+                    <th>Misafir Adı</th>
                     <th>E-posta</th>
                     <th>Telefon</th>
-                    <th>Tür</th>
+                    <th>Cinsiyet</th>
                     <th>Durum</th>
                     <th>Başvuru Tarihi</th>
                     <th>İşlemler</th>
@@ -207,12 +207,12 @@
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td style="font-weight:600">@item.FullName</td>
-                        <td style="font-size:12px;color:rgba(255,255,255,0.6)">@item.Email</td>
-                        <td style="font-size:12px;color:rgba(255,255,255,0.6)">@item.Phone</td>
+                        <td style="font-weight:600">@item.GuestName</td>
+                        <td style="font-size:12px;color:rgba(255,255,255,0.6)">@item.AddedByUserEmail</td>
+                        <td style="font-size:12px;color:rgba(255,255,255,0.6)">@item.GuestPhone</td>
                         <td>
                             <span style="padding:3px 8px;background:rgba(255,255,255,0.07);border-radius:5px;font-size:11px;font-weight:600;color:rgba(255,255,255,0.55)">
-                                @item.GuestlistTypeLabel
+                                @(item.Gender ?? "—")
                             </span>
                         </td>
                         <td>

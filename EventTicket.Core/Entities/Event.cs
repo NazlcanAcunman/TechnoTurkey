@@ -1,4 +1,6 @@
-﻿namespace EventTicket.Core.Entities;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace EventTicket.Core.Entities;
 
 public class Event : BaseEntity
 {
@@ -18,6 +20,17 @@ public class Event : BaseEntity
     public string? BadgeText { get; set; }
     public string? BadgeColor { get; set; }
     public bool IsFeatured { get; set; } = false;
+    public bool IsGuestlistOpen { get; set; } = false;
+    public DateTime? GuestlistDeadline { get; set; }
+    public string? DressCode { get; set; }
+
+    /// <summary>GuestlistDeadline için kullanıcı dostu alias — DB kolonu GuestlistDeadline'dır.</summary>
+    [NotMapped]
+    public DateTime? GuestlistClosesAt
+    {
+        get => GuestlistDeadline;
+        set => GuestlistDeadline = value;
+    }
 
     public int VenueId { get; set; }
     public int? ArtistId { get; set; }
@@ -26,5 +39,3 @@ public class Event : BaseEntity
     public Artist? Artist { get; set; }
     public ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }
-
-

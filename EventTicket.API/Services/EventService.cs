@@ -101,9 +101,12 @@ public class EventService : IEventService
             PromoCode       = string.IsNullOrWhiteSpace(dto.PromoCode) ? null : dto.PromoCode.ToUpperInvariant(),
             DiscountPercent = dto.DiscountPercent,
             PromoCodeColor  = dto.PromoCodeColor,
-            BadgeText       = string.IsNullOrWhiteSpace(dto.BadgeText) ? null : dto.BadgeText,
-            BadgeColor      = dto.BadgeColor,
-            IsFeatured      = dto.IsFeatured
+            BadgeText         = string.IsNullOrWhiteSpace(dto.BadgeText) ? null : dto.BadgeText,
+            BadgeColor        = dto.BadgeColor,
+            IsFeatured        = dto.IsFeatured,
+            IsGuestlistOpen   = dto.IsGuestlistOpen,
+            GuestlistClosesAt = dto.GuestlistClosesAt,
+            DressCode         = dto.DressCode
         };
 
         await _eventRepo.AddAsync(newEvent);
@@ -136,9 +139,12 @@ public class EventService : IEventService
         existing.PromoCode       = string.IsNullOrWhiteSpace(dto.PromoCode) ? null : dto.PromoCode.ToUpperInvariant();
         existing.DiscountPercent = dto.DiscountPercent;
         existing.PromoCodeColor  = dto.PromoCodeColor;
-        existing.BadgeText       = string.IsNullOrWhiteSpace(dto.BadgeText) ? null : dto.BadgeText;
-        existing.BadgeColor      = dto.BadgeColor;
-        existing.IsFeatured      = dto.IsFeatured;
+        existing.BadgeText         = string.IsNullOrWhiteSpace(dto.BadgeText) ? null : dto.BadgeText;
+        existing.BadgeColor        = dto.BadgeColor;
+        existing.IsFeatured        = dto.IsFeatured;
+        existing.IsGuestlistOpen   = dto.IsGuestlistOpen;
+        existing.GuestlistClosesAt = dto.GuestlistClosesAt;
+        existing.DressCode         = dto.DressCode;
 
         await _eventRepo.UpdateAsync(existing);
         _logger.LogInformation("Etkinlik güncellendi: ID {Id}", id);
@@ -235,6 +241,10 @@ public class EventService : IEventService
         PromoCodeColor  = e.PromoCodeColor,
         BadgeText       = e.BadgeText,
         BadgeColor      = e.BadgeColor,
-        IsFeatured      = e.IsFeatured
+        IsFeatured        = e.IsFeatured,
+        IsGuestlistOpen   = e.IsGuestlistOpen,
+        GuestlistDeadline = e.GuestlistDeadline,
+        GuestlistClosesAt = e.GuestlistClosesAt,
+        DressCode         = e.DressCode
     };
 }

@@ -1,4 +1,3 @@
-﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace EventTicket.UI.ViewModels.Admin;
@@ -28,6 +27,9 @@ public class CreateEventViewModel
     public string? BadgeText { get; set; }
     public string? BadgeColor { get; set; }
     public bool IsFeatured { get; set; } = false;
+    public bool IsGuestlistOpen { get; set; } = false;
+    public DateTime? GuestlistClosesAt { get; set; }
+    public string? DressCode { get; set; }
 
     // Dropdown için
     public List<VenueCardViewModel> Venues { get; set; } = new();

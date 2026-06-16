@@ -86,16 +86,16 @@ public class GuestlistController : Controller
         var approved = requests.Where(r => r.Status == 1).ToList();
 
         var sb = new StringBuilder();
-        sb.AppendLine("Ad Soyad,E-posta,Telefon,Tür,Başvuru Tarihi");
+        sb.AppendLine("Misafir Adı,E-posta,Telefon,Cinsiyet,Başvuru Tarihi");
 
         foreach (var r in approved)
         {
-            var name = $"\"{r.FullName.Replace("\"", "\"\"")}\"";
-            var email = $"\"{r.Email}\"";
-            var phone = $"\"{r.Phone}\"";
-            var type = $"\"{r.GuestlistTypeLabel}\"";
-            var date = r.CreatedAt.ToString("dd.MM.yyyy HH:mm");
-            sb.AppendLine($"{name},{email},{phone},{type},{date}");
+            var name   = $"\"{r.GuestName.Replace("\"", "\"\"")}\"";
+            var email  = $"\"{r.AddedByUserEmail}\"";
+            var phone  = $"\"{r.GuestPhone ?? ""}\"";
+            var gender = $"\"{r.Gender ?? ""}\"";
+            var date   = r.CreatedAt.ToString("dd.MM.yyyy HH:mm");
+            sb.AppendLine($"{name},{email},{phone},{gender},{date}");
         }
 
         var fileName = $"guestlist_{ev?.Title?.Replace(" ", "_") ?? eventId.ToString()}_{DateTime.Now:yyyyMMdd}.csv";

@@ -15,12 +15,12 @@ public class GuestlistUiService : IGuestlistUiService
     {
         return await _api.PostAsync<GuestlistRequestViewModel>("api/guestlist", new
         {
-            eventId = model.EventId,
-            fullName = model.FullName,
-            phone = model.Phone,
-            email = model.Email,
-            note = model.Note,
-            guestlistType = model.GuestlistType
+            eventId       = model.EventId,
+            guestName     = model.GuestName,
+            guestPhone    = model.GuestPhone,
+            note          = model.Note,
+            gender        = model.Gender,
+            termsAccepted = model.TermsAccepted
         });
     }
 

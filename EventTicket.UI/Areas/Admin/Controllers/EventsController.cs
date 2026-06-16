@@ -1,4 +1,4 @@
-﻿using EventTicket.Core.DTOs;
+using EventTicket.Core.DTOs;
 using EventTicket.UI.Services;
 using EventTicket.UI.ViewModels.Admin;
 using Microsoft.AspNetCore.Authorization;
@@ -39,7 +39,7 @@ public class EventsController : Controller
         ViewData["Title"] = "Yeni Etkinlik Ekle";
         var model = new CreateEventViewModel
         {
-            Venues = await _venueService.GetApprovedVenuesAsync(),
+            Venues  = await _venueService.GetApprovedVenuesAsync(),
             Artists = await _artistService.GetApprovedArtistsAsync()
         };
         return View(model);
@@ -52,26 +52,29 @@ public class EventsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            model.Venues = await _venueService.GetApprovedVenuesAsync();
+            model.Venues  = await _venueService.GetApprovedVenuesAsync();
             model.Artists = await _artistService.GetApprovedArtistsAsync();
             return View(model);
         }
 
         var dto = new CreateEventDto
         {
-            Title           = model.Title,
-            Description     = model.Description,
-            Date            = model.Date,
-            ImageUrl        = model.ImageUrl,
-            TicketUrl       = model.TicketUrl,
-            VenueId         = model.VenueId,
-            ArtistId        = model.ArtistId,
-            PromoCode       = string.IsNullOrWhiteSpace(model.PromoCode) ? null : model.PromoCode.ToUpperInvariant(),
-            DiscountPercent = model.DiscountPercent,
-            PromoCodeColor  = model.PromoCodeColor,
-            BadgeText       = string.IsNullOrWhiteSpace(model.BadgeText) ? null : model.BadgeText,
-            BadgeColor      = model.BadgeColor,
-            IsFeatured      = model.IsFeatured
+            Title             = model.Title,
+            Description       = model.Description,
+            Date              = model.Date,
+            ImageUrl          = model.ImageUrl,
+            TicketUrl         = model.TicketUrl,
+            VenueId           = model.VenueId,
+            ArtistId          = model.ArtistId,
+            PromoCode         = string.IsNullOrWhiteSpace(model.PromoCode) ? null : model.PromoCode.ToUpperInvariant(),
+            DiscountPercent   = model.DiscountPercent,
+            PromoCodeColor    = model.PromoCodeColor,
+            BadgeText         = string.IsNullOrWhiteSpace(model.BadgeText) ? null : model.BadgeText,
+            BadgeColor        = model.BadgeColor,
+            IsFeatured        = model.IsFeatured,
+            IsGuestlistOpen   = model.IsGuestlistOpen,
+            GuestlistClosesAt = model.GuestlistClosesAt,
+            DressCode         = model.DressCode
         };
 
         try
@@ -81,7 +84,7 @@ public class EventsController : Controller
         catch (Exception ex)
         {
             ModelState.AddModelError("", ex.Message);
-            model.Venues = await _venueService.GetApprovedVenuesAsync();
+            model.Venues  = await _venueService.GetApprovedVenuesAsync();
             model.Artists = await _artistService.GetApprovedArtistsAsync();
             return View(model);
         }
@@ -98,22 +101,25 @@ public class EventsController : Controller
 
         var model = new EditEventViewModel
         {
-            Id              = ev.Id,
-            Title           = ev.Title,
-            Description     = ev.Description,
-            Date            = ev.Date,
-            ImageUrl        = ev.ImageUrl,
-            TicketUrl       = ev.TicketUrl,
-            VenueId         = ev.VenueId,
-            ArtistId        = ev.ArtistId,
-            PromoCode       = ev.PromoCode,
-            DiscountPercent = ev.DiscountPercent,
-            PromoCodeColor  = ev.PromoCodeColor,
-            BadgeText       = ev.BadgeText,
-            BadgeColor      = ev.BadgeColor,
-            IsFeatured      = ev.IsFeatured,
-            Venues          = await _venueService.GetApprovedVenuesAsync(),
-            Artists         = await _artistService.GetApprovedArtistsAsync()
+            Id                = ev.Id,
+            Title             = ev.Title,
+            Description       = ev.Description,
+            Date              = ev.Date,
+            ImageUrl          = ev.ImageUrl,
+            TicketUrl         = ev.TicketUrl,
+            VenueId           = ev.VenueId,
+            ArtistId          = ev.ArtistId,
+            PromoCode         = ev.PromoCode,
+            DiscountPercent   = ev.DiscountPercent,
+            PromoCodeColor    = ev.PromoCodeColor,
+            BadgeText         = ev.BadgeText,
+            BadgeColor        = ev.BadgeColor,
+            IsFeatured        = ev.IsFeatured,
+            IsGuestlistOpen   = ev.IsGuestlistOpen,
+            GuestlistClosesAt = ev.GuestlistClosesAt,
+            DressCode         = ev.DressCode,
+            Venues            = await _venueService.GetApprovedVenuesAsync(),
+            Artists           = await _artistService.GetApprovedArtistsAsync()
         };
         return View(model);
     }
@@ -125,26 +131,29 @@ public class EventsController : Controller
     {
         if (!ModelState.IsValid)
         {
-            model.Venues = await _venueService.GetApprovedVenuesAsync();
+            model.Venues  = await _venueService.GetApprovedVenuesAsync();
             model.Artists = await _artistService.GetApprovedArtistsAsync();
             return View(model);
         }
 
         var dto = new UpdateEventDto
         {
-            Title           = model.Title,
-            Description     = model.Description,
-            Date            = model.Date,
-            ImageUrl        = model.ImageUrl,
-            TicketUrl       = model.TicketUrl,
-            VenueId         = model.VenueId,
-            ArtistId        = model.ArtistId,
-            PromoCode       = string.IsNullOrWhiteSpace(model.PromoCode) ? null : model.PromoCode.ToUpperInvariant(),
-            DiscountPercent = model.DiscountPercent,
-            PromoCodeColor  = model.PromoCodeColor,
-            BadgeText       = string.IsNullOrWhiteSpace(model.BadgeText) ? null : model.BadgeText,
-            BadgeColor      = model.BadgeColor,
-            IsFeatured      = model.IsFeatured
+            Title             = model.Title,
+            Description       = model.Description,
+            Date              = model.Date,
+            ImageUrl          = model.ImageUrl,
+            TicketUrl         = model.TicketUrl,
+            VenueId           = model.VenueId,
+            ArtistId          = model.ArtistId,
+            PromoCode         = string.IsNullOrWhiteSpace(model.PromoCode) ? null : model.PromoCode.ToUpperInvariant(),
+            DiscountPercent   = model.DiscountPercent,
+            PromoCodeColor    = model.PromoCodeColor,
+            BadgeText         = string.IsNullOrWhiteSpace(model.BadgeText) ? null : model.BadgeText,
+            BadgeColor        = model.BadgeColor,
+            IsFeatured        = model.IsFeatured,
+            IsGuestlistOpen   = model.IsGuestlistOpen,
+            GuestlistClosesAt = model.GuestlistClosesAt,
+            DressCode         = model.DressCode
         };
 
         try
@@ -154,7 +163,7 @@ public class EventsController : Controller
         catch (Exception ex)
         {
             ModelState.AddModelError("", ex.Message);
-            model.Venues = await _venueService.GetApprovedVenuesAsync();
+            model.Venues  = await _venueService.GetApprovedVenuesAsync();
             model.Artists = await _artistService.GetApprovedArtistsAsync();
             return View(model);
         }

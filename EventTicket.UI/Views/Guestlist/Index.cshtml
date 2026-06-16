@@ -227,7 +227,7 @@
         </div>
     }
 
-    @if (!Model.Any())
+    @if (!Model.Any(e => e.IsGuestlistOpen && (e.GuestlistDeadline == null || e.GuestlistDeadline > DateTime.UtcNow)))
     {
         <div class="gl-empty">
             <div class="gl-empty-icon"><i class="bi bi-person-lines-fill"></i></div>
@@ -238,7 +238,7 @@
     else
     {
         <div class="gl-index-grid">
-            @foreach (var ev in Model)
+            @foreach (var ev in Model.Where(e => e.IsGuestlistOpen && (e.GuestlistDeadline == null || e.GuestlistDeadline > DateTime.UtcNow)))
             {
                 var isSoldOut = ev.SoldCount >= ev.Capacity;
                 var dateParts = ev.Date.ToString("dd MMM", new System.Globalization.CultureInfo("tr-TR")).Split(' ');

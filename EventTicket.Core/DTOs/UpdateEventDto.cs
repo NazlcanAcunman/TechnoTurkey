@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace EventTicket.Core.DTOs;
 
@@ -35,6 +35,9 @@ public class UpdateEventDto
     public string? BadgeText { get; set; }
     public string? BadgeColor { get; set; }
     public bool IsFeatured { get; set; } = false;
+    public bool IsGuestlistOpen { get; set; } = false;
+    public DateTime? GuestlistClosesAt { get; set; }
+    public string? DressCode { get; set; }
 
     [Range(1, int.MaxValue, ErrorMessage = "Geçerli bir mekan seçiniz.")]
     public int VenueId { get; set; }

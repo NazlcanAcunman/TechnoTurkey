@@ -10,21 +10,16 @@ public class GuestlistConfiguration : IEntityTypeConfiguration<GuestlistRequest>
     {
         builder.HasKey(g => g.Id);
 
-        builder.Property(g => g.UserId)
+        builder.Property(g => g.AddedByUserId)
             .IsRequired()
             .HasMaxLength(450);
 
-        builder.Property(g => g.FullName)
+        builder.Property(g => g.GuestName)
             .IsRequired()
             .HasMaxLength(200);
 
-        builder.Property(g => g.Phone)
-            .IsRequired()
+        builder.Property(g => g.GuestPhone)
             .HasMaxLength(20);
-
-        builder.Property(g => g.Email)
-            .IsRequired()
-            .HasMaxLength(256);
 
         builder.Property(g => g.Note)
             .HasMaxLength(500);
@@ -35,21 +30,17 @@ public class GuestlistConfiguration : IEntityTypeConfiguration<GuestlistRequest>
         builder.Property(g => g.Status)
             .HasConversion<int>();
 
-        builder.Property(g => g.GuestlistType)
-            .HasConversion<int>();
-
         builder.HasOne(g => g.Event)
             .WithMany()
             .HasForeignKey(g => g.EventId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasOne(g => g.User)
+        builder.HasOne(g => g.AddedByUser)
             .WithMany()
-            .HasForeignKey(g => g.UserId)
+            .HasForeignKey(g => g.AddedByUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        // Bir kullanıcı aynı etkinliğe yalnızca bir kez başvurabilir
-        builder.HasIndex(g => new { g.EventId, g.UserId })
+        builder.HasIndex(g => new { g.EventId, g.AddedByUserId, g.GuestName })
             .IsUnique()
             .HasFilter("\"IsDeleted\" = false");
 
@@ -58,4 +49,3 @@ public class GuestlistConfiguration : IEntityTypeConfiguration<GuestlistRequest>
         builder.HasQueryFilter(g => !g.IsDeleted);
     }
 }
-

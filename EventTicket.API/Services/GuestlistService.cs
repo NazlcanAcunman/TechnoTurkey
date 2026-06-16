@@ -25,22 +25,29 @@ public class GuestlistService : IGuestlistService
         if (ev == null)
             return DataResult<GuestlistRequestResponseDto>.Fail("Etkinlik bulunamadı.");
 
+        if (!ev.IsGuestlistOpen)
+            return DataResult<GuestlistRequestResponseDto>.Fail("Bu etkinliğin guestlist başvurusu kapalı.");
+
+        if (ev.GuestlistDeadline.HasValue && ev.GuestlistDeadline.Value <= DateTime.UtcNow)
+            return DataResult<GuestlistRequestResponseDto>.Fail("Guestlist başvuru süresi dolmuştur.");
+
         var alreadyExists = await _guestlistRepo.AnyAsync(
-            g => g.EventId == dto.EventId && g.UserId == userId && !g.IsDeleted);
+            g => g.EventId == dto.EventId && g.AddedByUserId == userId
+              && g.GuestName == dto.GuestName && !g.IsDeleted);
 
         if (alreadyExists)
-            return DataResult<GuestlistRequestResponseDto>.Fail("Bu etkinliğe zaten başvurmuşsunuz.");
+            return DataResult<GuestlistRequestResponseDto>.Fail($"'{dto.GuestName}' bu etkinlik için zaten listede.");
 
         var request = new GuestlistRequest
         {
-            EventId = dto.EventId,
-            UserId = userId,
-            FullName = dto.FullName,
-            Phone = dto.Phone,
-            Email = dto.Email,
-            Note = dto.Note,
-            GuestlistType = dto.GuestlistType,
-            Status = GuestlistStatus.Pending
+            EventId       = dto.EventId,
+            AddedByUserId = userId,
+            GuestName     = dto.GuestName,
+            GuestPhone    = dto.GuestPhone,
+            Note          = dto.Note,
+            Gender        = dto.Gender,
+            TermsAccepted = dto.TermsAccepted,
+            Status        = GuestlistStatus.Pending
         };
 
         await _guestlistRepo.AddAsync(request);
@@ -50,16 +57,30 @@ public class GuestlistService : IGuestlistService
         return DataResult<GuestlistRequestResponseDto>.Ok(MapToDto(request, ev.Title, userId));
     }
 
+    public async Task<DataResult<List<GuestlistRequestResponseDto>>> CreateBulkAsync(List<CreateGuestlistRequestDto> dtos, string userId)
+    {
+        var results = new List<GuestlistRequestResponseDto>();
+
+        foreach (var dto in dtos)
+        {
+            var result = await CreateAsync(dto, userId);
+            if (result.Success && result.Data != null)
+                results.Add(result.Data);
+        }
+
+        return DataResult<List<GuestlistRequestResponseDto>>.Ok(results);
+    }
+
     public async Task<DataResult<List<GuestlistRequestResponseDto>>> GetByEventAsync(int eventId)
     {
         var requests = await _guestlistRepo.FindWithIncludesAsync(
             g => g.EventId == eventId && !g.IsDeleted,
             g => g.Event,
-            g => g.User);
+            g => g.AddedByUser);
 
         var result = requests
             .OrderByDescending(g => g.CreatedAt)
-            .Select(g => MapToDto(g, g.Event.Title, g.User.Email ?? string.Empty))
+            .Select(g => MapToDto(g, g.Event.Title, g.AddedByUser.Email ?? string.Empty))
             .ToList();
 
         return DataResult<List<GuestlistRequestResponseDto>>.Ok(result);
@@ -68,13 +89,13 @@ public class GuestlistService : IGuestlistService
     public async Task<DataResult<List<GuestlistRequestResponseDto>>> GetByUserAsync(string userId)
     {
         var requests = await _guestlistRepo.FindWithIncludesAsync(
-            g => g.UserId == userId && !g.IsDeleted,
+            g => g.AddedByUserId == userId && !g.IsDeleted,
             g => g.Event,
-            g => g.User);
+            g => g.AddedByUser);
 
         var result = requests
             .OrderByDescending(g => g.CreatedAt)
-            .Select(g => MapToDto(g, g.Event.Title, g.User.Email ?? string.Empty))
+            .Select(g => MapToDto(g, g.Event.Title, g.AddedByUser.Email ?? string.Empty))
             .ToList();
 
         return DataResult<List<GuestlistRequestResponseDto>>.Ok(result);
@@ -85,13 +106,13 @@ public class GuestlistService : IGuestlistService
         var requests = await _guestlistRepo.FindWithIncludesAsync(
             g => g.Id == id && !g.IsDeleted,
             g => g.Event,
-            g => g.User);
+            g => g.AddedByUser);
 
         var request = requests.FirstOrDefault();
         if (request == null)
-            return DataResult<GuestlistRequestResponseDto>.Fail("Başvuru bulunamadı.");
+            return DataResult<GuestlistRequestResponseDto>.Fail("Kayıt bulunamadı.");
 
-        request.Status = dto.Status;
+        request.Status    = dto.Status;
         request.AdminNote = dto.AdminNote;
 
         if (dto.Status == GuestlistStatus.Approved)
@@ -102,18 +123,18 @@ public class GuestlistService : IGuestlistService
         await _guestlistRepo.UpdateAsync(request);
 
         return DataResult<GuestlistRequestResponseDto>.Ok(
-            MapToDto(request, request.Event.Title, request.User.Email ?? string.Empty));
+            MapToDto(request, request.Event.Title, request.AddedByUser.Email ?? string.Empty));
     }
 
     public async Task<DataResult<GuestlistStatsDto>> GetStatsAsync(int eventId)
     {
-        var all = await _guestlistRepo.FindAsync(g => g.EventId == eventId && !g.IsDeleted);
+        var all  = await _guestlistRepo.FindAsync(g => g.EventId == eventId && !g.IsDeleted);
         var list = all.ToList();
 
         var stats = new GuestlistStatsDto
         {
-            TotalCount = list.Count,
-            PendingCount = list.Count(g => g.Status == GuestlistStatus.Pending),
+            TotalCount    = list.Count,
+            PendingCount  = list.Count(g => g.Status == GuestlistStatus.Pending),
             ApprovedCount = list.Count(g => g.Status == GuestlistStatus.Approved),
             RejectedCount = list.Count(g => g.Status == GuestlistStatus.Rejected)
         };
@@ -125,30 +146,30 @@ public class GuestlistService : IGuestlistService
     {
         var request = await _guestlistRepo.GetByIdAsync(id);
         if (request == null)
-            return DataResult<bool>.Fail("Başvuru bulunamadı.");
+            return DataResult<bool>.Fail("Kayıt bulunamadı.");
 
         request.IsDeleted = true;
         await _guestlistRepo.UpdateAsync(request);
 
-        return DataResult<bool>.Ok(true, "Başvuru silindi.");
+        return DataResult<bool>.Ok(true, "Kayıt silindi.");
     }
 
-    private static GuestlistRequestResponseDto MapToDto(GuestlistRequest g, string eventTitle, string userEmail) => new()
+    private static GuestlistRequestResponseDto MapToDto(GuestlistRequest g, string eventTitle, string addedByUserEmail) => new()
     {
-        Id = g.Id,
-        EventId = g.EventId,
-        EventTitle = eventTitle,
-        UserId = g.UserId,
-        UserEmail = userEmail,
-        FullName = g.FullName,
-        Phone = g.Phone,
-        Email = g.Email,
-        Note = g.Note,
-        Status = g.Status,
-        GuestlistType = g.GuestlistType,
-        ApprovedAt = g.ApprovedAt,
-        RejectedAt = g.RejectedAt,
-        AdminNote = g.AdminNote,
-        CreatedAt = g.CreatedAt
+        Id               = g.Id,
+        EventId          = g.EventId,
+        EventTitle       = eventTitle,
+        AddedByUserId    = g.AddedByUserId,
+        AddedByUserEmail = addedByUserEmail,
+        GuestName        = g.GuestName,
+        GuestPhone       = g.GuestPhone,
+        Note             = g.Note,
+        Gender           = g.Gender,
+        TermsAccepted    = g.TermsAccepted,
+        Status           = g.Status,
+        ApprovedAt       = g.ApprovedAt,
+        RejectedAt       = g.RejectedAt,
+        AdminNote        = g.AdminNote,
+        CreatedAt        = g.CreatedAt
     };
 }

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using EventTicket.UI.ViewModels;
 
 namespace EventTicket.UI.ViewModels.Admin;
@@ -30,6 +30,9 @@ public class EditEventViewModel
     public string? BadgeText { get; set; }
     public string? BadgeColor { get; set; }
     public bool IsFeatured { get; set; } = false;
+    public bool IsGuestlistOpen { get; set; } = false;
+    public DateTime? GuestlistClosesAt { get; set; }
+    public string? DressCode { get; set; }
 
     public List<VenueCardViewModel> Venues { get; set; } = new();
     public List<ArtistCardViewModel> Artists { get; set; } = new();

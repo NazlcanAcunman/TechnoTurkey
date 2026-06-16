@@ -1,4 +1,4 @@
-﻿namespace EventTicket.UI.ViewModels;
+namespace EventTicket.UI.ViewModels;
 
 public class EventCardViewModel
 {
@@ -26,4 +26,8 @@ public class EventCardViewModel
     public string? BadgeText { get; set; }
     public string? BadgeColor { get; set; }
     public bool IsFeatured { get; set; }
+    public bool IsGuestlistOpen { get; set; }
+    public DateTime? GuestlistDeadline { get; set; }
+    public DateTime? GuestlistClosesAt { get; set; }
+    public string? DressCode { get; set; }
 }
