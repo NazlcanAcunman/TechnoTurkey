@@ -1,0 +1,303 @@
+@model List<EventTicket.UI.ViewModels.EventCardViewModel>
+@{
+    ViewData["Title"] = "Guestlist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+}
+
+<style>
+    .gl-index-wrap {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 40px 24px 80px;
+    }
+
+    .gl-index-header {
+        margin-bottom: 36px;
+    }
+
+    .gl-index-title {
+        font-size: clamp(26px, 4vw, 40px);
+        font-weight: 900;
+        color: #fff;
+        letter-spacing: -0.04em;
+        margin-bottom: 10px;
+    }
+
+    .gl-index-sub {
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.38);
+        max-width: 560px;
+        line-height: 1.6;
+    }
+
+    .gl-index-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+    }
+
+    @media (max-width: 768px) {
+        .gl-index-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    }
+
+    @media (max-width: 480px) {
+        .gl-index-grid { grid-template-columns: 1fr; }
+    }
+
+    .gl-ev-card {
+        display: flex;
+        flex-direction: column;
+        background: rgba(255, 255, 255, 0.035);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 14px;
+        overflow: hidden;
+        transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+        text-decoration: none;
+    }
+
+    .gl-ev-card:hover {
+        transform: translateY(-6px);
+        border-color: rgba(255, 255, 255, 0.18);
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .gl-ev-img {
+        width: 100%;
+        aspect-ratio: 3/4;
+        overflow: hidden;
+        background: #0d0d0d;
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .gl-ev-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.55s;
+    }
+
+    .gl-ev-card:hover .gl-ev-img img {
+        transform: scale(1.07);
+    }
+
+    .gl-ev-date-badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.72);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 10px;
+        padding: 6px 10px;
+        text-align: center;
+        min-width: 42px;
+        line-height: 1;
+    }
+
+    .gl-ev-body {
+        padding: 13px 15px 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+    }
+
+    .gl-ev-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .gl-ev-meta {
+        font-size: 11px;
+        color: rgba(255, 255, 255, 0.28);
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .gl-ev-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 7px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .gl-ev-loc {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.28);
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        max-width: 100px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .gl-apply-btn {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        margin-top: 10px;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 8px;
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-align: center;
+        text-decoration: none;
+        cursor: pointer;
+        font-family: inherit;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .gl-apply-btn:hover {
+        background: rgba(255, 255, 255, 0.13);
+        color: #fff;
+    }
+
+    .gl-empty {
+        text-align: center;
+        padding: 80px 24px;
+        color: rgba(255, 255, 255, 0.25);
+    }
+
+    .gl-empty-icon {
+        font-size: 44px;
+        margin-bottom: 16px;
+        opacity: 0.3;
+    }
+
+    .gl-empty h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: rgba(255, 255, 255, 0.4);
+        margin-bottom: 8px;
+    }
+
+    .gl-empty p {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.25);
+    }
+
+    .gl-info-bar {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 14px 18px;
+        margin-bottom: 32px;
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.45);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+</style>
+
+<div class="gl-index-wrap">
+    <div class="gl-index-header">
+        <div class="gl-index-title">Guestlist</div>
+        <p class="gl-index-sub">
+            Seçili etkinliklere guestlist başvurusu yapabilirsiniz.
+            Başvurular incelenerek onaylanır; onay durumunuzu profilinizden takip edebilirsiniz.
+        </p>
+    </div>
+
+    @if (!isAuthenticated)
+    {
+        <div class="gl-info-bar">
+            <i class="bi bi-info-circle" style="font-size:16px;flex-shrink:0"></i>
+            Başvuru yapmak için
+            <a href="/Auth/Login?returnUrl=/Guestlist"
+               style="color:#fff;font-weight:700;text-decoration:underline;text-underline-offset:3px">
+                giriş yapmanız
+            </a>
+            gerekmektedir.
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="gl-empty">
+            <div class="gl-empty-icon"><i class="bi bi-person-lines-fill"></i></div>
+            <h3>Şu an açık guestlist yok</h3>
+            <p>Yeni etkinlikler eklendikçe burada görünecek.</p>
+        </div>
+    }
+    else
+    {
+        <div class="gl-index-grid">
+            @foreach (var ev in Model)
+            {
+                var isSoldOut = ev.SoldCount >= ev.Capacity;
+                var dateParts = ev.Date.ToString("dd MMM", new System.Globalization.CultureInfo("tr-TR")).Split(' ');
+                var applyUrl = isAuthenticated
+                    ? $"/guestlist/apply/{ev.Id}"
+                    : $"/Auth/Login?returnUrl=/guestlist/apply/{ev.Id}";
+
+                <div class="gl-ev-card">
+                    <div class="gl-ev-img">
+                        <img src="@ev.ImageUrl" alt="@ev.Title" loading="lazy" />
+                        <div class="gl-ev-date-badge">
+                            <span style="display:block;font-size:15px;font-weight:800;color:#fff;margin-bottom:2px">
+                                @dateParts[0]
+                            </span>
+                            <span style="display:block;font-size:9px;font-weight:700;letter-spacing:0.08em;color:rgba(255,255,255,0.42);text-transform:uppercase">
+                                @(dateParts.Length > 1 ? dateParts[1] : "")
+                            </span>
+                        </div>
+                        @if (!string.IsNullOrEmpty(ev.BadgeText))
+                        {
+                            var badgeBg = string.IsNullOrEmpty(ev.BadgeColor) ? "rgba(255,255,255,0.9)" : ev.BadgeColor;
+                            <span style="position:absolute;top:10px;right:10px;font-size:9px;font-weight:800;letter-spacing:0.07em;padding:4px 9px;border-radius:100px;backdrop-filter:blur(6px);background:@badgeBg;color:#000;text-transform:uppercase">
+                                @ev.BadgeText
+                            </span>
+                        }
+                    </div>
+                    <div class="gl-ev-body">
+                        <div class="gl-ev-title">@ev.Title</div>
+                        <div class="gl-ev-meta">
+                            <span>@ev.ArtistName</span>
+                            @if (!string.IsNullOrEmpty(ev.VenueName))
+                            {
+                                <span style="color:rgba(255,255,255,0.14)">·</span>
+                                <span>@ev.VenueName</span>
+                            }
+                        </div>
+                        <div class="gl-ev-footer">
+                            <span class="gl-ev-loc">
+                                <i class="bi bi-geo-alt"></i> @ev.VenueCity
+                            </span>
+                            <span style="font-size:11px;color:rgba(255,255,255,0.35)">
+                                @ev.Date.ToString("HH:mm")
+                            </span>
+                        </div>
+                        @if (isSoldOut)
+                        {
+                            <span class="gl-apply-btn" style="opacity:0.4;cursor:default;pointer-events:none">
+                                TÜKENDİ
+                            </span>
+                        }
+                        else
+                        {
+                            <a href="@applyUrl" class="gl-apply-btn">
+                                <i class="bi bi-person-check" style="margin-right:6px"></i>Başvur
+                            </a>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

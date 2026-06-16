@@ -17,6 +17,15 @@ public class GuestlistController : Controller
         _eventService = eventService;
     }
 
+    [AllowAnonymous]
+    [HttpGet("/Guestlist")]
+    public async Task<IActionResult> Index()
+    {
+        var events = await _eventService.GetApprovedEventsAsync();
+        ViewData["Title"] = "Guestlist";
+        return View(events);
+    }
+
     [HttpGet("/guestlist/apply/{eventId:int}")]
     public async Task<IActionResult> Apply(int eventId)
     {
