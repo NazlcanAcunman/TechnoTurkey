@@ -51,7 +51,7 @@ public class DbSeeder
             }
             else
             {
-                // Şifreyi PasswordHasher ile doğrudan güncelle
+             
                 superAdmin.PasswordHash   = hasher.HashPassword(superAdmin, adminPassword);
                 superAdmin.SecurityStamp  = Guid.NewGuid().ToString();
                 superAdmin.IsActive       = true;
