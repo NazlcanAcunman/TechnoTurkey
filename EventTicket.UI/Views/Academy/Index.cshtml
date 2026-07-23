@@ -23,11 +23,11 @@
         border-bottom: 1px solid rgba(255,255,255,0.07);
     }
     .academy-hero h1 {
-        font-size: clamp(2rem, 5vw, 3.5rem);
+        font-size: clamp(1.3rem, 2.4vw, 1.9rem);
         font-weight: 900;
         letter-spacing: -0.02em;
         color: #fff;
-        margin: 0 0 16px;
+        margin: 0 0 12px;
     }
     .academy-hero p {
         font-size: 1.1rem;
@@ -180,30 +180,28 @@
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 14px;
-        padding: 28px 20px;
+        overflow: hidden;
         text-align: center;
     }
     .instructor-card img {
-        width: 96px;
-        height: 96px;
-        border-radius: 50%;
+        width: 100%;
+        aspect-ratio: 4/5;
         object-fit: cover;
-        border: 2px solid rgba(255,255,255,0.12);
-        margin: 0 auto 16px;
+        object-position: top center;
         display: block;
     }
     .instructor-avatar-placeholder {
-        width: 96px;
-        height: 96px;
-        border-radius: 50%;
+        width: 100%;
+        aspect-ratio: 4/5;
         background: rgba(255,255,255,0.08);
-        border: 2px solid rgba(255,255,255,0.12);
-        margin: 0 auto 16px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2.2rem;
+        font-size: 2.6rem;
         color: rgba(255,255,255,0.3);
+    }
+    .instructor-card-body {
+        padding: 16px 16px 20px;
     }
     .instructor-card h3 {
         font-size: 1rem;
@@ -241,6 +239,64 @@
         transition: background .2s;
     }
     .content-link:hover { background: rgba(255,255,255,0.18); }
+
+    /* Course / Workshop carousel (afiş + açıklama) */
+    .course-carousel-wrap {
+        display: flex;
+        gap: 16px;
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 6px;
+    }
+    .course-carousel-wrap::-webkit-scrollbar { display: none; }
+    .course-card {
+        flex: 0 0 220px;
+        scroll-snap-align: start;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    .course-card img {
+        width: 100%;
+        aspect-ratio: 4/5;
+        object-fit: cover;
+        object-position: top center;
+        display: block;
+    }
+    .course-card-placeholder {
+        width: 100%;
+        aspect-ratio: 4/5;
+        background: rgba(255,255,255,0.08);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.4rem;
+        color: rgba(255,255,255,0.3);
+    }
+    .course-card-body {
+        padding: 14px 16px 18px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    .course-card h3 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0 0 6px;
+    }
+    .course-card p {
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.5);
+        margin: 0 0 10px;
+        line-height: 1.5;
+        flex: 1;
+    }
 </style>
 
 <div class="academy-page">
@@ -267,13 +323,15 @@
                         {
                             <div class="instructor-avatar-placeholder">&#128100;</div>
                         }
-                        <h3>@item.Title</h3>
-                        @if (!string.IsNullOrEmpty(item.LinkUrl))
-                        {
-                            <a href="@item.LinkUrl" target="_blank" rel="noopener" class="instructor-ig-link">
-                                <i class="bi bi-instagram"></i> Profili Gör
-                            </a>
-                        }
+                        <div class="instructor-card-body">
+                            <h3>@item.Title</h3>
+                            @if (!string.IsNullOrEmpty(item.LinkUrl))
+                            {
+                                <a href="@item.LinkUrl" target="_blank" rel="noopener" class="instructor-ig-link">
+                                    <i class="bi bi-instagram"></i> Profili Gör
+                                </a>
+                            }
+                        </div>
                     </div>
                 }
             </div>
@@ -305,23 +363,29 @@
     {
         <div class="academy-section">
             <div class="academy-section-title">Eğitimlerimiz</div>
-            <div class="student-grid">
+            <div class="course-carousel-wrap">
                 @foreach (var item in courseItems)
                 {
-                    <div class="student-card">
+                    <div class="course-card">
                         @if (!string.IsNullOrEmpty(item.MediaUrl))
                         {
                             <img src="@item.MediaUrl" alt="@item.Title" />
                         }
-                        <h3>@item.Title</h3>
-                        @if (!string.IsNullOrEmpty(item.Description))
+                        else
                         {
-                            <p>@item.Description</p>
+                            <div class="course-card-placeholder">&#127891;</div>
                         }
-                        @if (!string.IsNullOrEmpty(item.LinkUrl))
-                        {
-                            <a href="@item.LinkUrl" target="_blank" rel="noopener" class="content-link">Detaylar</a>
-                        }
+                        <div class="course-card-body">
+                            <h3>@item.Title</h3>
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <p>@item.Description</p>
+                            }
+                            @if (!string.IsNullOrEmpty(item.LinkUrl))
+                            {
+                                <a href="@item.LinkUrl" target="_blank" rel="noopener" class="content-link">Detaylar</a>
+                            }
+                        </div>
                     </div>
                 }
             </div>
@@ -333,23 +397,29 @@
     {
         <div class="academy-section">
             <div class="academy-section-title">Workshoplarımız</div>
-            <div class="student-grid">
+            <div class="course-carousel-wrap">
                 @foreach (var item in workshopItems)
                 {
-                    <div class="student-card">
+                    <div class="course-card">
                         @if (!string.IsNullOrEmpty(item.MediaUrl))
                         {
                             <img src="@item.MediaUrl" alt="@item.Title" />
                         }
-                        <h3>@item.Title</h3>
-                        @if (!string.IsNullOrEmpty(item.Description))
+                        else
                         {
-                            <p>@item.Description</p>
+                            <div class="course-card-placeholder">&#127891;</div>
                         }
-                        @if (!string.IsNullOrEmpty(item.LinkUrl))
-                        {
-                            <a href="@item.LinkUrl" target="_blank" rel="noopener" class="content-link">Detaylar</a>
-                        }
+                        <div class="course-card-body">
+                            <h3>@item.Title</h3>
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <p>@item.Description</p>
+                            }
+                            @if (!string.IsNullOrEmpty(item.LinkUrl))
+                            {
+                                <a href="@item.LinkUrl" target="_blank" rel="noopener" class="content-link">Detaylar</a>
+                            }
+                        </div>
                     </div>
                 }
             </div>
