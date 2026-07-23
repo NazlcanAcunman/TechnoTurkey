@@ -1,4 +1,5 @@
 @model List<EventTicket.UI.ViewModels.AcademyContentViewModel>
+@using System.Text.Json
 @{
     ViewData["Title"] = "Akademi Yönetimi";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -136,6 +137,12 @@
                             }
                         </td>
                         <td style="display:flex;align-items:center;gap:8px">
+                            <button type="button" class="btn-admin btn-sm"
+                                    data-item="@JsonSerializer.Serialize(new {
+                                        item.Id, item.Type, item.Title, item.Description,
+                                        item.MediaUrl, item.LinkUrl, item.DisplayOrder, item.IsActive
+                                    })"
+                                    onclick="openEditModal(this)">Düzenle</button>
                             <form asp-area="Admin" asp-controller="Academy" asp-action="Delete" method="post"
                                   onsubmit="confirmDelete(this, '@item.Title içeriğini silmek istediğinize emin misiniz?'); return false;">
                                 <input type="hidden" name="id" value="@item.Id" />
@@ -149,84 +156,170 @@
     }
 </div>
 
+<!-- ════ DÜZENLEME MODALI ════ -->
+<div id="editModalOverlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:1000;align-items:center;justify-content:center;padding:20px">
+    <div style="background:#141414;border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:28px;max-width:640px;width:100%;max-height:88vh;overflow-y:auto">
+        <h3 style="color:#fff;margin:0 0 20px;font-size:16px;font-weight:700">İçeriği Düzenle</h3>
+        <form asp-area="Admin" asp-controller="Academy" asp-action="Update" method="post">
+            <input type="hidden" name="Id" id="editId" />
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:16px">
+                <div>
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">TÜR</label>
+                    <input type="text" id="editTypeInput" name="Type" required list="academyTypeList"
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
+                </div>
+                <div>
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">BAŞLIK</label>
+                    <input type="text" name="Title" id="editTitle" required
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
+                </div>
+                <div id="editFieldMediaUrl">
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">GÖRSEL</label>
+                    <input type="file" id="editMediaFileInput" accept="image/*"
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:12px;font-family:inherit;box-sizing:border-box" />
+                    <input type="hidden" name="MediaUrl" id="editMediaUrlHidden" />
+                    <div id="editMediaUploadStatus" style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px"></div>
+                </div>
+                <div id="editFieldLinkUrl">
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">LİNK <span style="font-weight:400;color:rgba(255,255,255,0.35)">(Instagram, web sitesi vb.)</span></label>
+                    <input type="text" name="LinkUrl" id="editLinkUrl"
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
+                </div>
+                <div>
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">SIRA</label>
+                    <input type="number" name="DisplayOrder" id="editDisplayOrder" min="0"
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
+                </div>
+            </div>
+            <div id="editFieldDescription" style="margin-bottom:16px">
+                <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">AÇIKLAMA</label>
+                <textarea name="Description" id="editDescription" rows="3"
+                          style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box;resize:vertical"></textarea>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;color:rgba(255,255,255,0.7);font-size:13px;margin-bottom:20px">
+                <input type="hidden" name="IsActive" value="false" />
+                <input type="checkbox" name="IsActive" id="editIsActive" value="true" style="width:16px;height:16px" />
+                Aktif
+            </label>
+            <div style="display:flex;gap:10px">
+                <button type="submit" class="btn-admin">Kaydet</button>
+                <button type="button" class="btn-admin" style="background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.7)" onclick="closeEditModal()">İptal</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    (function () {
-        // Her tür için hangi alanların görünmesi gerektiğini tanımlar.
-        // Listede olmayan bir alan gizlenir. Bilinmeyen/özel türlerde hepsi gösterilir (güvenli varsayılan).
-        var typeFieldMap = {
-            "info":        ["description"],
-            "photo":       ["mediaurl"],
-            "student":     ["mediaurl", "description"],
-            "video":       ["mediaurl", "description"],
-            "instructor":  ["mediaurl", "linkurl"],
-            "course":      ["mediaurl", "description", "linkurl"],
-            "workshop":    ["mediaurl", "description", "linkurl"],
-            "faq":         ["description"],
-            "testimonial": ["mediaurl", "description"],
-            "certificate": ["mediaurl"]
-        };
-        var allFields = ["mediaurl", "linkurl", "description"];
-        var fieldElements = {
-            mediaurl: document.getElementById("fieldMediaUrl"),
-            linkurl: document.getElementById("fieldLinkUrl"),
-            description: document.getElementById("fieldDescription")
-        };
-        var typeInput = document.getElementById("academyTypeInput");
+    // Her tür için hangi alanların görünmesi gerektiğini tanımlar (create + edit ortak).
+    var typeFieldMap = {
+        "info":        ["description"],
+        "photo":       ["mediaurl"],
+        "student":     ["mediaurl", "description"],
+        "video":       ["mediaurl", "description"],
+        "instructor":  ["mediaurl", "linkurl"],
+        "course":      ["mediaurl", "description", "linkurl"],
+        "workshop":    ["mediaurl", "description", "linkurl"],
+        "faq":         ["description"],
+        "testimonial": ["mediaurl", "description"],
+        "certificate": ["mediaurl"]
+    };
+    var allFields = ["mediaurl", "linkurl", "description"];
 
-        function updateVisibility() {
+    function setupTypeVisibility(typeInput, fieldEls) {
+        if (!typeInput) return;
+        function update() {
             var typeKey = (typeInput.value || "").trim().toLowerCase();
-            var visibleFields = typeFieldMap[typeKey] || allFields; // bilinmeyen tür -> hepsini göster
-
+            var visibleFields = typeFieldMap[typeKey] || allFields;
             allFields.forEach(function (f) {
-                if (fieldElements[f]) {
-                    fieldElements[f].style.display = visibleFields.indexOf(f) !== -1 ? "" : "none";
+                if (fieldEls[f]) {
+                    fieldEls[f].style.display = visibleFields.indexOf(f) !== -1 ? "" : "none";
                 }
             });
         }
+        typeInput.addEventListener("input", update);
+        update();
+    }
 
-        if (typeInput) {
-            typeInput.addEventListener("input", updateVisibility);
-            updateVisibility(); // sayfa yüklenince mevcut değere göre ayarla
-        }
+    function setupMediaUpload(fileInput, hiddenInput, statusEl) {
+        if (!fileInput) return;
+        fileInput.addEventListener("change", function () {
+            var f = this.files[0];
+            if (!f) return;
 
-        // ── Görsel yükleme ──
-        var mediaFileInput = document.getElementById("mediaFileInput");
-        var mediaUrlHidden = document.getElementById("mediaUrlHidden");
-        var mediaUploadStatus = document.getElementById("mediaUploadStatus");
+            statusEl.textContent = "Yükleniyor...";
+            statusEl.style.color = "rgba(255,255,255,0.4)";
+            hiddenInput.value = "";
 
-        if (mediaFileInput) {
-            mediaFileInput.addEventListener("change", function () {
-                var f = this.files[0];
-                if (!f) return;
+            var fd = new FormData();
+            fd.append("file", f);
 
-                mediaUploadStatus.textContent = "Yükleniyor...";
-                mediaUploadStatus.style.color = "rgba(255,255,255,0.4)";
-                mediaUrlHidden.value = "";
-
-                var fd = new FormData();
-                fd.append("file", f);
-
-                fetch("@Url.Action("UploadImage", "Academy", new { area = "Admin" })", {
-                    method: "POST",
-                    body: fd
+            fetch("@Url.Action("UploadImage", "Academy", new { area = "Admin" })", {
+                method: "POST",
+                body: fd
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        hiddenInput.value = data.url;
+                        statusEl.textContent = "Yüklendi ✓";
+                        statusEl.style.color = "#10b981";
+                    } else {
+                        statusEl.textContent = data.message || "Yükleme hatası oluştu.";
+                        statusEl.style.color = "#ef4444";
+                    }
                 })
-                    .then(function (r) { return r.json(); })
-                    .then(function (data) {
-                        if (data.success) {
-                            mediaUrlHidden.value = data.url;
-                            mediaUploadStatus.textContent = "Yüklendi ✓";
-                            mediaUploadStatus.style.color = "#10b981";
-                        } else {
-                            mediaUploadStatus.textContent = data.message || "Yükleme hatası oluştu.";
-                            mediaUploadStatus.style.color = "#ef4444";
-                        }
-                    })
-                    .catch(function () {
-                        mediaUploadStatus.textContent = "Bağlantı hatası.";
-                        mediaUploadStatus.style.color = "#ef4444";
-                    });
-            });
-        }
-    })();
-</script>
+                .catch(function () {
+                    statusEl.textContent = "Bağlantı hatası.";
+                    statusEl.style.color = "#ef4444";
+                });
+        });
+    }
 
+    (function () {
+        setupTypeVisibility(document.getElementById("academyTypeInput"), {
+            mediaurl: document.getElementById("fieldMediaUrl"),
+            linkurl: document.getElementById("fieldLinkUrl"),
+            description: document.getElementById("fieldDescription")
+        });
+        setupMediaUpload(
+            document.getElementById("mediaFileInput"),
+            document.getElementById("mediaUrlHidden"),
+            document.getElementById("mediaUploadStatus")
+        );
+
+        setupTypeVisibility(document.getElementById("editTypeInput"), {
+            mediaurl: document.getElementById("editFieldMediaUrl"),
+            linkurl: document.getElementById("editFieldLinkUrl"),
+            description: document.getElementById("editFieldDescription")
+        });
+        setupMediaUpload(
+            document.getElementById("editMediaFileInput"),
+            document.getElementById("editMediaUrlHidden"),
+            document.getElementById("editMediaUploadStatus")
+        );
+    })();
+
+    function openEditModal(btn) {
+        var item = JSON.parse(btn.getAttribute("data-item"));
+
+        document.getElementById("editId").value = item.Id;
+        document.getElementById("editTypeInput").value = item.Type || "";
+        document.getElementById("editTitle").value = item.Title || "";
+        document.getElementById("editMediaUrlHidden").value = item.MediaUrl || "";
+        document.getElementById("editLinkUrl").value = item.LinkUrl || "";
+        document.getElementById("editDisplayOrder").value = item.DisplayOrder || 0;
+        document.getElementById("editDescription").value = item.Description || "";
+        document.getElementById("editIsActive").checked = !!item.IsActive;
+        document.getElementById("editMediaUploadStatus").textContent = item.MediaUrl ? "Mevcut görsel korunuyor (değiştirmek için yeni dosya seçin)" : "";
+        document.getElementById("editMediaUploadStatus").style.color = "rgba(255,255,255,0.4)";
+
+        // tür değiştiğinde alan görünürlüğünü güncelle
+        document.getElementById("editTypeInput").dispatchEvent(new Event("input"));
+
+        document.getElementById("editModalOverlay").style.display = "flex";
+    }
+
+    function closeEditModal() {
+        document.getElementById("editModalOverlay").style.display = "none";
+    }
+</script>
