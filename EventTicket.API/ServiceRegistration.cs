@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Diagnostics;
 using EventTicket.API.Services;
 using EventTicket.Core.Entities;
 using EventTicket.Core.Interfaces;
