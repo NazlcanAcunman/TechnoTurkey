@@ -8,6 +8,7 @@
     var instructorItems = Model.Where(x => x.Type == "instructor" && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
     var courseItems     = Model.Where(x => x.Type == "course"     && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
     var workshopItems   = Model.Where(x => x.Type == "workshop"   && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
+    var bannerItems     = Model.Where(x => x.Type == "banner"     && x.IsActive).OrderBy(x => x.DisplayOrder).ToList();
 }
 
 <style>
@@ -17,23 +18,23 @@
         color: #fff;
         font-family: inherit;
     }
-.academy-hero {
-    text-align: center;
-    padding: 32px 24px 24px;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-}
-.academy-hero h1 {
-    font-size: clamp(1.05rem, 1.6vw, 1.35rem);
-    font-weight: 900;
-    letter-spacing: -0.02em;
-    color: #fff;
-    margin: 0 0 6px;
-}
-.academy-hero p {
-    font-size: 0.85rem;
-    color: rgba(255,255,255,0.5);
-    margin: 0;
-}
+    .academy-hero {
+        text-align: center;
+        padding: 32px 24px 24px;
+        border-bottom: 1px solid rgba(255,255,255,0.07);
+    }
+    .academy-hero h1 {
+        font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+        font-weight: 900;
+        letter-spacing: -0.02em;
+        color: #fff;
+        margin: 0 0 6px;
+    }
+    .academy-hero p {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.5);
+        margin: 0;
+    }
     .academy-section {
         max-width: 1200px;
         margin: 0 auto;
@@ -298,6 +299,35 @@
         line-height: 1.5;
         flex: 1;
     }
+
+    /* Banner slider */
+    .banner-slider-wrap {
+        display: flex;
+        gap: 14px;
+        overflow-x: auto;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px 24px 4px;
+    }
+    .banner-slider-wrap::-webkit-scrollbar { display: none; }
+    .banner-slide {
+        flex: 0 0 320px;
+        scroll-snap-align: start;
+        border-radius: 14px;
+        overflow: hidden;
+        display: block;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+    }
+    .banner-slide img {
+        width: 100%;
+        aspect-ratio: 21/9;
+        object-fit: cover;
+        display: block;
+    }
 </style>
 
 <div class="academy-page">
@@ -307,6 +337,27 @@
         <h1>TechnoTurkey Akademi</h1>
         <p>Müzik dünyasına adım atmak isteyenler için.</p>
     </div>
+
+    @if (bannerItems.Any())
+    {
+        <div class="banner-slider-wrap">
+            @foreach (var item in bannerItems)
+            {
+                @if (!string.IsNullOrEmpty(item.LinkUrl))
+                {
+                    <a href="@item.LinkUrl" target="_blank" rel="noopener" class="banner-slide">
+                        <img src="@item.MediaUrl" alt="@item.Title" />
+                    </a>
+                }
+                else
+                {
+                    <div class="banner-slide">
+                        <img src="@item.MediaUrl" alt="@item.Title" />
+                    </div>
+                }
+            }
+        </div>
+    }
 
     @if (instructorItems.Any())
     {
@@ -534,3 +585,4 @@
         </button>
     </div>
 </div>
+
