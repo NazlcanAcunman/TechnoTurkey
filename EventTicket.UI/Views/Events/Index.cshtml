@@ -146,39 +146,39 @@
     .et-dummy-loc  { font-size:10px; color:rgba(255,255,255,0.28); display:flex; align-items:center; gap:3px; max-width:115px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .et-dummy-price{ font-size:13px; font-weight:800; color:#fff; white-space:nowrap; }
 
-  @media (max-width: 768px) {
-    .filter-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
+    @@media (max-width: 768px) {
+        .filter-grid {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        .filter-input, .filter-select {
+            width: 100%;
+        }
+        #eventGrid {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            overflow-x: auto !important;
+            scroll-snap-type: x proximity;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            gap: 12px !important;
+            padding-bottom: 4px;
+        }
+        #eventGrid::-webkit-scrollbar { display: none; }
+        #eventGrid > * {
+            flex: 0 0 200px;
+            scroll-snap-align: start;
+        }
+        .et-dummy-title { font-size: 11px; }
+        .et-dummy-meta  { font-size: 10px; }
+        .et-dummy-loc   { font-size: 9px; }
     }
-    .filter-input, .filter-select {
-        width: 100%;
-    }
-    #eventGrid {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        scroll-snap-type: x proximity;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        gap: 12px !important;
-        padding-bottom: 4px;
-    }
-    #eventGrid::-webkit-scrollbar { display: none; }
-    #eventGrid > * {
-        flex: 0 0 200px;
-        scroll-snap-align: start;
-    }
-    .et-dummy-title { font-size: 11px; }
-    .et-dummy-meta  { font-size: 10px; }
-    .et-dummy-loc   { font-size: 9px; }
-}
 
-@media (max-width: 480px) {
-    #eventGrid > * {
-        flex: 0 0 160px;
+    @@media (max-width: 480px) {
+        #eventGrid > * {
+            flex: 0 0 160px;
+        }
     }
-}
 </style>
 
 <!-- FİLTRE PANELİ -->
