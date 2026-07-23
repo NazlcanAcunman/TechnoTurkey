@@ -457,17 +457,17 @@ main {
     margin-bottom: 16px;
 }
 .et-fullbanner-title {
-    font-size: clamp(52px, 8vw, 108px);
-    font-weight: 900;
+    font-size: clamp(18px, 2.2vw, 24px);
+    font-weight: 800;
     color: #fff;
-    line-height: 0.96;
-    letter-spacing: -0.045em;
-    margin-bottom: 18px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
     text-shadow: 0 8px 64px rgba(0,0,0,0.6);
     font-family: 'Anek Latin', 'Inter', sans-serif;
 }
 .et-fullbanner-sub {
-    font-size: 15px;
+    font-size: 12px;
     font-weight: 400;
     color: rgba(255,255,255,0.42);
     letter-spacing: 0.03em;
@@ -579,12 +579,12 @@ main {
     backdrop-filter: blur(8px);
 }
 .et-hero-title {
-    font-size: clamp(36px, 5.2vw, 72px);
-    font-weight: 900;
+    font-size: clamp(15px, 1.8vw, 20px);
+    font-weight: 800;
     color: #fff;
-    line-height: 1.04;
-    margin-bottom: 14px;
-    letter-spacing: -0.03em;
+    line-height: 1.25;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
     text-shadow: 0 2px 32px rgba(0,0,0,0.8);
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -592,7 +592,7 @@ main {
     overflow: hidden;
 }
 .et-hero-artist {
-    font-size: 16px;
+    font-size: 12px;
     font-weight: 400;
     color: var(--text-2);
     letter-spacing: 0.01em;
@@ -677,7 +677,7 @@ main {
 .et-card-img-wrap {
     position: relative;
     width: 100%;
-    aspect-ratio: 4/5;
+    aspect-ratio: 1/1;
     overflow: hidden;
     flex-shrink: 0;
     background: #0d0d0d;
@@ -685,7 +685,6 @@ main {
 .et-card-img {
     width: 100%; height: 100%;
     object-fit: cover;
-    object-position: top center;
     transition: transform 0.55s ease;
     display: block;
 }
@@ -1408,7 +1407,7 @@ main {
 @media (max-width: 900px) {
     .et-banner-inner { height: 460px; }
     .et-fullbanner { min-height: 380px; height: clamp(380px, 60vh, 560px); }
-    .et-fullbanner-title { font-size: clamp(38px, 7vw, 72px); }
+    .et-fullbanner-title { font-size: clamp(16px, 2vw, 20px); }
     .et-fullbanner-content { padding: 0 32px; bottom: 60px; }
     .et-hero { height: clamp(320px, 44vh, 460px); }
     .et-hero-overlay { padding: 40px 40px; }
@@ -1416,12 +1415,12 @@ main {
 @media (max-width: 768px) {
     :root { --nav-h: 56px; }
     .et-fullbanner { min-height: 320px; height: clamp(320px, 55vh, 480px); }
-    .et-fullbanner-title { font-size: clamp(28px, 7vw, 48px); }
+    .et-fullbanner-title { font-size: clamp(14px, 3vw, 18px); }
     .et-fullbanner-content { padding: 0 24px; bottom: 44px; }
     .et-fullbanner-btn { padding: 13px 28px; font-size: 11px; }
     .et-hero { height: clamp(280px, 40vh, 400px); }
     .et-hero-overlay { padding: 28px 28px; }
-    .et-hero-title { font-size: 26px; }
+    .et-hero-title { font-size: 15px; }
     .et-hero-dots { right: 24px; }
     .et-cat-row { flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
     .et-cat-row::-webkit-scrollbar { display:none; }
@@ -1441,10 +1440,10 @@ main {
 @media (max-width: 480px) {
     .et-genre-grid { grid-template-columns: repeat(4,1fr); }
     .et-fullbanner { height: clamp(280px, 50vh, 400px); }
-    .et-fullbanner-title { font-size: 26px; }
-    .et-fullbanner-sub { font-size: 13px; }
+    .et-fullbanner-title { font-size: 14px; }
+    .et-fullbanner-sub { font-size: 11px; }
     .et-hero { height: clamp(240px, 36vh, 320px); }
-    .et-hero-title { font-size: 22px; }
+    .et-hero-title { font-size: 13px; }
     .et-hero-btn { font-size: 11px; padding: 12px 22px; }
     .et-hero-arrow { width:36px; height:36px; font-size:13px; }
     .et-cta-inner { padding: 40px 24px; }
@@ -1452,7 +1451,11 @@ main {
     .et-banner-title { font-size: 26px; }
     .et-feat-overlay { padding: 24px 20px; }
 }
-/* ── MOBILE CAROUSEL FIX ── */
+
+/* ── MOBILE CAROUSEL FIX ──────────────────────────────────────────
+   Küçük ekranlarda ok butonlarını gizle (dokunarak kaydırma zaten
+   doğal), ve carousel/scroll konteynerlerinin yüksekliğini içeriğe
+   göre sabitleyerek altta kalan boş alanı gider. ─────────────────── */
 @media (max-width: 768px) {
     .et-carr-btn { display: none !important; }
     .et-carousel { padding: 0 !important; height: auto !important; }
