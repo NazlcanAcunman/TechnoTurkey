@@ -10,12 +10,31 @@ namespace EventTicket.UI.Areas.Admin.Controllers;
 public class AcademyController : Controller
 {
     private readonly IAcademyUlService _academyService;
-    public AcademyController(IAcademyUlService academyService) => _academyService = academyService;
+    private readonly IApiService _apiService;
+
+    public AcademyController(IAcademyUlService academyService, IApiService apiService)
+    {
+        _academyService = academyService;
+        _apiService = apiService;
+    }
 
     public async Task<IActionResult> Index()
     {
         var items = await _academyService.GetAllAsync();
         return View(items);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> UploadImage(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return Json(new { success = false, message = "Dosya seçilmedi." });
+
+        var result = await _apiService.PostFileAsync<UploadResultDto>("api/upload/image", file);
+        if (result == null || string.IsNullOrEmpty(result.Url))
+            return Json(new { success = false, message = _apiService.LastError ?? "Yükleme başarısız." });
+
+        return Json(new { success = true, url = result.Url });
     }
 
     [HttpPost]
@@ -38,4 +57,9 @@ public class AcademyController : Controller
         await _academyService.UpdateAsync(vm.Id, vm);
         return RedirectToAction("Index");
     }
+}
+
+public class UploadResultDto
+{
+    public string? Url { get; set; }
 }
