@@ -677,7 +677,7 @@ main {
 .et-card-img-wrap {
     position: relative;
     width: 100%;
-    aspect-ratio: 1/1;
+    aspect-ratio: 4/5;
     overflow: hidden;
     flex-shrink: 0;
     background: #0d0d0d;
@@ -685,6 +685,7 @@ main {
 .et-card-img {
     width: 100%; height: 100%;
     object-fit: cover;
+    object-position: top center;
     transition: transform 0.55s ease;
     display: block;
 }
