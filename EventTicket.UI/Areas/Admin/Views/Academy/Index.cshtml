@@ -14,7 +14,7 @@
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:16px">
                 <div>
                     <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">TÜR</label>
-                    <input type="text" name="Type" required list="academyTypeList" placeholder="tür yazın (örn: instructor)"
+                    <input type="text" id="academyTypeInput" name="Type" required list="academyTypeList" placeholder="tür yazın (örn: instructor)"
                            style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
                     <datalist id="academyTypeList">
                         <option value="info">Hakkımızda</option>
@@ -34,12 +34,12 @@
                     <input type="text" name="Title" required placeholder="Başlık girin..."
                            style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
                 </div>
-                <div>
+                <div id="fieldMediaUrl">
                     <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">MEDYA URL</label>
                     <input type="text" name="MediaUrl" placeholder="https://..."
                            style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
                 </div>
-                <div>
+                <div id="fieldLinkUrl">
                     <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">LİNK <span style="font-weight:400;color:rgba(255,255,255,0.35)">(Instagram, web sitesi vb.)</span></label>
                     <input type="text" name="LinkUrl" placeholder="https://instagram.com/kullaniciadi"
                            style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
@@ -50,7 +50,7 @@
                            style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
                 </div>
             </div>
-            <div style="margin-bottom:16px">
+            <div id="fieldDescription" style="margin-bottom:16px">
                 <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">AÇIKLAMA</label>
                 <textarea name="Description" rows="3" placeholder="Açıklama girin..."
                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box;resize:vertical"></textarea>
@@ -146,3 +146,45 @@
         </table>
     }
 </div>
+
+<script>
+    (function () {
+        // Her tür için hangi alanların görünmesi gerektiğini tanımlar.
+        // Listede olmayan bir alan gizlenir. Bilinmeyen/özel türlerde hepsi gösterilir (güvenli varsayılan).
+        var typeFieldMap = {
+            "info":        ["description"],
+            "photo":       ["mediaurl"],
+            "student":     ["mediaurl", "description"],
+            "video":       ["mediaurl", "description"],
+            "instructor":  ["mediaurl", "linkurl"],
+            "course":      ["mediaurl", "description", "linkurl"],
+            "workshop":    ["mediaurl", "description", "linkurl"],
+            "faq":         ["description"],
+            "testimonial": ["mediaurl", "description"],
+            "certificate": ["mediaurl"]
+        };
+        var allFields = ["mediaurl", "linkurl", "description"];
+        var fieldElements = {
+            mediaurl: document.getElementById("fieldMediaUrl"),
+            linkurl: document.getElementById("fieldLinkUrl"),
+            description: document.getElementById("fieldDescription")
+        };
+        var typeInput = document.getElementById("academyTypeInput");
+
+        function updateVisibility() {
+            var typeKey = (typeInput.value || "").trim().toLowerCase();
+            var visibleFields = typeFieldMap[typeKey] || allFields; // bilinmeyen tür -> hepsini göster
+
+            allFields.forEach(function (f) {
+                if (fieldElements[f]) {
+                    fieldElements[f].style.display = visibleFields.indexOf(f) !== -1 ? "" : "none";
+                }
+            });
+        }
+
+        if (typeInput) {
+            typeInput.addEventListener("input", updateVisibility);
+            updateVisibility(); // sayfa yüklenince mevcut değere göre ayarla
+        }
+    })();
+</script>
