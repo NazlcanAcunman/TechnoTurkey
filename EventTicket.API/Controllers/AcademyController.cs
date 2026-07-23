@@ -31,6 +31,7 @@ public class AcademyController : ControllerBase
                 x.Title,
                 x.Description,
                 x.MediaUrl,
+                x.LinkUrl,
                 x.DisplayOrder,
                 x.IsActive
             })
@@ -49,6 +50,7 @@ public class AcademyController : ControllerBase
             Title = dto.Title,
             Description = dto.Description,
             MediaUrl = dto.MediaUrl,
+            LinkUrl = dto.LinkUrl,
             DisplayOrder = dto.DisplayOrder,
             IsActive = dto.IsActive
         };
@@ -56,7 +58,7 @@ public class AcademyController : ControllerBase
         _db.AcademyContents.Add(item);
         await _db.SaveChangesAsync();
 
-        return Ok(new { item.Id, item.Type, item.Title, item.Description, item.MediaUrl, item.DisplayOrder, item.IsActive });
+        return Ok(new { item.Id, item.Type, item.Title, item.Description, item.MediaUrl, item.LinkUrl, item.DisplayOrder, item.IsActive });
     }
 
     [HttpPut("{id}")]
@@ -70,6 +72,7 @@ public class AcademyController : ControllerBase
         item.Title = dto.Title;
         item.Description = dto.Description;
         item.MediaUrl = dto.MediaUrl;
+        item.LinkUrl = dto.LinkUrl;
         item.DisplayOrder = dto.DisplayOrder;
         item.IsActive = dto.IsActive;
 
@@ -96,6 +99,7 @@ public class AcademyContentDto
     public string Title { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string? MediaUrl { get; set; }
+    public string? LinkUrl { get; set; }
     public int DisplayOrder { get; set; }
     public bool IsActive { get; set; } = true;
 }
