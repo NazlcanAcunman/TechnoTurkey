@@ -1451,3 +1451,11 @@ main {
     .et-banner-title { font-size: 26px; }
     .et-feat-overlay { padding: 24px 20px; }
 }
+/* ── MOBILE CAROUSEL FIX ── */
+@media (max-width: 768px) {
+    .et-carr-btn { display: none !important; }
+    .et-carousel { padding: 0 !important; height: auto !important; }
+    .et-scroll-wrap { height: auto !important; }
+    .et-scroll-inner { height: auto !important; align-items: flex-start; }
+    .et-scroll-inner .et-card-wrap { flex-shrink: 0; height: auto !important; }
+}
