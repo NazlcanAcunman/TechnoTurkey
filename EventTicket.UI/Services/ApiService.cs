@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -58,6 +59,36 @@ public class ApiService : IApiService
         catch (HttpRequestException ex)
         {
             _logger.LogError(ex, "GET {Endpoint} sırasında bağlantı hatası oluştu.", endpoint);
+            LastError = "Bağlantı hatası: " + ex.Message;
+            return default;
+        }
+    }
+
+    public async Task<T?> PostFileAsync<T>(string endpoint, IFormFile file)
+    {
+        try
+        {
+            using var content = new MultipartFormDataContent();
+            using var fileStream = file.OpenReadStream();
+            using var streamContent = new StreamContent(fileStream);
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+            content.Add(streamContent, "file", file.FileName);
+
+            var response = await _http.PostAsync(endpoint, content);
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                _logger.LogWarning("POST(file) {Endpoint} başarısız. StatusCode: {StatusCode}, Body: {Body}", endpoint, response.StatusCode, errorBody);
+                LastError = errorBody;
+                return default;
+            }
+            LastError = null;
+            var responseJson = await response.Content.ReadAsStringAsync();
+            return JsonSerializer.Deserialize<T>(responseJson, _jsonOptions);
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "POST(file) {Endpoint} sırasında bağlantı hatası oluştu.", endpoint);
             LastError = "Bağlantı hatası: " + ex.Message;
             return default;
         }
