@@ -301,18 +301,6 @@
     }
 
     /* Banner slider */
-    .banner-slider-wrap {
-        display: flex;
-        gap: 14px;
-        overflow-x: auto;
-        scroll-snap-type: x proximity;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 20px 24px 4px;
-    }
-    .banner-slider-wrap::-webkit-scrollbar { display: none; }
     .banner-slide {
         flex: 0 0 320px;
         scroll-snap-align: start;
@@ -340,22 +328,28 @@
 
     @if (bannerItems.Any())
     {
-        <div class="banner-slider-wrap">
-            @foreach (var item in bannerItems)
-            {
-                @if (!string.IsNullOrEmpty(item.LinkUrl))
-                {
-                    <a href="@item.LinkUrl" target="_blank" rel="noopener" class="banner-slide">
-                        <img src="@item.MediaUrl" alt="@item.Title" />
-                    </a>
-                }
-                else
-                {
-                    <div class="banner-slide">
-                        <img src="@item.MediaUrl" alt="@item.Title" />
-                    </div>
-                }
-            }
+        <div class="et-carousel" style="max-width:1200px;margin:0 auto;padding:20px 48px 4px">
+            <button class="et-carr-btn et-carr-l" onclick="sc('bannerScroll',-1)"><i class="bi bi-chevron-left"></i></button>
+            <div class="et-scroll-wrap" id="bannerScroll">
+                <div class="et-scroll-inner" style="gap:14px">
+                    @foreach (var item in bannerItems)
+                    {
+                        @if (!string.IsNullOrEmpty(item.LinkUrl))
+                        {
+                            <a href="@item.LinkUrl" target="_blank" rel="noopener" class="banner-slide">
+                                <img src="@item.MediaUrl" alt="@item.Title" />
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="banner-slide">
+                                <img src="@item.MediaUrl" alt="@item.Title" />
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+            <button class="et-carr-btn et-carr-r" onclick="sc('bannerScroll',1)"><i class="bi bi-chevron-right"></i></button>
         </div>
     }
 
@@ -586,3 +580,9 @@
     </div>
 </div>
 
+<script>
+    function sc(id, dir) {
+        var el = document.getElementById(id);
+        if (el) el.scrollBy({ left: dir * 340, behavior: 'smooth' });
+    }
+</script>
