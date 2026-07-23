@@ -300,21 +300,90 @@
         flex: 1;
     }
 
-    /* Banner slider */
-    .banner-slide {
-        flex: 0 0 320px;
-        scroll-snap-align: start;
-        border-radius: 14px;
-        overflow: hidden;
-        display: block;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08);
-    }
-    .banner-slide img {
+    /* Büyük hero banner slayt (anasayfadaki gibi) */
+    .academy-banner-hero {
+        position: relative;
         width: 100%;
-        aspect-ratio: 21/9;
+        height: clamp(240px, 38vh, 400px);
+        overflow: hidden;
+        background: #080808;
+    }
+    .academy-banner-slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.9s ease;
+        pointer-events: none;
+    }
+    .academy-banner-slide.active {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    .academy-banner-slide img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
         object-fit: cover;
         display: block;
+    }
+    .academy-banner-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.35) 45%, transparent 100%);
+        display: flex;
+        align-items: flex-end;
+        padding: 28px 32px;
+    }
+    .academy-banner-text h2 {
+        font-size: clamp(16px, 2vw, 22px);
+        font-weight: 800;
+        color: #fff;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+        text-shadow: 0 2px 20px rgba(0,0,0,0.7);
+    }
+    .academy-banner-text p {
+        font-size: 12px;
+        color: rgba(255,255,255,0.65);
+        margin: 0 0 10px;
+        max-width: 480px;
+    }
+    .academy-banner-text a {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        text-decoration: none;
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.25);
+        padding: 6px 14px;
+        border-radius: 100px;
+    }
+    .academy-banner-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 4;
+        width: 38px; height: 38px;
+        border-radius: 50%;
+        background: rgba(0,0,0,0.6);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #fff;
+        font-size: 15px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .academy-banner-arrow:hover { background: rgba(0,0,0,0.8); }
+    .academy-banner-l { left: 16px; }
+    .academy-banner-r { right: 16px; }
+    @media (max-width: 768px) {
+        .academy-banner-arrow { width: 32px; height: 32px; font-size: 13px; }
     }
 </style>
 
@@ -328,28 +397,32 @@
 
     @if (bannerItems.Any())
     {
-        <div class="et-carousel" style="max-width:1200px;margin:0 auto;padding:20px 48px 4px">
-            <button class="et-carr-btn et-carr-l" onclick="sc('bannerScroll',-1)"><i class="bi bi-chevron-left"></i></button>
-            <div class="et-scroll-wrap" id="bannerScroll">
-                <div class="et-scroll-inner" style="gap:14px">
-                    @foreach (var item in bannerItems)
-                    {
-                        @if (!string.IsNullOrEmpty(item.LinkUrl))
-                        {
-                            <a href="@item.LinkUrl" target="_blank" rel="noopener" class="banner-slide">
-                                <img src="@item.MediaUrl" alt="@item.Title" />
-                            </a>
-                        }
-                        else
-                        {
-                            <div class="banner-slide">
-                                <img src="@item.MediaUrl" alt="@item.Title" />
-                            </div>
-                        }
-                    }
+        <div class="academy-banner-hero" id="academyBannerHero">
+            @for (int i = 0; i < bannerItems.Count; i++)
+            {
+                var item = bannerItems[i];
+                <div class="academy-banner-slide @(i == 0 ? "active" : "")">
+                    <img src="@item.MediaUrl" alt="@item.Title" />
+                    <div class="academy-banner-overlay">
+                        <div class="academy-banner-text">
+                            <h2>@item.Title</h2>
+                            @if (!string.IsNullOrEmpty(item.Description))
+                            {
+                                <p>@item.Description</p>
+                            }
+                            @if (!string.IsNullOrEmpty(item.LinkUrl))
+                            {
+                                <a href="@item.LinkUrl" target="_blank" rel="noopener">Detaylar</a>
+                            }
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <button class="et-carr-btn et-carr-r" onclick="sc('bannerScroll',1)"><i class="bi bi-chevron-right"></i></button>
+            }
+            @if (bannerItems.Count > 1)
+            {
+                <button class="academy-banner-arrow academy-banner-l" onclick="academyBannerNav(-1)"><i class="bi bi-chevron-left"></i></button>
+                <button class="academy-banner-arrow academy-banner-r" onclick="academyBannerNav(1)"><i class="bi bi-chevron-right"></i></button>
+            }
         </div>
     }
 
@@ -585,4 +658,23 @@
         var el = document.getElementById(id);
         if (el) el.scrollBy({ left: dir * 340, behavior: 'smooth' });
     }
+
+    var academyBannerIndex = 0;
+    function academyBannerNav(dir) {
+        var wrap = document.getElementById("academyBannerHero");
+        if (!wrap) return;
+        var slides = wrap.querySelectorAll(".academy-banner-slide");
+        if (slides.length === 0) return;
+
+        slides[academyBannerIndex].classList.remove("active");
+        academyBannerIndex = (academyBannerIndex + dir + slides.length) % slides.length;
+        slides[academyBannerIndex].classList.add("active");
+    }
+
+    (function () {
+        var wrap = document.getElementById("academyBannerHero");
+        if (wrap && wrap.querySelectorAll(".academy-banner-slide").length > 1) {
+            setInterval(function () { academyBannerNav(1); }, 6000);
+        }
+    })();
 </script>
