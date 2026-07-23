@@ -35,9 +35,11 @@
                            style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
                 </div>
                 <div id="fieldMediaUrl">
-                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">MEDYA URL</label>
-                    <input type="text" name="MediaUrl" placeholder="https://..."
-                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">GÖRSEL</label>
+                    <input type="file" id="mediaFileInput" accept="image/*"
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:8px 10px;font-size:12px;font-family:inherit;box-sizing:border-box" />
+                    <input type="hidden" name="MediaUrl" id="mediaUrlHidden" />
+                    <div id="mediaUploadStatus" style="font-size:11px;color:rgba(255,255,255,0.4);margin-top:6px"></div>
                 </div>
                 <div id="fieldLinkUrl">
                     <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">LİNK <span style="font-weight:400;color:rgba(255,255,255,0.35)">(Instagram, web sitesi vb.)</span></label>
@@ -186,5 +188,45 @@
             typeInput.addEventListener("input", updateVisibility);
             updateVisibility(); // sayfa yüklenince mevcut değere göre ayarla
         }
+
+        // ── Görsel yükleme ──
+        var mediaFileInput = document.getElementById("mediaFileInput");
+        var mediaUrlHidden = document.getElementById("mediaUrlHidden");
+        var mediaUploadStatus = document.getElementById("mediaUploadStatus");
+
+        if (mediaFileInput) {
+            mediaFileInput.addEventListener("change", function () {
+                var f = this.files[0];
+                if (!f) return;
+
+                mediaUploadStatus.textContent = "Yükleniyor...";
+                mediaUploadStatus.style.color = "rgba(255,255,255,0.4)";
+                mediaUrlHidden.value = "";
+
+                var fd = new FormData();
+                fd.append("file", f);
+
+                fetch("@Url.Action("UploadImage", "Academy", new { area = "Admin" })", {
+                    method: "POST",
+                    body: fd
+                })
+                    .then(function (r) { return r.json(); })
+                    .then(function (data) {
+                        if (data.success) {
+                            mediaUrlHidden.value = data.url;
+                            mediaUploadStatus.textContent = "Yüklendi ✓";
+                            mediaUploadStatus.style.color = "#10b981";
+                        } else {
+                            mediaUploadStatus.textContent = data.message || "Yükleme hatası oluştu.";
+                            mediaUploadStatus.style.color = "#ef4444";
+                        }
+                    })
+                    .catch(function () {
+                        mediaUploadStatus.textContent = "Bağlantı hatası.";
+                        mediaUploadStatus.style.color = "#ef4444";
+                    });
+            });
+        }
     })();
 </script>
+
