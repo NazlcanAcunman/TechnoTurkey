@@ -14,13 +14,20 @@
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:16px">
                 <div>
                     <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">TÜR</label>
-                  <select name="Type" required style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit">
-    <option value="info">Bilgi (info)</option>
-    <option value="photo">Fotoğraf (photo)</option>
-    <option value="student">Öğrenci (student)</option>
-    <option value="video">Video (video)</option>
-    <option value="instructor">Eğitmen (instructor)</option>
-</select>
+                    <input type="text" name="Type" required list="academyTypeList" placeholder="tür yazın (örn: instructor)"
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
+                    <datalist id="academyTypeList">
+                        <option value="info">Hakkımızda</option>
+                        <option value="photo">Fotoğraf</option>
+                        <option value="student">Öğrenci</option>
+                        <option value="video">Video</option>
+                        <option value="instructor">Eğitmen</option>
+                        <option value="course">Eğitim</option>
+                        <option value="workshop">Workshop</option>
+                        <option value="faq">Sık Sorulan Soru</option>
+                        <option value="testimonial">Başarı Hikayesi</option>
+                        <option value="certificate">Sertifika</option>
+                    </datalist>
                 </div>
                 <div>
                     <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">BAŞLIK</label>
@@ -33,14 +40,19 @@
                            style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
                 </div>
                 <div>
+                    <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">LİNK <span style="font-weight:400;color:rgba(255,255,255,0.35)">(Instagram, web sitesi vb.)</span></label>
+                    <input type="text" name="LinkUrl" placeholder="https://instagram.com/kullaniciadi"
+                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
+                </div>
+                <div>
                     <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">SIRA</label>
                     <input type="number" name="DisplayOrder" value="0" min="0"
                            style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box" />
                 </div>
             </div>
             <div style="margin-bottom:16px">
-            <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">AÇIKLAMA <span style="font-weight:400;color:rgba(255,255,255,0.35)">(Eğitmen için: Instagram kullanıcı adı, @@ olmadan yazın — örn. technoturkey)</span></label>
-<textarea name="Description" rows="3" placeholder="Açıklama girin... (Eğitmen ise Instagram kullanıcı adı)"
+                <label style="font-size:12px;color:rgba(255,255,255,0.5);font-weight:600;display:block;margin-bottom:6px">AÇIKLAMA</label>
+                <textarea name="Description" rows="3" placeholder="Açıklama girin..."
                           style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:8px;color:#fff;padding:10px 12px;font-size:13px;font-family:inherit;box-sizing:border-box;resize:vertical"></textarea>
             </div>
             <div style="display:flex;align-items:center;gap:20px">
@@ -87,15 +99,20 @@
                     <tr>
                         <td>
                             @{
-                              var badgeColor = item.Type switch
-{
-    "info"       => "#3b82f6",
-    "photo"      => "#10b981",
-    "student"    => "#f59e0b",
-    "video"      => "#ef4444",
-    "instructor" => "#ec4899",
-    _            => "#6b7280"
-};
+                                var badgeColor = item.Type switch
+                                {
+                                    "info"        => "#3b82f6",
+                                    "photo"       => "#10b981",
+                                    "student"     => "#f59e0b",
+                                    "video"       => "#ef4444",
+                                    "instructor"  => "#ec4899",
+                                    "course"      => "#8b5cf6",
+                                    "workshop"    => "#06b6d4",
+                                    "faq"         => "#84cc16",
+                                    "testimonial" => "#f97316",
+                                    "certificate" => "#eab308",
+                                    _             => "#6b7280"
+                                };
                             }
                             <span style="background:@(badgeColor)22;color:@badgeColor;border:1px solid @(badgeColor)44;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase">
                                 @item.Type
