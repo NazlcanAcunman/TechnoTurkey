@@ -3,8 +3,10 @@ using EventTicket.API;
 using EventTicket.API.Middleware;
 using EventTicket.Data;
 using EventTicket.Data.Context;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using System.Threading.RateLimiting;
 
 // Npgsql: treat all DateTime values as UTC (fixes DateTimeKind.Unspecified → timestamp with time zone)
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -18,6 +20,20 @@ builder.Services.AddDataServices(builder.Configuration);
 builder.Services.AddApiServices(builder.Configuration);
 
 builder.Services.AddControllers();
+
+// Rate limiting — giriş/kayıt denemelerine karşı brute-force koruması
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddFixedWindowLimiter("AuthLimiter", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = 8;               // dakikada en fazla 8 deneme (aynı IP)
+        opt.QueueLimit = 0;
+        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+    });
+});
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -44,6 +60,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
 app.UseCors("AllowUI");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
@@ -51,4 +68,3 @@ app.MapControllers();
 await DbSeeder.SeedData(app);
 
 app.Run();
-
