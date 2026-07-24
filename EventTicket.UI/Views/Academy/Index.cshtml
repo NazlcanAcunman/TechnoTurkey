@@ -254,17 +254,12 @@
     /* Course / Workshop carousel (afiş + açıklama) */
     .course-carousel-wrap {
         display: flex;
+        flex-direction: column;
         gap: 16px;
-        overflow-x: auto;
-        scroll-snap-type: x proximity;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        padding-bottom: 6px;
     }
-    .course-carousel-wrap::-webkit-scrollbar { display: none; }
     .course-card {
-        flex: 0 0 340px;
-        scroll-snap-align: start;
+        width: 100%;
+        max-width: 720px;
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 14px;
@@ -278,7 +273,7 @@
         box-shadow: 0 14px 36px rgba(0,0,0,0.5);
     }
     .course-card-img-wrap {
-        flex: 0 0 130px;
+        flex: 0 0 260px;
         aspect-ratio: 3/4;
         overflow: hidden;
         background: #0d0d0d;
@@ -293,17 +288,17 @@
     }
     .course-card:hover img { transform: scale(1.08); }
     .course-card-placeholder {
-        flex: 0 0 130px;
+        flex: 0 0 260px;
         aspect-ratio: 3/4;
         background: rgba(255,255,255,0.08);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 2rem;
+        font-size: 2.2rem;
         color: rgba(255,255,255,0.3);
     }
     .course-card-body {
-        padding: 14px 16px;
+        padding: 18px 22px;
         flex: 1;
         min-width: 0;
         display: flex;
@@ -311,18 +306,18 @@
         justify-content: center;
     }
     .course-card h3 {
-        font-size: 0.92rem;
+        font-size: 1.05rem;
         font-weight: 700;
         color: #fff;
-        margin: 0 0 6px;
+        margin: 0 0 8px;
     }
     .course-card p {
-        font-size: 0.78rem;
+        font-size: 0.85rem;
         color: rgba(255,255,255,0.55);
         margin: 0 0 10px;
-        line-height: 1.5;
+        line-height: 1.6;
         display: -webkit-box;
-        -webkit-line-clamp: 5;
+        -webkit-line-clamp: 6;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
@@ -381,6 +376,10 @@
     .academy-banner-r { right: 16px; }
     @@media (max-width: 768px) {
         .academy-banner-arrow { width: 32px; height: 32px; font-size: 13px; }
+        .course-card-img-wrap, .course-card-placeholder { flex-basis: 120px; }
+        .course-card h3 { font-size: 0.9rem; }
+        .course-card p { font-size: 0.78rem; -webkit-line-clamp: 4; }
+        .course-card-body { padding: 12px 14px; }
     }
 </style>
 
