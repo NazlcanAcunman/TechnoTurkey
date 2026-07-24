@@ -253,13 +253,24 @@
 
     /* Course / Workshop carousel (afiş + açıklama) */
     .course-carousel-wrap {
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    .course-carousel-wrap > .course-card:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+        justify-self: center;
+        width: 100%;
+        max-width: calc(50% - 10px);
+    }
+    @@media (max-width: 640px) {
+        .course-carousel-wrap { grid-template-columns: 1fr; }
+        .course-carousel-wrap > .course-card:last-child:nth-child(odd) {
+            max-width: 100%;
+        }
     }
     .course-card {
         width: 100%;
-        max-width: 720px;
         background: rgba(255,255,255,0.04);
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 14px;
@@ -273,7 +284,7 @@
         box-shadow: 0 14px 36px rgba(0,0,0,0.5);
     }
     .course-card-img-wrap {
-        flex: 0 0 260px;
+        flex: 0 0 60%;
         aspect-ratio: 3/4;
         overflow: hidden;
         background: #0d0d0d;
@@ -288,7 +299,7 @@
     }
     .course-card:hover img { transform: scale(1.08); }
     .course-card-placeholder {
-        flex: 0 0 260px;
+        flex: 0 0 60%;
         aspect-ratio: 3/4;
         background: rgba(255,255,255,0.08);
         display: flex;
@@ -298,28 +309,24 @@
         color: rgba(255,255,255,0.3);
     }
     .course-card-body {
-        padding: 18px 22px;
+        padding: 16px 18px;
         flex: 1;
         min-width: 0;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
     }
     .course-card h3 {
-        font-size: 1.05rem;
+        font-size: 1rem;
         font-weight: 700;
         color: #fff;
         margin: 0 0 8px;
     }
     .course-card p {
-        font-size: 0.85rem;
+        font-size: 0.83rem;
         color: rgba(255,255,255,0.55);
         margin: 0 0 10px;
         line-height: 1.6;
-        display: -webkit-box;
-        -webkit-line-clamp: 6;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
     }
 
     /* Büyük hero banner slayt (anasayfadaki gibi) */
@@ -376,9 +383,8 @@
     .academy-banner-r { right: 16px; }
     @@media (max-width: 768px) {
         .academy-banner-arrow { width: 32px; height: 32px; font-size: 13px; }
-        .course-card-img-wrap, .course-card-placeholder { flex-basis: 120px; }
         .course-card h3 { font-size: 0.9rem; }
-        .course-card p { font-size: 0.78rem; -webkit-line-clamp: 4; }
+        .course-card p { font-size: 0.78rem; }
         .course-card-body { padding: 12px 14px; }
     }
 </style>
