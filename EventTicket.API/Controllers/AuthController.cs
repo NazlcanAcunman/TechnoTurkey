@@ -5,6 +5,7 @@ using EventTicket.Core.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Security.Claims;
 
 namespace EventTicket.API.Controllers;
@@ -31,6 +32,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("register")]
+    [EnableRateLimiting("AuthLimiter")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         if (dto.DateOfBirth > DateTime.Today.AddYears(-18))
@@ -87,6 +89,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("AuthLimiter")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
         var user = await _userManager.FindByEmailAsync(dto.Email);
