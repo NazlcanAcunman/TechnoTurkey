@@ -23,6 +23,7 @@ builder.Services.AddAuthentication("Cookies")
         //  but MaxAge ensures the browser honours the lifetime even when set).
         options.Cookie.MaxAge = TimeSpan.FromDays(7);
         options.Cookie.SameSite = SameSiteMode.Lax;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     });
 
 builder.Services.AddAuthorization();
@@ -61,6 +62,7 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 var app = builder.Build();
