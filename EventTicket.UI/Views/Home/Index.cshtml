@@ -305,7 +305,10 @@
     <div class="et-pop-row">
         @foreach (var pa in popArtists)
         {
-            <div class="et-pop-card" onclick="showArtistModal('@pa.Name','@Html.Raw(pa.Genre)','@pa.ImageUrl','@Html.Raw(pa.Bio ?? pa.Genre)','@pa.Name','','@pa.Id')" style="cursor:pointer">
+            <div class="et-pop-card"
+                 data-name="@pa.Name" data-genre="@pa.Genre" data-img="@pa.ImageUrl"
+                 data-bio="@(pa.Bio ?? pa.Genre)" data-id="@pa.Id"
+                 onclick="showArtistModalFromCard(this)" style="cursor:pointer">
                 <div class="et-pop-img"><img src="@pa.ImageUrl" alt="@pa.Name" /></div>
                 <div class="et-pop-name">@pa.Name</div>
                 <div class="et-pop-genre">@pa.Genre</div>
@@ -387,7 +390,6 @@
 .et-all-grid {
     max-width: 1280px; margin: 0 auto; padding: 0 20px;
     display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 18px;
-align-items: start;
 }
 @@media (max-width: 600px) { .et-all-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 12px; } }
 
@@ -761,6 +763,10 @@ button.et-genre-tile { outline: none; }
     }
 
     /* ── Artist modal ── */
+    function showArtistModalFromCard(el) {
+        showArtistModal(el.dataset.name, el.dataset.genre, el.dataset.img, el.dataset.bio, el.dataset.name, '', el.dataset.id);
+    }
+
     function showArtistModal(name, genre, img, bio, eventTitle, eventDate, artistId) {
         document.getElementById('am-name').textContent = name;
         document.getElementById('am-genre').textContent = genre;
