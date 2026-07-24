@@ -1,9 +1,30 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - TechnoTurkey</title>
+
+    <!-- SEO / Sosyal medya paylaşım (Open Graph + Twitter Card) -->
+    @{
+        var ogTitle = ViewData["Title"] != null ? $"{ViewData["Title"]} - TechnoTurkey" : "TechnoTurkey - Elektronik Müzik Etkinlik Platformu";
+        var ogDescription = ViewData["OgDescription"] as string ?? "Türkiye'nin elektronik müzik etkinlik ve bilet platformu. Etkinlikleri keşfet, biletini al, sahneye çık.";
+        var ogImage = ViewData["OgImage"] as string ?? $"{Context.Request.Scheme}://{Context.Request.Host}/favicon.jpg";
+        var ogUrl = $"{Context.Request.Scheme}://{Context.Request.Host}{Context.Request.Path}";
+    }
+    <meta name="description" content="@ogDescription" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="TechnoTurkey" />
+    <meta property="og:title" content="@ogTitle" />
+    <meta property="og:description" content="@ogDescription" />
+    <meta property="og:image" content="@ogImage" />
+    <meta property="og:url" content="@ogUrl" />
+    <meta property="og:locale" content="tr_TR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@ogTitle" />
+    <meta name="twitter:description" content="@ogDescription" />
+    <meta name="twitter:image" content="@ogImage" />
+
     <link rel="icon" type="image/svg+xml" href="~/favicon.svg" asp-append-version="true" />
     <link rel="alternate icon" type="image/jpeg" href="~/favicon.jpg" asp-append-version="true" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
