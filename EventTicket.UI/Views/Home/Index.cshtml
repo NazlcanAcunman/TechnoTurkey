@@ -18,7 +18,7 @@
     // Events from database
     var top10          = Model.OrderByDescending(e => e.SoldCount).Take(10).ToList();
     var featuredArtists = artists.Take(8).ToList();
-    var newest         = Model.OrderByDescending(e => e.Date).Where(e => e.Date >= now).Take(8).ToList();
+    var promoEvents    = Model.Where(e => e.Date >= now && !string.IsNullOrWhiteSpace(e.PromoCode)).OrderBy(e => e.Date).Take(12).ToList();
     var popArtists     = artists.Take(5).ToList();
 
     var venueImgMap = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase) {
@@ -73,19 +73,19 @@
     <div class="et-fullbanner-scroll"><i class="bi bi-chevron-compact-down"></i></div>
 </div>
 
-<!-- ════ EN YENİ ETKİNLİKLER ════ -->
-@if (newest.Any())
+<!-- ════ PROMOSYON KODLU ETKİNLİKLER ════ -->
+@if (promoEvents.Any())
 {
 <div class="et-section">
     <div class="et-section-header">
-        <span class="et-section-title">En Yeni Etkinlikler</span>
+        <span class="et-section-title">Promosyon Kodlu Etkinlikler</span>
         <a asp-controller="Events" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
     </div>
     <div class="et-carousel">
         <button class="et-carr-btn et-carr-l" onclick="sc('nw',-1)"><i class="bi bi-chevron-left"></i></button>
         <div class="et-scroll-wrap" id="nw">
             <div class="et-scroll-inner" style="gap:14px">
-                @foreach (var n in newest)
+                @foreach (var n in promoEvents)
                 {
                     @await Html.PartialAsync("_EventCard", n)
                 }
@@ -165,12 +165,12 @@
 </div>
 }
 
-<!-- ════ TOP 10 ════ -->
+<!-- ════ POPÜLER ETKİNLİKLER ════ -->
 @if (top10.Any())
 {
 <div class="et-section">
     <div class="et-section-header">
-        <span class="et-section-title">TOP 10 – En Çok Satan</span>
+        <span class="et-section-title">Popüler Etkinlikler</span>
         <a asp-controller="Events" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
     </div>
     <div class="et-top10-wrap">
