@@ -19,7 +19,6 @@
     var top10          = Model.OrderByDescending(e => e.SoldCount).Take(10).ToList();
     var featuredArtists = artists.Take(8).ToList();
     var promoEvents    = Model.Where(e => e.Date >= now && !string.IsNullOrWhiteSpace(e.PromoCode)).OrderBy(e => e.Date).Take(12).ToList();
-    var popArtists     = artists.Take(5).ToList();
 
     var venueImgMap = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase) {
         { "Klein Phönix",                          "https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d" },
@@ -295,58 +294,6 @@
     </div>
 }
 
-@if (popArtists.Any())
-{
-<div class="et-section" style="background:rgba(255,255,255,.015);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)">
-    <div class="et-section-header">
-        <span class="et-section-title">Popüler Sanatçılar</span>
-        <a asp-controller="Artists" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
-    </div>
-    <div class="et-pop-row">
-        @foreach (var pa in popArtists)
-        {
-            <div class="et-pop-card"
-                 data-name="@pa.Name" data-genre="@pa.Genre" data-img="@pa.ImageUrl"
-                 data-bio="@(pa.Bio ?? pa.Genre)" data-id="@pa.Id"
-                 onclick="showArtistModalFromCard(this)" style="cursor:pointer">
-                <div class="et-pop-img"><img src="@pa.ImageUrl" alt="@pa.Name" /></div>
-                <div class="et-pop-name">@pa.Name</div>
-                <div class="et-pop-genre">@pa.Genre</div>
-                <button class="et-pop-follow" onclick="event.stopPropagation();toggleFollow(this)"><i class="bi bi-person-plus"></i> Takip Et</button>
-            </div>
-        }
-    </div>
-
-    <!-- Sanatçı bilgi modalı -->
-    <div id="artistModal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px)" onclick="closeArtistModal()">
-        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);border-radius:18px;width:min(480px,94vw);overflow:hidden" onclick="event.stopPropagation()">
-            <div id="am-img" style="width:100%;height:220px;overflow:hidden;position:relative;background:#111">
-                <img id="am-img-el" src="" style="width:100%;height:100%;object-fit:cover;opacity:0.7" />
-                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(26,26,26,1) 0%,transparent 60%)"></div>
-                <button onclick="closeArtistModal()" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:50%;width:32px;height:32px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px">&times;</button>
-            </div>
-            <div style="padding:20px 24px 28px">
-                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px">
-                    <div>
-                        <div id="am-name" style="font-size:22px;font-weight:900;color:#fff;margin-bottom:4px"></div>
-                        <div id="am-genre" style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:#000;background:#fff;padding:3px 9px;border-radius:4px;display:inline-block"></div>
-                    </div>
-                </div>
-                <div id="am-bio" style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.75;margin-bottom:18px"></div>
-                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 16px;margin-bottom:18px">
-                    <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px">Yaklaşan Etkinlik</div>
-                    <div id="am-event-title" style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px"></div>
-                    <div id="am-event-date" style="font-size:12px;color:rgba(255,255,255,0.35)"><i class="bi bi-calendar3"></i> </div>
-                </div>
-                <div style="display:flex;gap:10px">
-                    <a id="am-ticket-btn" href="#" class="et-hero-btn" style="flex:1;justify-content:center"><i class="bi bi-ticket-perforated"></i> BİLET AL</a>
-                    <button onclick="toggleFollow(this);event.stopPropagation()" class="et-pop-follow" style="border-radius:10px;padding:12px 18px"><i class="bi bi-person-plus"></i> Takip Et</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-}
 
 
 
@@ -730,38 +677,5 @@ button.et-genre-tile { outline: none; }
         if (el) el.scrollBy({ left: dir * 270, behavior: 'smooth' });
     }
 
-    /* ── Follow toggle ── */
-    function toggleFollow(btn) {
-        const on = btn.dataset.f === '1';
-        btn.innerHTML = on ? '<i class="bi bi-person-plus"></i> Takip Et' : '<i class="bi bi-person-check-fill"></i> Takip Ediliyor';
-        btn.style.background   = on ? '' : 'rgba(255,255,255,0.1)';
-        btn.style.borderColor  = on ? '' : 'rgba(255,255,255,0.3)';
-        btn.style.color        = on ? '' : '#fff';
-        btn.dataset.f          = on ? '0' : '1';
-    }
-
-    /* ── Artist modal ── */
-    function showArtistModalFromCard(el) {
-        showArtistModal(el.dataset.name, el.dataset.genre, el.dataset.img, el.dataset.bio, el.dataset.name, '', el.dataset.id);
-    }
-
-    function showArtistModal(name, genre, img, bio, eventTitle, eventDate, artistId) {
-        document.getElementById('am-name').textContent = name;
-        document.getElementById('am-genre').textContent = genre;
-        document.getElementById('am-img-el').src = img;
-        document.getElementById('am-bio').textContent = bio;
-        document.getElementById('am-event-title').textContent = eventTitle;
-        document.getElementById('am-event-date').innerHTML = '<i class="bi bi-calendar3"></i> ' + (eventDate || '');
-        document.getElementById('am-ticket-btn').href = '/Events?search=' + encodeURIComponent(name);
-        document.getElementById('artistModal').style.display = 'block';
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeArtistModal() {
-        document.getElementById('artistModal').style.display = 'none';
-        document.body.style.overflow = '';
-    }
-
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArtistModal(); });
 </script>
 }
