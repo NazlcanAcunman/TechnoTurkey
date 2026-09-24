@@ -1,5 +1,7 @@
 using EventTicket.Core.Interfaces;
 using EventTicket.UI.Services;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +20,6 @@ builder.Services.AddAuthentication("Cookies")
         options.AccessDeniedPath = "/Auth/Login";
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
         options.SlidingExpiration = true;
-        // MaxAge makes the browser persist the cookie across restarts
-        // (ExpireTimeSpan alone is not enough without IsPersistent on each SignIn,
-        //  but MaxAge ensures the browser honours the lifetime even when set).
         options.Cookie.MaxAge = TimeSpan.FromDays(7);
         options.Cookie.SameSite = SameSiteMode.Lax;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -33,10 +32,13 @@ builder.Services.AddHttpClient<IApiService, ApiService>(client =>
 {
     client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!);
 })
-.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+.ConfigurePrimaryHttpMessageHandler(() =>
 {
-    // Development'ta self-signed sertifikaya izin ver
-    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
+    var handler = new HttpClientHandler();
+    // Self-signed sertifikaya SADECE Development'ta izin ver (production'da normal doğrulama)
+    if (builder.Environment.IsDevelopment())
+        handler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+    return handler;
 });
 
 builder.Services.AddScoped<IEventUlService, EventUlService>();
@@ -55,8 +57,6 @@ builder.Services.AddScoped<IBannerUlService, BannerUlService>();
 builder.Services.AddScoped<IArticleUlService, ArticleUlService>();
 builder.Services.AddScoped<IGuestlistUiService, GuestlistUiService>();
 
-
-// Session — sepet için
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -65,7 +65,44 @@ builder.Services.AddSession(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.OnRejected = async (ctx, token) =>
+    {
+        ctx.HttpContext.Response.ContentType = "text/plain; charset=utf-8";
+        await ctx.HttpContext.Response.WriteAsync("Çok fazla deneme yaptınız. Lütfen bir dakika sonra tekrar deneyin.", token);
+    };
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(ctx =>
+    {
+        var path = ctx.Request.Path.Value ?? "";
+        var isAuthPost = HttpMethods.IsPost(ctx.Request.Method) &&
+            (path.StartsWith("/Auth/Login", StringComparison.OrdinalIgnoreCase) ||
+             path.StartsWith("/Auth/Register", StringComparison.OrdinalIgnoreCase));
+
+        if (!isAuthPost)
+            return RateLimitPartition.GetNoLimiter("other");
+
+        var ip = ctx.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        return RateLimitPartition.GetFixedWindowLimiter("auth:" + ip, _ => new FixedWindowRateLimiterOptions
+        {
+            Window = TimeSpan.FromMinutes(1),
+            PermitLimit = 8,
+            QueueLimit = 0
+        });
+    });
+});
+
 var app = builder.Build();
+
+app.UseForwardedHeaders();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -76,11 +113,11 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseRateLimiter();
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Site ziyaret sayacı — her sayfa yüklenişinde API'ye bildir (statik, admin ve api hariç)
 app.Use(async (context, next) =>
 {
     var path = context.Request.Path.Value ?? "";
@@ -112,12 +149,10 @@ app.Use(async (context, next) =>
     await next();
 });
 
-// Area route — üstte olmalı
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
-// Normal route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
