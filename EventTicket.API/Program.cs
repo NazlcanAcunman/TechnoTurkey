@@ -3,6 +3,7 @@ using EventTicket.API;
 using EventTicket.API.Middleware;
 using EventTicket.Data;
 using EventTicket.Data.Context;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -21,18 +22,27 @@ builder.Services.AddApiServices(builder.Configuration);
 
 builder.Services.AddControllers();
 
-// Rate limiting — giriş/kayıt denemelerine karşı brute-force koruması
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-    options.AddFixedWindowLimiter("AuthLimiter", opt =>
-    {
-        opt.Window = TimeSpan.FromMinutes(1);
-        opt.PermitLimit = 8;               // dakikada en fazla 8 deneme (aynı IP)
-        opt.QueueLimit = 0;
-        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
-    });
+    options.AddPolicy("AuthLimiter", httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: _ => new FixedWindowRateLimiterOptions
+            {
+                Window = TimeSpan.FromMinutes(1),
+                PermitLimit = 30,
+                QueueLimit = 0,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst
+            }));
 });
 builder.Services.AddOpenApi();
 
@@ -56,6 +66,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseForwardedHeaders();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseStaticFiles();
 app.UseHttpsRedirection();
