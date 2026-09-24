@@ -2,6 +2,7 @@ using EventTicket.Core.Entities;
 using EventTicket.Core.Enums;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EventTicket.Api;
@@ -17,21 +18,31 @@ public class DbSeeder
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<AppRole>>();
             var hasher      = scope.ServiceProvider.GetRequiredService<IPasswordHasher<AppUser>>();
+            var config      = scope.ServiceProvider.GetRequiredService<IConfiguration>();
 
-            // Tüm rolleri oluştur
             foreach (var role in Roles.All)
             {
                 if (!await roleManager.RoleExistsAsync(role))
                     await roleManager.CreateAsync(new AppRole(role));
             }
+            
+            var adminEmail = config["Seed:AdminEmail"];
+            if (string.IsNullOrWhiteSpace(adminEmail))
+                adminEmail = "technoturkey@gmail.com";
 
-            const string adminEmail    = "technoturkey@gmail.com";
-            const string adminPassword = "Admin.123";
+            var adminPassword = config["Seed:AdminPassword"];
+            var forceReset = string.Equals(config["Seed:ForcePasswordReset"], "true", StringComparison.OrdinalIgnoreCase);
 
             var superAdmin = await userManager.FindByEmailAsync(adminEmail);
 
             if (superAdmin == null)
             {
+                if (string.IsNullOrWhiteSpace(adminPassword))
+                {
+                    Console.WriteLine("SuperAdmin yok ve Seed__AdminPassword tanımlı değil; süper admin oluşturulmadı.");
+                    return;
+                }
+
                 superAdmin = new AppUser
                 {
                     UserName       = "superadmin",
@@ -51,19 +62,22 @@ public class DbSeeder
             }
             else
             {
-             
-                superAdmin.PasswordHash   = hasher.HashPassword(superAdmin, adminPassword);
-                superAdmin.SecurityStamp  = Guid.NewGuid().ToString();
                 superAdmin.IsActive       = true;
                 superAdmin.EmailConfirmed = true;
                 superAdmin.LockoutEnd     = null;
+
+                if (forceReset && !string.IsNullOrWhiteSpace(adminPassword))
+                {
+                    superAdmin.PasswordHash  = hasher.HashPassword(superAdmin, adminPassword);
+                    superAdmin.SecurityStamp = Guid.NewGuid().ToString();
+                    Console.WriteLine("SuperAdmin şifresi Seed__AdminPassword ile sıfırlandı. " +
+                                      "Seed__ForcePasswordReset değişkenini şimdi silin.");
+                }
 
                 var updateResult = await userManager.UpdateAsync(superAdmin);
                 if (!updateResult.Succeeded)
                     Console.WriteLine("SuperAdmin güncellenemedi: " +
                         string.Join(", ", updateResult.Errors.Select(e => e.Description)));
-                else
-                    Console.WriteLine("SuperAdmin şifresi sıfırlandı (Admin.123).");
 
                 await userManager.ResetAccessFailedCountAsync(superAdmin);
             }
