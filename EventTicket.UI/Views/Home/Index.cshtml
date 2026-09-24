@@ -11,14 +11,12 @@
 
     // Banner data from database
     var heroSlides     = banners.Where(b => b.Type == BannerType.HeroSlide).OrderBy(b => b.SortOrder).ToList();
-    var featuredBanner = banners.FirstOrDefault(b => b.Type == BannerType.FeaturedBanner)
-                         ?? (heroSlides.Any() ? heroSlides[0] : null);
     var bannerSlide    = heroSlides.Any() ? heroSlides[0] : null;
 
     // Events from database
     var top10          = Model.OrderByDescending(e => e.SoldCount).Take(10).ToList();
-    var featuredArtists = artists.Take(8).ToList();
-    var promoEvents    = Model.Where(e => e.Date >= now && !string.IsNullOrWhiteSpace(e.PromoCode)).OrderBy(e => e.Date).Take(12).ToList();
+    var newest         = Model.OrderByDescending(e => e.Date).Where(e => e.Date >= now).Take(8).ToList();
+    var popArtists     = artists.Take(5).ToList();
 
     var venueImgMap = new Dictionary<string,string>(StringComparer.OrdinalIgnoreCase) {
         { "Klein Phönix",                          "https://cdn.bugece.co/e56b65a3-02a6-44bd-b968-7d721e51df2d" },
@@ -71,9 +69,87 @@
     </div>
     <div class="et-fullbanner-scroll"><i class="bi bi-chevron-compact-down"></i></div>
 </div>
+}
 
-<!-- ════ PROMOSYON KODLU ETKİNLİKLER ════ -->
-@if (promoEvents.Any())
+<!-- ════ POPÜLER SANATÇILAR ════ -->
+@if (popArtists.Any())
+{
+<div class="et-section" style="background:rgba(255,255,255,.015);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)">
+    <div class="et-section-header">
+        <span class="et-section-title">Popüler Sanatçılar</span>
+        <a asp-controller="Artists" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
+    </div>
+    <div class="et-pop-row">
+        @foreach (var pa in popArtists)
+        {
+            <div class="et-pop-card"
+                 data-name="@pa.Name" data-genre="@pa.Genre" data-img="@pa.ImageUrl"
+                 data-bio="@(pa.Bio ?? pa.Genre)" data-id="@pa.Id"
+                 onclick="showArtistModalFromCard(this)" style="cursor:pointer">
+                <div class="et-pop-img"><img src="@pa.ImageUrl" alt="@pa.Name" /></div>
+                <div class="et-pop-name">@pa.Name</div>
+                <div class="et-pop-genre">@pa.Genre</div>
+                <button class="et-pop-follow" onclick="event.stopPropagation();toggleFollow(this)"><i class="bi bi-person-plus"></i> Takip Et</button>
+            </div>
+        }
+    </div>
+
+    <!-- Sanatçı bilgi modalı -->
+    <div id="artistModal" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,0.75);backdrop-filter:blur(6px)" onclick="closeArtistModal()">
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#1a1a1a;border:1px solid rgba(255,255,255,0.1);border-radius:18px;width:min(480px,94vw);overflow:hidden" onclick="event.stopPropagation()">
+            <div id="am-img" style="width:100%;height:220px;overflow:hidden;position:relative;background:#111">
+                <img id="am-img-el" src="" style="width:100%;height:100%;object-fit:cover;opacity:0.7" />
+                <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(26,26,26,1) 0%,transparent 60%)"></div>
+                <button onclick="closeArtistModal()" style="position:absolute;top:14px;right:14px;background:rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:50%;width:32px;height:32px;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px">&times;</button>
+            </div>
+            <div style="padding:20px 24px 28px">
+                <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px">
+                    <div>
+                        <div id="am-name" style="font-size:22px;font-weight:900;color:#fff;margin-bottom:4px"></div>
+                        <div id="am-genre" style="font-size:10px;font-weight:800;letter-spacing:0.1em;color:#000;background:#fff;padding:3px 9px;border-radius:4px;display:inline-block"></div>
+                    </div>
+                </div>
+                <div id="am-bio" style="font-size:13px;color:rgba(255,255,255,0.55);line-height:1.75;margin-bottom:18px"></div>
+                <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:12px 16px;margin-bottom:18px">
+                    <div style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:8px">Yaklaşan Etkinlik</div>
+                    <div id="am-event-title" style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px"></div>
+                    <div id="am-event-date" style="font-size:12px;color:rgba(255,255,255,0.35)"><i class="bi bi-calendar3"></i> </div>
+                </div>
+                <div style="display:flex;gap:10px">
+                    <a id="am-ticket-btn" href="#" class="et-hero-btn" style="flex:1;justify-content:center"><i class="bi bi-ticket-perforated"></i> BİLET AL</a>
+                    <button onclick="toggleFollow(this);event.stopPropagation()" class="et-pop-follow" style="border-radius:10px;padding:12px 18px"><i class="bi bi-person-plus"></i> Takip Et</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+<!-- ════ BU HAFTA ════ -->
+@if (thisWeek.Any())
+{
+    <div class="et-section">
+        <div class="et-section-header">
+            <span class="et-section-title"><span class="et-live-dot"></span>Bu Hafta</span>
+            <a asp-controller="Events" asp-action="Index" class="et-section-more">TÜMÜNÜ GÖR →</a>
+        </div>
+        <div class="et-carousel">
+            <button class="et-carr-btn et-carr-l" onclick="sc('tw',-1)"><i class="bi bi-chevron-left"></i></button>
+            <div class="et-scroll-wrap" id="tw">
+                <div class="et-scroll-inner">
+                    @foreach (var ev in thisWeek)
+                    {
+                        @await Html.PartialAsync("_EventCard", ev)
+                    }
+                </div>
+            </div>
+            <button class="et-carr-btn et-carr-r" onclick="sc('tw',1)"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+}
+
+<!-- ════ PROMOSYON KODLU ETKİNLİKLER (başlık) ════ -->
+@if (newest.Any())
 {
 <div class="et-section">
     <div class="et-section-header">
@@ -84,7 +160,7 @@
         <button class="et-carr-btn et-carr-l" onclick="sc('nw',-1)"><i class="bi bi-chevron-left"></i></button>
         <div class="et-scroll-wrap" id="nw">
             <div class="et-scroll-inner" style="gap:14px">
-                @foreach (var n in promoEvents)
+                @foreach (var n in newest)
                 {
                     @await Html.PartialAsync("_EventCard", n)
                 }
@@ -94,6 +170,10 @@
     </div>
 </div>
 }
+
+@if (bannerSlide != null)
+{
+
 
 <!-- ════ COMPACT SLIDER ════ -->
 <div class="et-hero-wrap">
@@ -193,106 +273,8 @@
 </div>
 }
 
-@if (featuredArtists.Any())
-{
-<div class="et-section" style="background:rgba(255,255,255,.012);border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)">
-    <div class="et-section-header">
-        <span class="et-section-title">Öne Çıkan Sanatçılar</span>
-        <a asp-controller="Artists" asp-action="Index" class="et-section-more">Tümünü Gör →</a>
-    </div>
-    <div class="et-carousel">
-        <button class="et-carr-btn et-carr-l" onclick="sc('aw',-1)"><i class="bi bi-chevron-left"></i></button>
-        <div class="et-scroll-wrap" id="aw">
-            <div class="et-scroll-inner" style="gap:14px">
-                @foreach (var a in featuredArtists)
-                {
-                    <div class="et-ac">
-                        <a href="/Events?search=@Uri.EscapeDataString(a.Name)" style="text-decoration:none">
-                            <div class="et-ac-img">
-                                <img src="@a.ImageUrl" alt="@a.Name" />
-                                <span class="et-ac-genre">@a.Genre</span>
-                            </div>
-                        </a>
-                        <div class="et-ac-body">
-                            <a href="/Events?search=@Uri.EscapeDataString(a.Name)" style="text-decoration:none">
-                                <div class="et-ac-name">@a.Name</div>
-                                <div class="et-ac-sub">@a.Genre</div>
-                            </a>
-                            <a href="/Events?search=@Uri.EscapeDataString(a.Name)" class="et-ac-btn" style="text-decoration:none"><i class="bi bi-music-note-list"></i> ETKİNLİKLERİ GÖR</a>
-                        </div>
-                    </div>
-                }
-            </div>
-        </div>
-        <button class="et-carr-btn et-carr-r" onclick="sc('aw',1)"><i class="bi bi-chevron-right"></i></button>
-    </div>
-</div>
-}
 
-@if (featuredBanner != null)
-{
-    string fbUrl = featuredBanner.EventId.HasValue
-        ? "/Events/Details/" + featuredBanner.EventId
-        : (!string.IsNullOrEmpty(featuredBanner.TicketUrl)
-            ? featuredBanner.TicketUrl
-            : (!string.IsNullOrEmpty(featuredBanner.SearchQuery)
-                ? "/Events?search=" + Uri.EscapeDataString(featuredBanner.SearchQuery)
-                : "/Events"));
-<div class="et-banner-section">
-    <div class="et-banner-inner" onclick="location.href='@fbUrl'" style="cursor:pointer">
-        <img src="@featuredBanner.ImageUrl" alt="@featuredBanner.Title" />
-        <div class="et-feat-overlay">
-            <div class="et-banner-content">
-                <div class="et-hero-badge" style="margin-bottom:18px;font-size:11px;padding:6px 16px">
-                    <i class="bi bi-lightning-charge-fill" style="color:#fff"></i> ÖNE ÇIKAN ETKİNLİK
-                </div>
-                <div class="et-banner-title">@featuredBanner.Title</div>
-                @if (!string.IsNullOrEmpty(featuredBanner.SubTitle))
-                {
-                    <div style="font-size:15px;font-weight:400;color:rgba(255,255,255,0.6);margin-bottom:16px;letter-spacing:0.04em">@featuredBanner.SubTitle</div>
-                }
-                <div class="et-banner-meta">
-                    @if (!string.IsNullOrEmpty(featuredBanner.DateText))
-                    {
-                        <span><i class="bi bi-calendar3"></i> @featuredBanner.DateText</span>
-                    }
-                    @if (!string.IsNullOrEmpty(featuredBanner.Venue))
-                    {
-                        <span>&nbsp;·&nbsp; <i class="bi bi-geo-alt"></i> @featuredBanner.Venue</span>
-                    }
-                </div>
-                <div style="display:flex;gap:12px;align-items:center;margin-top:28px;flex-wrap:wrap">
-                    <a href="@fbUrl" class="et-hero-btn" onclick="event.stopPropagation()">
-                        <i class="bi bi-ticket-perforated"></i> BİLET AL
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-}
 
-@if (thisWeek.Any())
-{
-    <div class="et-section">
-        <div class="et-section-header">
-            <span class="et-section-title"><span class="et-live-dot"></span>Bu Hafta</span>
-            <a asp-controller="Events" asp-action="Index" class="et-section-more">TÜMÜNÜ GÖR →</a>
-        </div>
-        <div class="et-carousel">
-            <button class="et-carr-btn et-carr-l" onclick="sc('tw',-1)"><i class="bi bi-chevron-left"></i></button>
-            <div class="et-scroll-wrap" id="tw">
-                <div class="et-scroll-inner">
-                    @foreach (var ev in thisWeek)
-                    {
-                        @await Html.PartialAsync("_EventCard", ev)
-                    }
-                </div>
-            </div>
-            <button class="et-carr-btn et-carr-r" onclick="sc('tw',1)"><i class="bi bi-chevron-right"></i></button>
-        </div>
-    </div>
-}
 
 
 
@@ -676,6 +658,40 @@ button.et-genre-tile { outline: none; }
         const el = document.getElementById(id);
         if (el) el.scrollBy({ left: dir * 270, behavior: 'smooth' });
     }
+
+    /* ── Follow toggle ── */
+    function toggleFollow(btn) {
+        const on = btn.dataset.f === '1';
+        btn.innerHTML = on ? '<i class="bi bi-person-plus"></i> Takip Et' : '<i class="bi bi-person-check-fill"></i> Takip Ediliyor';
+        btn.style.background   = on ? '' : 'rgba(255,255,255,0.1)';
+        btn.style.borderColor  = on ? '' : 'rgba(255,255,255,0.3)';
+        btn.style.color        = on ? '' : '#fff';
+        btn.dataset.f          = on ? '0' : '1';
+    }
+
+    /* ── Artist modal ── */
+    function showArtistModalFromCard(el) {
+        showArtistModal(el.dataset.name, el.dataset.genre, el.dataset.img, el.dataset.bio, el.dataset.name, '', el.dataset.id);
+    }
+
+    function showArtistModal(name, genre, img, bio, eventTitle, eventDate, artistId) {
+        document.getElementById('am-name').textContent = name;
+        document.getElementById('am-genre').textContent = genre;
+        document.getElementById('am-img-el').src = img;
+        document.getElementById('am-bio').textContent = bio;
+        document.getElementById('am-event-title').textContent = eventTitle;
+        document.getElementById('am-event-date').innerHTML = '<i class="bi bi-calendar3"></i> ' + (eventDate || '');
+        document.getElementById('am-ticket-btn').href = '/Events?search=' + encodeURIComponent(name);
+        document.getElementById('artistModal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeArtistModal() {
+        document.getElementById('artistModal').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeArtistModal(); });
 
 </script>
 }
